@@ -30,23 +30,3 @@ INSERT INTO cursos (nome, descricao, carga_horaria) VALUES
 ('Programação', 'Lógica de programação e algoritmos', 80),
 ('Engenharia de Software', 'Processos de desenvolvimento de software', 120),
 ('Redes de Computadores', 'Fundamentos de redes', 50);
-
-CONSULTAS SQL
-
-SELECT * FROM cursos;
-### Resultado:
-![Resultado do Select Geral]("C:\Users\Geovanna\Pictures\Screenshots\Captura de tela 2026-05-27 183023.png")
-
-SELECT COM WHERE
-
-SELECT * FROM cursos
-WHERE carga_horaria > 50;
-### Resultado:
-  ![Resultado do WHERE]()
-
-SELECT COM ORDER BY
-
-SELECT * FROM cursos
-ORDER BY nome ASC;
-### Resultado:
-![Resultado do ORDER BY]("C:\Users\Geovanna\Pictures\Screenshots\Captura de tela 2026-05-27 182947.png"
