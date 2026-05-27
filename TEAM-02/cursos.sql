@@ -1,15 +1,3 @@
-# Team 02 — Módulo de Cursos
-
-## Integrantes
-
-- Geovanna Gaspar Ribeiro
----
-
-# Descrição
-
-Este módulo é responsável pelo gerenciamento de cursos no sistema, incluindo cadastro, consulta e organização das informações como nome, descrição e carga horária.
-
----
 
 -- 1. Criação e seleção do banco de dados
 CREATE DATABASE escola_db;
@@ -30,3 +18,11 @@ INSERT INTO cursos (nome, descricao, carga_horaria) VALUES
 ('Programação', 'Lógica de programação e algoritmos', 80),
 ('Engenharia de Software', 'Processos de desenvolvimento de software', 120),
 ('Redes de Computadores', 'Fundamentos de redes', 50);
+
+SELECT * FROM cursos;
+
+SELECT * FROM cursos
+WHERE carga_horaria > 60;
+
+SELECT * FROM cursos
+ORDER BY carga_horaria DESC;
