@@ -46,11 +46,13 @@ ORDER BY carga_horaria DESC;
 <img width="552" height="356" alt="Captura de tela 2026-05-27 182911" src="https://github.com/user-attachments/assets/477e2eff-e7e8-4f33-9956-03daec896a07" />
 
 # ORDER BY
+
 ```sql 
 SELECT * FROM cursos
 WHERE carga_horaria > 60;
 ```
 <img width="558" height="405" alt="Captura de tela 2026-05-27 182947" src="https://github.com/user-attachments/assets/07747d4d-20ff-4b6a-b98f-3dcba5e59bc9" />
+
 
 
 
