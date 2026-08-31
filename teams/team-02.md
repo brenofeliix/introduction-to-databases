@@ -1,27 +1,45 @@
-# Team 02 — Módulo de Cursos
+# Team 02 — Modulo Imobiliario
 
 ## Integrantes
 
-- Geovanna Gaspar Ribeiro
-
+- Rafael Tokashiki Souza
 
 ---
 
-# Descrição
+# Descricao
 
-Este módulo é responsável pelo gerenciamento de cursos no sistema. Ele permite cadastrar cursos, armazenar informações como nome, descrição e carga horária, além de realizar consultas e ordenações dos dados.
+Este modulo e responsavel pelo cadastro de imoveis e de seus proprietarios.
+Permite registrar informacoes como tipo, finalidade, bairro, numero de quartos,
+area e preco, alem de identificar o proprietario de cada imovel.
 
 ---
 
 # CREATE TABLE
 
 ```sql
-CREATE TABLE cursos (
+CREATE TABLE proprietarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    carga_horaria INT NOT NULL,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    telefone VARCHAR(20),
+    cidade VARCHAR(80)
+);
+
+CREATE TABLE imoveis (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    tipo VARCHAR(30) NOT NULL,
+    finalidade VARCHAR(20) NOT NULL,
+    bairro VARCHAR(80),
+    cidade VARCHAR(80) NOT NULL,
+    quartos INT DEFAULT 0,
+    banheiros INT DEFAULT 0,
+    vagas INT DEFAULT 0,
+    area_m2 DECIMAL(8,2),
+    preco DECIMAL(12,2) NOT NULL,
+    disponivel BOOLEAN DEFAULT TRUE,
+    data_cadastro DATE NOT NULL,
+    proprietario_id INT,
+    FOREIGN KEY (proprietario_id) REFERENCES proprietarios(id)
 );
 ```
 
@@ -30,11 +48,20 @@ CREATE TABLE cursos (
 # INSERT INTO
 
 ```sql
-INSERT INTO cursos (nome, descricao, carga_horaria) VALUES
-('Banco de Dados', 'Curso de SQL e modelagem de dados', 60),
-('Programação', 'Lógica de programação e algoritmos', 80),
-('Engenharia de Software', 'Processos de desenvolvimento de software', 70),
-('Redes de Computadores', 'Fundamentos de redes', 50);
+INSERT INTO proprietarios (nome, telefone, cidade) VALUES
+('Joao Pereira', '66999990001', 'Rondonopolis'),
+('Maria Santos', '66999990002', 'Rondonopolis'),
+('Carlos Oliveira', '66999990003', 'Cuiaba');
+
+INSERT INTO imoveis
+(titulo, tipo, finalidade, bairro, cidade, quartos, banheiros, vagas, area_m2, preco, data_cadastro, proprietario_id)
+VALUES
+('Casa terrea com quintal', 'Casa', 'Venda', 'Vila Aurora', 'Rondonopolis', 3, 2, 2, 180.00, 450000.00, '2026-03-10', 1),
+('Apartamento no centro', 'Apartamento', 'Aluguel', 'Centro', 'Rondonopolis', 2, 1, 1, 68.50, 1800.00, '2026-04-02', 1),
+('Sobrado alto padrao', 'Sobrado', 'Venda', 'Jardim Atlantico', 'Rondonopolis', 4, 4, 3, 320.00, 1250000.00, '2026-01-15', 2),
+('Kitnet mobiliada', 'Kitnet', 'Aluguel', 'Vila Birigui', 'Rondonopolis', 1, 1, 0, 32.00, 950.00, '2026-05-20', 2),
+('Terreno em condominio', 'Terreno', 'Venda', 'Parque Universitario', 'Rondonopolis', 0, 0, 0, 400.00, 280000.00, '2026-02-08', 3),
+('Sala comercial', 'Comercial', 'Aluguel', 'Centro', 'Rondonopolis', 0, 1, 1, 45.00, 2200.00, '2026-06-01', 3);
 ```
 
 ---
@@ -44,39 +71,60 @@ INSERT INTO cursos (nome, descricao, carga_horaria) VALUES
 ## SELECT *
 
 ```sql
-SELECT * FROM cursos;
+SELECT * FROM imoveis;
 ```
+
 ---
 
 ## SELECT COM WHERE
 
 ```sql
-SELECT * FROM cursos
-ORDER BY carga_horaria DESC;
+SELECT titulo, bairro, preco
+FROM imoveis
+WHERE finalidade = 'Venda';
 ```
+
 ---
 
 ## SELECT COM ORDER BY
 
 ```sql
-SELECT * FROM cursos
-WHERE carga_horaria > 60;
+SELECT titulo, quartos, preco
+FROM imoveis
+ORDER BY preco DESC;
 ```
+
+---
+
+## SELECT COM GROUP BY
+
+```sql
+SELECT tipo, COUNT(*) AS total
+FROM imoveis
+GROUP BY tipo;
+```
+
 ---
 
 # JOIN
 
+Relaciona cada imovel ao seu proprietario por meio da chave estrangeira
+`proprietario_id`.
+
 ```sql
-SELECT *
-FROM example;
+SELECT imoveis.titulo, imoveis.preco, proprietarios.nome
+FROM imoveis
+INNER JOIN proprietarios ON imoveis.proprietario_id = proprietarios.id;
 ```
 
 ---
 
 # Screenshots
 
-<img width="540" height="333" alt="Captura de tela 2026-05-27 183023" src="https://github.com/user-attachments/assets/d570fdb5-0b3f-4846-a087-5e225c4b2fbb" />
+Inserir screenshots abaixo.
 
-<img width="552" height="356" alt="Captura de tela 2026-05-27 182911" src="https://github.com/user-attachments/assets/477e2eff-e7e8-4f33-9956-03daec896a07" />
+---
 
-<img width="558" height="405" alt="Captura de tela 2026-05-27 182947" src="https://github.com/user-attachments/assets/07747d4d-20ff-4b6a-b98f-3dcba5e59bc9" />
+# Observacoes
+
+Os scripts foram executados e testados no MySQL via terminal no Ubuntu.
