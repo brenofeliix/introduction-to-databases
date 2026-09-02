@@ -11,20 +11,16 @@
 
 ## 1. IDENTIFICAÇÃO DA ENTREGA
 
-- **Equipe:** `team-XX`
-- **Semana / Sprint:** `xx`
-- **Período da entrega:** `DM/MM/AAAA a DD/MM/AAAA`
+- **Equipe:** `team-06`
+- **Semana / Sprint:** `01`
+- **Período da entrega:** `27/08/2026 a 03/09/2026`
 - **Issue da semana:** `#XX`
-- **Branch da equipe:** `team-XX-sprint-XX`
+- **Branch da equipe:** `team-06-sprint-01`
 - **Pull Request:** `#XX`
 
 ### Integrantes
 
-- Nome 1
-- Nome 2
-- Nome 3
-- Nome 4
-
+- Nome Anna Beatriz Oliveira Moura
 ---
 
 ## 2. TAREFA DA SEMANA
@@ -32,6 +28,8 @@
 ### Objetivo
 
 Descreva, em uma frase clara e objetiva, o que deverá estar funcionando ao final da semana.
+
+Criar um esquema inicial de um banco de dados de Filmes de Terror, contendo as tabelas `nome`, `diretor`, `subgenero` e `notas`.
 
 > Exemplo: Criar o esquema inicial do banco de dados da equipe contendo as tabelas `cliente`, `produto` e `pedido`, com suas respectivas chaves primárias e estrangeiras.
 
