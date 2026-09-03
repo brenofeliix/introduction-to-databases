@@ -33,15 +33,15 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 # 1. Identificação do aluno
 
-**Nome completo:**
+**Pedro Gustavo Macena da Silva**
 
 > Preencha aqui.
 
-**Nome escolhido para o banco de dados:**
+**sistema escolar**
 
 ```text
 
-```
+``` 
 
 ---
 
@@ -73,7 +73,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> sistema escolar.
 
 ---
 
@@ -90,7 +90,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> O sistema escolar será utilizado para organizar as informações de uma escola. Ele permitirá o cadastro de alunos, professores, disciplinas e turmas, além do gerenciamento de matrículas. O sistema será utilizado pela secretaria e pelos professores para consultá, cadastrá, alterá e excluí informações quando necessário.
 
 ---
 
@@ -100,7 +100,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> O objetivo deste banco de dados é armazenar e organizar as informações da escola, incluindo alunos, professores, disciplinas, turmas e matrículas. O sistema permitirá cadastrar, consultar, atualizar e excluir registros de forma organizada, garantindo a integridade dos dados.
 
 ---
 
@@ -112,11 +112,11 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Cadastrar Alunos 
+2. Cadastrar Professores
+3. Cadastrrar Disciplinas
+4. Cadastrar Turmas
+5. Gerenciamento de Matriculas
 
 ---
 
@@ -148,14 +148,14 @@ Pagamento
 
 ### Entidades do seu banco
 
-| Nº | Entidade | O que representa? |
-|---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| Nº| Entidade  | O que representa?              |
+|---|-----------|--------------------------------|
+| 1 |ALUNO      |DADOS DOS ALUNOS                |
+| 2 |PROFESSOR  |DADOS DOS PROFESSORES           |
+| 3 |DISCIPLINA |DADOS DA DISCIPLINAS            |
+| 4 |TURMA      |DADOS DAS TURMAS                |
+| 5 |MATRICULA  |DADOS DAS MATRICULAS DOS ALUNOS |
+| 6 |SECRETARIA |DADOS DA SECRETARIA ESCOLAR     |
 
 > Como referência para esta atividade, planeje **pelo menos 4 tabelas relacionadas**.
 
@@ -167,39 +167,39 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 ## Entidade 1
 
-**Nome da entidade:**
+**ALUNO:**
 
 ```text
 
 ```
 
-| Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
-|---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Atributo  | Informação armazenada        | Tipo de dado previsto | Obrigatório? |
+|-----------|------------------------------|-----------------------|--------------|
+|MATRICULA  |NOME COMPLETO DO ALUNO        |TEXTO                  |SIM           |
+|TELEFONE   |PEDRO GUSTAVO MACENA DA SILVA |TEXTO                  |SIM           |
+|NOME       |TEXTO NOME DO ALUNO           |TEXTO                  |SIM           |
+|TURMA      |DADOS DA TURMA                |TEXTO                  |SIM           |
+|SECRETARIA |DADOS DA SECRETARIA           |TEXTO                  |SIM           |
 
 ## Entidade 2
 
-**Nome da entidade:**
+**PROFESSOR:**
 
 ```text
 
 ```
 
-| Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
-|---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Atributo | Informação armazenada   | Tipo de dado previsto | Obrigatório? |
+|----------|-------------------------|-----------------------|--------------|
+|NOME      |NOME DO PROFESSOR        |TEXTO                  |SIM           |
+|CPF       |CPF DO PROFESSOR         |TEXTO                  |SIM           |
+|EMAIL     |EMAIL DO PROFESSOR       |TEXTO                  |SIM           |
+|TEFONE    |TELEFONE DO PROFESSOR    |TEXTO                  |SIM           |
+|DISCIPLINA|DISCIPLINA DO PROFESSOR  |TEXTO                  |SIM           |
 
 ## Entidade 3
 
-**Nome da entidade:**
+**DISCIPLINA:**
 
 ```text
 
@@ -207,30 +207,29 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|CODIGO  |CODIGO DA DISCIPLINA |TEXTO |SIM |
+|NOME  |NOME DA DICIPLINA  |TEXTO |SIM |
+|CARGA HORARIA  |CARGA HORARIA DA DICIPLINA  |INTEIRO  |SIM  |
+|DESCRIÇÃO  |DESCRIÇÃO DA DICIPLINA  |TEXTO |SIM  |
+|PROFESSOR RESPONSAVEL  |NOME DO PROFESSOR RESPONSAVEL  |TEXTO |SIM |
 
 ## Entidade 4
 
-**Nome da entidade:**
+**TURMA:**
 
 ```text
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
-|---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|----------|-----------------------|-----------------------|--------------|
+|CODIGO    |CODIGO DA TURMA        |TEXTO                  |SIM           |
+|ATRIBUTO  |NOME DA TURMA          |TEXTO                  |SIM           |
+|TURNO     |TURNO DA TURMA         |TEXTO                  |SIM           |
+|ATRIBUTO  |ATRIBNUTO DA TURMA     |TEXTO                  |SIM           |
+|SALA      |SALA DA TURMA          |TEXTO                  |SIM           |
 
 ## Outras entidades
-
 Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 
 | Entidade | Principais atributos |
@@ -245,12 +244,12 @@ Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 
 Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
-| Entidade/Tabela | Chave primária prevista | Justificativa |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Entidade/Tabela | Chave primária prevista | Justificativa                           |
+|-----------------|-------------------------|-----------------------------------------|
+|ALUNO            |MATRICULA                |IDENTIFICA CADA ALUNO DE FORMA UNICA     |
+|PROFESSOR        |CPF                      |IDENTIFICA CADA PROFESSOR DE FORMA UNICA |
+|DICIPLINA        |CODIGO                   |IDENTIFICA CADA DICIPLINA DE3 FORMA UNICA|
+|TURMA            |CODIGO                   |IDENTIFICA CADA ALUNO DE FORMA UNICA     |
 
 Considere:
 
@@ -268,20 +267,20 @@ Identifique como as entidades se relacionam.
 ### Exemplo
 
 ```text
-Cliente realiza Pedido
-Pedido possui Item_Pedido
-Produto aparece em Item_Pedido
+Aluno pertence a turma
+Professor ministra a disciplina
+Turma cursa diciplina
 ```
 
 ### Relacionamentos planejados
 
 | Entidade A | Relacionamento | Entidade B |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|------------|----------------|------------|
+|ALUNO       |PERTENCE        |DICIPLINA   |
+|PROFESSOR   |CURSA           |DICIPLINA   |
+|ALUNO       |REALISA         |MATRICULA   |
+|MATRICULA   |REFERENTE       |DICIPLINA   |
+|PROFESSOR   |LECION          |DICIPLINA   |
 
 ---
 
@@ -291,27 +290,27 @@ Utilize:
 
 ```text
 1:1  → um para um
-1:N  → um para muitos
+1:N  → um para muito
 N:N  → muitos para muitos
 ```
 
-| Relacionamento | Cardinalidade prevista | Justificativa |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Relacionamento                | Cardinalidade prevista | Justificativa                                  |
+|-------------------------------|------------------------|------------------------------------------------|
+|ALUNO PERTENCE A DICIPLINA     |N:N                     |UM ALUNO PODE PERTENCER A VARIAS DICIPLINAS     |
+|PROPFESSOR LECIONA DISCIPLINA  |1:N                     |UM PARA MUITOS                                  |
+|ALUNO REALIZA MATRICULA        |1:N                     |UM PARA MUITOS                                  |
+|MATRICULA REFENRETE A DICIPLINA|N:1                     |VARIAS MATRICULAS PODEM SER DA MESMA DICIPLINA  |
 
 ---
 
 # 11. Chaves estrangeiras previstas
-
-| Tabela | Atributo previsto como FK | Referencia qual tabela? |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+ 
+| Tabela   | Atributo previsto como FK        |Referencia qual tabela?|
+|----------|----------------------------------|-----------------------|
+|MATRICULA |ID ALUNO COMO CHAVE ESTRAGEIRA    |TABELA ALUNO           |
+|MATRICULA |ID DICIPLINA COMO CHAVE ESTRAGEIRA|TABELA DICIPLINA       |
+|DICIPLINA |ID PROFESSOR COMO CHAVE ESTRAGEIRA|TABELA PROFESSOR       |
+|          |                                  |                       |
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
 
@@ -330,13 +329,13 @@ DEFAULT
 AUTO_INCREMENT
 ```
 
-| Tabela | Atributo | Restrição prevista | Motivo |
-|---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Tabela   | Atributo     | Restrição prevista           | Motivo                                                                                                    |
+|----------|--------------|------------------------------|-----------------------------------------------------------------------------------------------------------|
+|ALUNO     |ID ALUNO      |PRIMARY KEY                   |IDENTIFICA CADA ALUNO DE FORMA UNICA                                                                       |
+|PROFESSOR |ID PROFESSOR  |PRIMARY KEY                   |IDENTIFICA CADA DICIPLINA DE FORMA UNICA                                                                   |
+|DICPLINA  |ID DICIPLINA  |PRIMARY KEY                   |IDENTIFICA CADA DICIPLINA DE FORMA UNICA                                                                   |
+|MATRICULA |ID MATRICULA  |PRIMARY KEY                   |IDENTIFICA CADA MATRICULA DE FORMA UNICA                                                                   |
+|ID ALUNO  |ID DICIPLINA  |PRIMARY KEY PARA ID MATRICULA |Identifica cada aluno de forma única, permitindo relacionar matrículas ao aluno e à disciplina corretamente|
 
 ---
 
@@ -356,11 +355,11 @@ Um empréstimo deve possuir uma data de realização.
 
 ### Regras do seu banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. UM ALUNO PODE ESTAR MATRICULADO EM VARIAS DICIPLINAS
+2. UMA DICIPLINA P´DODE TER VARIOS ALUNOS MATRICULADOS
+3. CADA MATRICULA DEVE ESTAR VINCULADA A UM ALUNO VINCULADA E A UMA DICIPLINA
+4. UM PROFESSOR PODE LECIONAR MAIS DE UMA DICIPLINA  
+5. CADA DICIPLINA DEVE POSSUIR UM PROFESSOR RESPONSAVEL
 
 ---
 
@@ -387,7 +386,31 @@ CLIENTE 1 ───── N PEDIDO
 ### Esboço do seu banco
 
 ```text
-Escreva aqui a estrutura planejada.
+ALUNO
+├── id_aluno (PK)
+├── nome
+└── email
+
+PROFESSOR
+├── id_professor (PK)
+└── nome
+
+DICIPLINA
+├── id_diciplina (PK)
+├── nome
+└── id_professor (FK)
+
+MATRICULA
+├── id_matricula (PK)
+├── id_aluno (FK)
+└── id_diciplina (FK)
+
+PROFESSOR 1 ───── N DICIPLINAS
+ALUNO     1 ───── N MATRICULAS
+DICIPLINA 1 ───── N MATRICULAS
+
+
+
 ```
 
 ---
@@ -396,10 +419,10 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1. REGISTROS DE ALUNO
+2. REGISTROS DE PROFESSORES
+3. REGISTROS DE DICIPLINAS
+4. REGISTROS DE MATRICULAS
 
 ---
 
@@ -419,17 +442,17 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. QUAIS ALUNOS QUE ESTÃO CADASTRADOS NO SISTEMAS
+2. QUAIS PROFESSORES ESTÃO CADASTRADOS
+3. QUAIS DICIPLINAS CADA PROFESSOR LECIONA
+4. QUAIS DICIPLINAS EM QUE CADA ALUNO ESTA MATRICULADO
+5. QUANTOS ALUNOS ESTÃO MATRICULADOS EM CADA DICIPLINA
 
 ---
 
 # 17. Decisões e dúvidas pendentes
 
-- 
+- NENHUMA DUVIDA PENDENTE NO MOMENT0
 - 
 - 
 
@@ -441,24 +464,24 @@ Caso não existam dúvidas:
 
 # 18. Checklist da Sprint 1/5
 
-- [ ] identifiquei o aluno responsável;
-- [ ] defini o tema do banco de dados;
-- [ ] descrevi o sistema;
-- [ ] defini o objetivo do banco;
-- [ ] defini o escopo inicial;
-- [ ] identifiquei pelo menos 4 entidades;
-- [ ] planejei os principais atributos;
-- [ ] defini as chaves primárias previstas;
-- [ ] identifiquei os relacionamentos;
-- [ ] defini as cardinalidades iniciais;
-- [ ] identifiquei possíveis chaves estrangeiras;
-- [ ] planejei restrições de integridade;
-- [ ] defini pelo menos 5 regras de negócio;
-- [ ] fiz um esboço da estrutura do banco;
-- [ ] defini os tipos de dados que futuramente serão cadastrados;
-- [ ] defini pelo menos 5 perguntas que o banco deverá responder;
-- [ ] registrei dúvidas ou decisões pendentes;
-- [ ] revisei o arquivo antes de finalizar.
+- [X] identifiquei o aluno responsável;
+- [X] defini o tema do banco de dados;
+- [X] descrevi o sistema;
+- [X] defini o objetivo do banco;
+- [X] defini o escopo inicial;
+- [X] identifiquei pelo menos 4 entidades;
+- [X] planejei os principais atributos;
+- [X] defini as chaves primárias previstas;
+- [X] identifiquei os relacionamentos;
+- [X] defini as cardinalidades iniciais;
+- [X] identifiquei possíveis chaves estrangeiras;
+- [X] planejei restrições de integridade;
+- [X] defini pelo menos 5 regras de negócio;
+- [X] fiz um esboço da estrutura do banco;
+- [X] defini os tipos de dados que futuramente serão cadastrados;
+- [X] defini pelo menos 5 perguntas que o banco deverá responder;
+- [X] registrei dúvidas ou decisões pendentes;
+- [X] revisei o arquivo antes de finalizar.
 
 ---
 
