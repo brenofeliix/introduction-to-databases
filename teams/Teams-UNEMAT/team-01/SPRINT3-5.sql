@@ -56,15 +56,15 @@ VALUES
 -- Tabela 4: ITEM_WATCHLIST (depende de USUARIO e SERIE)
 INSERT INTO item_watchlist (id_usuario, id_serie, status_assistindo, nota, comentario)
 VALUES 
-    (1, 1, 'Concluído', 9.5, 'Excelente primeira e quarta temporadas.'),
+    (1, 1, 'Finalizado', 9.5, 'Excelente primeira e quarta temporadas.'),
     (1, 2, 'Assistindo', 9.0, 'Adaptação muito fiel ao jogo.'),
     (1, 5, 'Quero Ver', NULL, NULL),
-    (2, 2, 'Concluído', 10.0, 'Uma obra-prima dramática.'),
-    (2, 6, 'Concluído', 9.8, 'Roteiro complexo e trilha fantástica.'),
+    (2, 2, 'Finalizado', 10.0, 'Uma obra-prima dramática.'),
+    (2, 6, 'Finalizado', 9.8, 'Roteiro complexo e trilha fantástica.'),
     (3, 3, 'Assistindo', 8.5, 'Sátira ácida muito boa.'),
     (3, 4, 'Quero Ver', NULL, NULL),
     (4, 1, 'Assistindo', 8.0, 'Ritmo bom.'),
-    (4, 7, 'Concluído', 9.7, 'Atuações impecáveis.'),
+    (4, 7, 'Finalizado', 9.7, 'Atuações impecáveis.'),
     (5, 5, 'Quero Ver', NULL, NULL),
     (6, 8, 'Quero Ver', NULL, 'Adicionada para teste de remoção.');
 
@@ -82,7 +82,7 @@ SELECT * FROM item_watchlist;
 
 -- UPDATE 1: Atualização de status na watchlist de um usuário
 UPDATE item_watchlist
-SET status_assistindo = 'Concluído'
+SET status_assistindo = 'Finalizado'
 WHERE id_usuario = 1 AND id_serie = 2;
 
 -- UPDATE 2: Atualização de e-mail de um usuário
