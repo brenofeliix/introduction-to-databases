@@ -268,19 +268,19 @@ ITEM_WATCHLIST
 ```sql
 -- Cole aqui os INSERTs realizados.
 
-INSERT INTO item_watchlist (id_usuario, id_serie, status_assistindo)
+INSERT INTO item_watchlist (id_usuario, id_serie, status_assistindo, nota, comentario)
 VALUES 
-    (1, 1, 'Concluído'),
-    (1, 2, 'Assistindo'),
-    (1, 5, 'Quero Ver'),
-    (2, 2, 'Concluído'),
-    (2, 6, 'Concluído'),
-    (3, 3, 'Assistindo'),
-    (3, 4, 'Quero Ver'),
-    (4, 1, 'Assistindo'),
-    (4, 7, 'Concluído'),
-    (5, 5, 'Quero Ver'),
-    (6, 8, 'Quero Ver');
+    (1, 1, 'Finalizado', 9.5, 'Excelente primeira e quarta temporadas.'),
+    (1, 2, 'Assistindo', 9.0, 'Adaptação muito fiel ao jogo.'),
+    (1, 5, 'Quero Ver', NULL, NULL),
+    (2, 2, 'Finalizado', 10.0, 'Uma obra-prima dramática.'),
+    (2, 6, 'Finalizado', 9.8, 'Roteiro complexo e trilha fantástica.'),
+    (3, 3, 'Assistindo', 8.5, 'Sátira ácida muito boa.'),
+    (3, 4, 'Quero Ver', NULL, NULL),
+    (4, 1, 'Assistindo', 8.0, 'Ritmo bom.'),
+    (4, 7, 'Finalizado', 9.7, 'Atuações impecáveis.'),
+    (5, 5, 'Quero Ver', NULL, NULL),
+    (6, 8, 'Quero Ver', NULL, 'Adicionada para teste de remoção.');
 
 ```
 
@@ -440,7 +440,7 @@ Execute pelo menos:
 ```sql
 -- Cole aqui.
 UPDATE item_watchlist
-SET status_assistindo = 'Concluído'
+SET status_assistindo = 'Finalizado'
 WHERE id_usuario = 1 AND id_serie = 2;
 ```
 
@@ -787,7 +787,7 @@ SPRINT3-5.sql
 | PLATAFORMA | 6 |
 | USUARIO | 6 |
 | SERIE | 7 |
-| ITEM_WATCHLIST | 11 |
+| ITEM_WATCHLIST | 10 |
 |  |  |
 
 ---
