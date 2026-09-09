@@ -838,7 +838,7 @@ LIMIT 3;
 
 ### Por que essa consulta é importante?
 
-> Representa o propósito central de uma plataforma de catálogo comunitário (recomen
+> > Representa o propósito central de uma plataforma de catálogo comunitário, permitindo calcular o ranking das séries mais bem avaliadas pelos usuários para gerar recomendações diretas.
 
 ---
 
