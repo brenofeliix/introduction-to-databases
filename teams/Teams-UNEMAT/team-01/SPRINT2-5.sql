@@ -1,13 +1,8 @@
 -- ============================================================
 -- IDENTIFICAÇÃO
--- Disciplina : Laboratório de Banco de Dados
 -- Aluna      : Raquel Silva dos Santos
--- Data       : 03/09/2026
--- Atividade  : Sprint 2/5 — Implementação da Estrutura DDL
 -- ============================================================
 
--- ============================================================
--- BANCO
 -- ============================================================
 DROP DATABASE IF EXISTS series_watchlist_db;
 CREATE DATABASE series_watchlist_db;
