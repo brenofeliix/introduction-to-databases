@@ -60,12 +60,12 @@ ORDER BY ano_lancamento DESC, titulo ASC;
 -- ============================================================
 
 -- 4.1 COUNT com filtro WHERE e agrupamento 
--- Pergunta: Quantas séries cada usuário tem marcadas com o status "Finalizada" (registrado como 'Concluído')?
+-- Pergunta: Quantas séries cada usuário tem marcadas com o status "Finalizada"?
 SELECT 
     id_usuario, 
-    COUNT(*) AS total_concluidas
+    COUNT(*) AS total_Finalizado
 FROM item_watchlist
-WHERE status_assistindo = 'Concluído'
+WHERE status_assistindo = 'Finalizado'
 GROUP BY id_usuario;
 
 -- 4.2 SUM
