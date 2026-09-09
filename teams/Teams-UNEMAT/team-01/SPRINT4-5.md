@@ -85,11 +85,19 @@ SPRINT4-5.sql
 
 Recupere as perguntas que você definiu anteriormente para o banco.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. **Quais séries cadastradas pertencem à plataforma "Netflix"?**
+   * *Exige:* Filtro com `WHERE` (`id_plataforma = 1`).
+2. **Qual é a média das notas de cada série calculada a partir das avaliações dos usuários?**
+   * *Exige:* Agrupamento com `GROUP BY` e agregação com `AVG()`.
+3. **Quantas séries cada usuário tem marcadas com o status "Finalizado"?**
+   * *Exige:* Filtro com `WHERE`, agrupamento com `GROUP BY` e agregação com `COUNT()`.
+4. **Quais séries cadastradas são do gênero "Drama" e foram lançadas a partir de 2020?**
+   * *Exige:* Filtro composto com `WHERE`, `LIKE` e operador `AND`.
+5. **Qual é o top 3 de séries com as maiores notas médias entre os usuários?**
+   * *Exige:* Agrupamento com `GROUP BY`, agregação com `AVG()`, ordenação decrescente com `ORDER BY` e limite de registros com `LIMIT`.
+
+---
+
 
 Agora identifique quais delas exigem:
 
@@ -122,18 +130,23 @@ FROM nome_tabela;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Qual é a listagem geral das séries do catálogo com seus títulos, gêneros e anos de lançamento?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+--
+ SELECT 
+    titulo AS nome_da_serie, 
+    genero AS categoria, 
+    ano_lancamento AS ano_estreia
+FROM serie;
 
 ```
 
 ### Explique o resultado
 
-> Escreva aqui.
+> Projeta exclusivamente as colunas informativas do catálogo, renomeando os cabeçalhos para uma visualização clara e objetiva antes da aplicação dos filtros.
 
 ---
 
@@ -185,18 +198,19 @@ WHERE preco > 100
 
 ### Pergunta respondida
 
-> Escreva aqui.
-
+> Quais séries cadastradas pertencem à plataforma "Netflix"?
 ### SQL
 
 ```sql
--- Cole aqui.
-
+-- 
+SELECT id_serie, titulo, genero, ano_lancamento
+FROM serie
+WHERE id_plataforma = 1;
 ```
 
 ### Explique o filtro
 
-> Escreva aqui.
+> Aplica a restrição WHERE id_plataforma = 1 para selecionar exclusivamente os títulos associados à plataforma Netflix no sistema.
 
 ---
 
@@ -230,12 +244,15 @@ ORDER BY categoria ASC, preco DESC;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Como listar o catálogo de séries ordenado da produção mais recente para a mais antiga e, em caso de empate de ano, em ordem alfabética?
 
 ### SQL
 
 ```sql
 -- Cole aqui.
+SELECT titulo, ano_lancamento, genero
+FROM serie
+ORDER BY ano_lancamento DESC, titulo ASC;
 
 ```
 
@@ -290,23 +307,31 @@ FROM nome_tabela;
 
 ```sql
 -- Cole aqui.
-
+SELECT 
+    id_usuario, 
+    COUNT(*) AS total_concluidas
+FROM item_watchlist
+WHERE status_assistindo = 'Finalizado'
+GROUP BY id_usuario;
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Quantas séries cada usuário tem marcadas com o status "Finalizada" (registrado como 'Concluído')?
 
 ## SUM
 
 ```sql
 -- Cole aqui.
+SELECT SUM(nota) AS somatorio_pontos_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL;
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é o somatório total de pontos atribuídos pelas notas válidas registradas na plataforma?
 
 Caso não seja aplicável ao domínio, justifique.
 
@@ -314,12 +339,19 @@ Caso não seja aplicável ao domínio, justifique.
 
 ```sql
 -- Cole aqui.
+SELECT 
+    id_serie,
+    ROUND(AVG(nota), 2) AS media_notas,
+    COUNT(nota) AS volume_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL
+GROUP BY id_serie;
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é a média das notas de cada série calculada a partir das avaliações dos usuários?
 
 Caso não seja aplicável ao domínio, justifique.
 
@@ -327,12 +359,15 @@ Caso não seja aplicável ao domínio, justifique.
 
 ```sql
 -- Cole aqui.
-
+SELECT 
+    MIN(nota) AS menor_nota,
+    MAX(nota) AS maior_nota
+FROM item_watchlist;
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Quais foram as notas extremas (menor e maior avaliação) registradas no banco de dados?
 
 ---
 
@@ -362,18 +397,25 @@ GROUP BY status;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Qual é a média de notas obtida por cada série a partir das resenhas registradas?
 
 ### SQL
 
 ```sql
 -- Cole aqui.
+SELECT 
+    id_serie,
+    ROUND(AVG(nota), 2) AS media_notas,
+    COUNT(nota) AS total_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL
+GROUP BY id_serie;
 
 ```
 
 ### Explique o agrupamento
 
-> Escreva aqui.
+> A cláusula GROUP BY id_serie reúne todas as avaliações dadas ao mesmo título e aplica a função agregada AVG(nota) sobre cada grupo individualmente.
 
 ---
 
@@ -397,18 +439,26 @@ HAVING COUNT(*) > 5;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Entre as séries avaliadas, quais obtiveram média de aprovação excelente (nota média maior ou igual a 9.0)?
 
 ### SQL
 
 ```sql
 -- Cole aqui.
+SELECT 
+    id_serie,
+    ROUND(AVG(nota), 2) AS media_notas,
+    COUNT(nota) AS total_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL
+GROUP BY id_serie
+HAVING AVG(nota) >= 9.0;
 
 ```
 
 ### Por que HAVING foi necessário?
 
-> Escreva aqui.
+> Porque a condição restringe o resultado de uma operação agregada (AVG(nota)). O WHERE filtra as linhas antes do agrupamento, sendo mandatório o uso de HAVING para filtrar os grupos já calculados.
 
 ---
 
@@ -438,12 +488,18 @@ FROM item_pedido;
 
 ```sql
 -- Cole aqui.
+SELECT 
+    titulo,
+    ano_lancamento,
+    (2026 - ano_lancamento) AS anos_desde_lancamento
+FROM serie
+ORDER BY anos_desde_lancamento ASC;
 
 ```
 
 ### Explique o cálculo
 
-> Escreva aqui.
+> Realiza uma operação aritmética simples subtraindo o ano de lançamento do ano atual (2026), calculando a idade de cada produção diretamente na consulta.
 
 Caso não seja aplicável ao domínio, justifique.
 
@@ -695,14 +751,18 @@ SPRINT4-5.sql
 
 | Nº | Pergunta | Recursos SQL utilizados | Funcionou? |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
-| 6 |  |  |  |
-| 7 |  |  |  |
-| 8 |  |  |  |
+| 1 | Plataformas cadastradas | `SELECT *` | Sim |
+| 2 | Catálogo com nomes amigáveis | `SELECT`, `AS (Alias)` | Sim |
+| 3 | Séries da plataforma Netflix | `WHERE =` | Sim |
+| 4 | Séries de Drama a partir de 2020 | `WHERE`, `LIKE`, `AND`, `>=` | Sim |
+| 5 | Séries ordenadas por ano e título | `ORDER BY DESC`, `ASC` | Sim |
+| 6 | Séries concluídas por usuário | `WHERE`, `GROUP BY`, `COUNT()` | Sim |
+| 7 | Somatório de pontos de avaliações | `SUM()`, `IS NOT NULL` | Sim |
+| 8 | Média de notas por série | `GROUP BY`, `AVG()`, `ROUND()` | Sim |
+| 9 | Menor e maior nota da base | `MIN()`, `MAX()` | Sim |
+| 10 | Séries com média excelente (>= 9.0) | `GROUP BY`, `HAVING`, `AVG()` | Sim |
+| 11 | Anos desde o lançamento | Expressão aritmética `(2026 - ano)` | Sim |
+| 12 | Top 3 séries com maiores notas | `GROUP BY`, `AVG()`, `ORDER BY`, `LIMIT` | Sim |
 
 ---
 
@@ -710,18 +770,27 @@ SPRINT4-5.sql
 
 ### Pergunta
 
-> Escreva aqui.
+> Qual é o top 3 de séries com as maiores notas médias entre os usuários?
 
 ### SQL
 
 ```sql
 -- Cole aqui.
+SELECT 
+    id_serie,
+    ROUND(AVG(nota), 2) AS media_final,
+    COUNT(nota) AS total_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL
+GROUP BY id_serie
+ORDER BY media_final DESC
+LIMIT 3;
 
 ```
 
 ### Por que ela é útil?
 
-> Escreva aqui.
+> Responde à principal métrica de recomendação da plataforma, identificando e ordenando as produções com melhor recepção pelo público.
 
 ---
 
@@ -729,18 +798,26 @@ SPRINT4-5.sql
 
 ### Pergunta
 
-> Escreva aqui.
+> Quais séries possuem média de avaliação superior ou igual a 9.0?
 
 ### SQL
 
 ```sql
 -- Cole aqui.
+SELECT 
+    id_serie,
+    ROUND(AVG(nota), 2) AS media_notas,
+    COUNT(nota) AS total_avaliacoes
+FROM item_watchlist
+WHERE nota IS NOT NULL
+GROUP BY id_serie
+HAVING AVG(nota) >= 9.0;
 
 ```
 
 ### Qual foi a dificuldade?
 
-> Escreva aqui.
+> Diferenciar a filtragem de linhas que ainda não possuem nota (WHERE nota IS NOT NULL) da filtragem do resultado agregado final com HAVING AVG(nota) >= 9.0.
 
 ---
 
@@ -748,10 +825,8 @@ SPRINT4-5.sql
 
 | Problema | Possível causa | Solução aplicada |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+| Cálculo incorreto de agregações com valores nulos | Séries salvas com status "Quero Ver" contêm `nota` como `NULL`. | Utilizou-se a condição `WHERE nota IS NOT NULL` e `COUNT(nota)` em vez de `COUNT(*)`. |
+| Erro de sintaxe ao filtrar média agregada no `WHERE` | Tentativa de utilizar `WHERE AVG(nota) >= 9.0`. | Corrigido para `HAVING AVG(nota) >= 9.0`, pois filtros pós-agrupamento exigem `HAVING`. |
 ---
 
 # 21. Uso de LLMs nesta Sprint
