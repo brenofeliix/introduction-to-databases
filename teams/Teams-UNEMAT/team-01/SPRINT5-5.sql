@@ -117,15 +117,15 @@ VALUES
 -- Inserções em ITEM_WATCHLIST
 INSERT INTO item_watchlist (id_usuario, id_serie, status_assistindo, nota, comentario)
 VALUES 
-    (1, 1, 'Concluído', 9.5, 'Excelente primeira e quarta temporadas.'),
+    (1, 1, 'Finalizado', 9.5, 'Excelente primeira e quarta temporadas.'),
     (1, 2, 'Assistindo', 9.0, 'Adaptação muito fiel ao jogo.'),
     (1, 5, 'Quero Ver', NULL, NULL),
-    (2, 2, 'Concluído', 10.0, 'Uma obra-prima dramática.'),
-    (2, 6, 'Concluído', 9.8, 'Roteiro complexo e trilha fantástica.'),
+    (2, 2, 'Finalizado', 10.0, 'Uma obra-prima dramática.'),
+    (2, 6, 'Finalizado', 9.8, 'Roteiro complexo e trilha fantástica.'),
     (3, 3, 'Assistindo', 8.5, 'Sátira ácida muito boa.'),
     (3, 4, 'Quero Ver', NULL, NULL),
     (4, 1, 'Assistindo', 8.0, 'Ritmo bom.'),
-    (4, 7, 'Concluído', 9.7, 'Atuações impecáveis.'),
+    (4, 7, 'Finalizado', 9.7, 'Atuações impecáveis.'),
     (5, 5, 'Quero Ver', NULL, NULL),
     (6, 8, 'Quero Ver', NULL, 'Adicionada para teste de remoção.');
 
@@ -135,7 +135,7 @@ VALUES
 
 -- UPDATEs
 UPDATE item_watchlist
-SET status_assistindo = 'Concluído'
+SET status_assistindo = 'Finalizado'
 WHERE id_usuario = 1 AND id_serie = 2;
 
 UPDATE usuario
@@ -161,20 +161,20 @@ WHERE id_serie = 8;
 SELECT * 
 FROM plataforma;
 
--- 5.2 SELECT com colunas específicas e aliases
+-- 5.2 SELECT com colunas específicas 
 SELECT 
     titulo AS nome_da_serie, 
     genero AS categoria, 
     ano_lancamento AS ano_estreia
 FROM serie;
 
--- 5.3 WHERE simples (Pergunta 1 da Sprint 1)
+-- 5.3 WHERE simples 
 -- Pergunta: Quais séries cadastradas pertencem à plataforma "Netflix"?
 SELECT id_serie, titulo, genero, ano_lancamento
 FROM serie
 WHERE id_plataforma = 1;
 
--- 5.4 WHERE com múltiplas condições (Pergunta 4 da Sprint 1)
+-- 5.4 WHERE com múltiplas condições
 -- Pergunta: Quais séries cadastradas são do gênero "Drama" e foram lançadas a partir de 2020?
 SELECT titulo, genero, ano_lancamento, pais_origem
 FROM serie
@@ -187,13 +187,13 @@ SELECT titulo, ano_lancamento, genero
 FROM serie
 ORDER BY ano_lancamento DESC, titulo ASC;
 
--- 5.6 Agregação COUNT com WHERE e GROUP BY (Pergunta 3 da Sprint 1)
+-- 5.6 Agregação COUNT com WHERE e GROUP BY 
 -- Pergunta: Quantas séries cada usuário tem marcadas com o status "Concluído"?
 SELECT 
     id_usuario, 
-    COUNT(*) AS total_concluidas
+    COUNT(*) AS total_Finalizado
 FROM item_watchlist
-WHERE status_assistindo = 'Concluído'
+WHERE status_assistindo = 'Finalizado'
 GROUP BY id_usuario;
 
 -- 5.7 Agregação SUM
@@ -202,7 +202,7 @@ SELECT SUM(nota) AS somatorio_pontos_avaliacoes
 FROM item_watchlist
 WHERE nota IS NOT NULL;
 
--- 5.8 Agregação AVG com GROUP BY (Pergunta 2 da Sprint 1)
+-- 5.8 Agregação AVG com GROUP BY 
 -- Pergunta: Qual é a média das notas de cada série calculada a partir das avaliações dos usuários?
 SELECT 
     id_serie,
@@ -239,7 +239,7 @@ SELECT
 FROM serie
 ORDER BY anos_desde_lancamento ASC;
 
--- 5.12 Consulta Integrada (Pergunta 5 da Sprint 1)
+-- 5.12 Consulta Integrada 
 -- Pergunta: Qual é o top 3 de séries com as maiores notas médias entre os usuários?
 SELECT 
     id_serie,
