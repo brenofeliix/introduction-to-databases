@@ -138,9 +138,7 @@ USE real_estate_database;
 
 ## Nome definitivo do banco
 
-```real_estate_database
-
-```
+```real_estate_database```
 
 ---
 
