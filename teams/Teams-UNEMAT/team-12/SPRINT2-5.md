@@ -716,10 +716,10 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| corretor | Sim | Sim |
+| cliente | Sim | Sim |
+| imovel | Sim | Sim |
+| agendamento | Sim | Sim |
 
 ---
 
@@ -808,9 +808,8 @@ Verifique:
 
 | Problema | Causa identificada | Como foi resolvido |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Botão de raio (executar) indisponível no Workbench | Arquivo aberto sem estar vinculado a uma conexão ativa com o servidor MySQL. | Solução teórica: criar uma nova Query Tab com a conexão ativa e colar o código. |
+| Senha do banco de dados local desconhecida | Configuração de ambiente/senha padrão do MySQL não documentada. | Optamos por focar na estruturação do DDL e no preenchimento da documentação. |
 
 Caso não encontre problemas:
 
@@ -902,26 +901,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
