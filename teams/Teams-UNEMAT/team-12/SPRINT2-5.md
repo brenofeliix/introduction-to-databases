@@ -491,7 +491,8 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+ALTER TABLE cliente
+ADD COLUMN data_nascimento DATE;
 
 ```
 
