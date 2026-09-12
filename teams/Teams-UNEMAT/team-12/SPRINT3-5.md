@@ -342,9 +342,9 @@ Registre os resultados:
 
 | Restrição testada | O que foi testado? | Resultado |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| UNIQUE em email | Tentar cadastrar um novo cliente com 'joao@email.com' novamente | Erro: Duplicate entry 'joao@email.com' for key 'cliente.email' |
+| NOT NULL em valor | Tentar cadastrar imóvel sem declarar o preço | Erro: Field 'valor' doesn't have a default value |
+| FOREIGN KEY | Tentar inserir um agendamento com um id_imovel que não existe (ex: 99) | Erro: Cannot add or update a child row: a foreign key constraint fails |
 
 > Não mantenha comandos propositalmente inválidos no `SPRINT3-5.sql` final.
 
@@ -406,35 +406,35 @@ Execute pelo menos:
 ## UPDATE 1
 
 ```sql
--- Cole aqui.
+UPDATE agendamento SET status = 'Confirmado' WHERE id_agendamento = 1;
 
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> O status do agendamento de id 1 (referente à visita de id_cliente 1 à casa de id_imovel 4) foi alterado de 'Pendente' para 'Confirmado'.
 
 ## UPDATE 2
 
 ```sql
--- Cole aqui.
+UPDATE imovel SET valor = 240000.00 WHERE id_imovel = 2;
 
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> O preço de venda do imóvel 2 (Apartamento Centro) foi atualizado, recebendo um desconto em relação ao valor originalmente cadastrado.
 
 ## UPDATE 3
 
 ```sql
--- Cole aqui.
+UPDATE cliente SET telefone = '66000000000' WHERE id_cliente = 3;
 
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> O número de telefone de contato do cliente de id 3 foi atualizado no banco de dados.
 
 ---
 
@@ -513,24 +513,22 @@ Execute pelo menos:
 ## DELETE 1
 
 ```sql
--- Cole aqui.
-
+DELETE FROM agendamento WHERE id_agendamento = 5;
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> O agendamento de id 5 foi removido do banco pois o status original já indicava que a visita estava cancelada.
 
 ## DELETE 2
 
 ```sql
--- Cole aqui.
-
+DELETE FROM imovel WHERE id_imovel = 6;
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> O imóvel de id 6 (Cobertura Duplex) foi removido do sistema, pois o corretor suspendeu o anúncio e ele ainda não possuía nenhum agendamento vinculado, permitindo uma exclusão segura.
 
 ---
 
@@ -559,63 +557,75 @@ Depois execute a alteração e consulte novamente.
 **Não entregue o código abaixo sem adaptação.**
 
 ```sql
-USE nome_do_banco;
+USE real_estate_database;
 
 -- INSERTS
 
-INSERT INTO tabela_a (
-    campo_a1,
-    campo_a2
+INSERT INTO corretor (
+    nome,
+    creci,
+    email,
+    telefone
 )
 VALUES (
-    'Valor 1',
-    'Valor 2'
+    'Paulo Roberto',
+    'CRECI111',
+    'paulo@imob.com',
+    '66999991111'
 );
 
-INSERT INTO tabela_a (
-    campo_a1,
-    campo_a2
+INSERT INTO corretor (
+    nome,
+    creci,
+    email,
+    telefone
 )
 VALUES
-    ('Valor 3', 'Valor 4'),
-    ('Valor 5', 'Valor 6'),
-    ('Valor 7', 'Valor 8');
+    ('Isa', 'CRECI222', 'isa@imob.com', '66999992222'),
+    ('Jao', 'CRECI333', 'jao@imob.com', '66999993333'),
+    ('Amanda', 'CRECI444', 'amanda@imob.com', '66999994444');
 
-INSERT INTO tabela_b (
-    id_a,
-    campo_b1
+INSERT INTO imovel (
+    id_corretor,
+    titulo,
+    valor,
+    quantidade_comodos,
+    cidade
 )
 VALUES (
     1,
-    'Outro valor'
+    'Casa com piscina',
+    450000.00,
+    4,
+    'Rondonópolis'
 );
 
 -- VERIFICAÇÕES
 
-SELECT * FROM tabela_a;
-SELECT * FROM tabela_b;
+SELECT * FROM corretor;
+SELECT * FROM imovel;
 
 -- UPDATES
 
-UPDATE tabela_a
-SET campo_a1 = 'Valor atualizado'
-WHERE id_a = 1;
+UPDATE corretor
+SET nome = 'Paulo Roberto Junior'
+WHERE id_corretor = 1;
 
-UPDATE tabela_a
-SET campo_a2 = 'Outro valor'
-WHERE id_a = 2;
+UPDATE corretor
+SET telefone = '66000000000'
+WHERE id_corretor = 2;
 
-UPDATE tabela_b
-SET campo_b1 = 'Atualizado'
-WHERE id_b = 1;
+UPDATE imovel
+SET valor = 400000.00
+WHERE id_imovel = 1;
 
 -- DELETES
 
-DELETE FROM tabela_b
-WHERE id_b = 3;
+DELETE FROM imovel
+WHERE id_imovel = 3;
 
-DELETE FROM tabela_a
-WHERE id_a = 5;
+DELETE FROM corretor
+WHERE id_corretor = 5;
 ```
 
 ---
@@ -627,56 +637,95 @@ WHERE id_a = 5;
 -- IDENTIFICAÇÃO
 -- ============================================================
 
--- Aluno:
--- Banco:
-
+-- Aluno: João Guilherme Barros de Lima
+-- Banco: real_estate_database
 
 -- ============================================================
 -- SELECIONAR O BANCO
 -- ============================================================
 
-USE nome_do_banco;
-
-
--- ============================================================
--- INSERTS — TABELA 1
--- ============================================================
-
+USE real_estate_database;
 
 -- ============================================================
--- INSERTS — TABELA 2
+-- INSERTS — TABELA 1 (corretor)
 -- ============================================================
 
+INSERT INTO corretor (nome, creci, email, telefone)
+VALUES
+    ('Paulo Roberto de Lima Junior', 'CRECI111', 'paulo@imob.com', '66999991111'),
+    ('Isa', 'CRECI222', 'isa@imob.com', '66999992222'),
+    ('Jao', 'CRECI333', 'jao@imob.com', '66999993333'),
+    ('Amanda', 'CRECI444', 'amanda@imob.com', '66999994444'),
+    ('Theus', 'CRECI555', 'theus@imob.com', '66999995555');
 
 -- ============================================================
--- INSERTS — TABELA 3
+-- INSERTS — TABELA 2 (cliente)
 -- ============================================================
 
+INSERT INTO cliente (nome, email, senha, telefone, data_nascimento)
+VALUES
+    ('João Guilherme Barros de Lima', 'joao@email.com', 'senha123', '66988881111', '2006-11-29'),
+    ('Gi', 'gi@email.com', 'senha456', '66988882222', '2005-05-15'),
+    ('Carlos Santos', 'carlos@email.com', 'senha789', '66988883333', '1990-08-20'),
+    ('Mariana Silva', 'mariana@email.com', 'senha321', '66988884444', '1995-12-10'),
+    ('Lucas Almeida', 'lucas@email.com', 'senha654', '66988885555', '1988-03-30');
 
 -- ============================================================
--- INSERTS — TABELA 4
+-- INSERTS — TABELA 3 (imovel)
 -- ============================================================
 
+INSERT INTO imovel (id_corretor, titulo, valor, quantidade_comodos, cidade)
+VALUES
+    (1, 'Casa com piscina', 450000.00, 4, 'Rondonópolis'),
+    (2, 'Apartamento Centro', 250000.00, 3, 'Rondonópolis'),
+    (3, 'Chácara para descanso', 600000.00, 5, 'Chapada dos Guimarães'),
+    (4, 'Casa na praia', 800000.00, 4, 'Alagoas'),
+    (1, 'Terreno amplo', 150000.00, 0, 'Rondônia'),
+    (5, 'Cobertura Duplex', 950000.00, 6, 'Rondonópolis');
+
+-- ============================================================
+-- INSERTS — TABELA 4 (agendamento)
+-- ============================================================
+
+INSERT INTO agendamento (id_cliente, id_imovel, data_visita, status)
+VALUES
+    (1, 4, '2026-10-15 10:00:00', 'Pendente'),
+    (2, 3, '2026-10-16 14:30:00', 'Pendente'),
+    (1, 3, '2026-10-17 09:00:00', 'Pendente'),
+    (3, 2, '2026-10-18 11:00:00', 'Pendente'),
+    (4, 5, '2026-10-19 15:00:00', 'Cancelado'),
+    (5, 1, '2026-10-20 16:00:00', 'Pendente');
 
 -- ============================================================
 -- VERIFICAÇÕES
 -- ============================================================
 
+SELECT * FROM corretor;
+SELECT * FROM cliente;
+SELECT * FROM imovel;
+SELECT * FROM agendamento;
 
 -- ============================================================
 -- UPDATES
 -- ============================================================
 
+UPDATE agendamento SET status = 'Confirmado' WHERE id_agendamento = 1;
+UPDATE imovel SET valor = 240000.00 WHERE id_imovel = 2;
+UPDATE cliente SET telefone = '66000000000' WHERE id_cliente = 3;
 
 -- ============================================================
 -- DELETES
 -- ============================================================
 
+DELETE FROM agendamento WHERE id_agendamento = 5;
+DELETE FROM imovel WHERE id_imovel = 6;
 
 -- ============================================================
 -- VERIFICAÇÃO FINAL
 -- ============================================================
 
+SELECT * FROM agendamento;
+SELECT * FROM imovel;
 ```
 
 ---
@@ -737,11 +786,10 @@ SPRINT3-5.sql
 
 | Tabela | Quantidade aproximada de registros ao final |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| corretor | 5 |
+| cliente | 5 |
+| imovel | 5 |
+| agendamento | 5 |
 
 ---
 
@@ -751,24 +799,21 @@ SPRINT3-5.sql
 
 Quantidade aproximada de registros inseridos:
 
-```text
-
+```22 registros no total.
 ```
 
 ## UPDATE
 
 Quantidade de operações:
 
-```text
-
+```3 operações.
 ```
 
 ## DELETE
 
 Quantidade de operações:
 
-```text
-
+```2 operações.
 ```
 
 ---
@@ -777,9 +822,7 @@ Quantidade de operações:
 
 | Problema | Possível causa | Solução aplicada |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Erro "Cannot delete or update a parent row" ao tentar excluir um cliente | O cliente possuía agendamentos. O MySQL bloqueia a exclusão por causa da Integridade Referencial (FK). | Excluímos um imóvel (id 6) que não tinha dependências, ou usaríamos `DELETE` no agendamento primeiro antes de excluir o cliente. |
 
 Mensagens que podem aparecer:
 
@@ -812,22 +855,22 @@ Não exclua arquivos das etapas anteriores.
 
 # 27. Checklist da Sprint 3/5
 
-- [ ] utilizei o banco criado na Sprint 2/5;
-- [ ] utilizei `USE`;
-- [ ] inseri dados coerentes com o projeto;
-- [ ] respeitei a ordem das tabelas;
-- [ ] procurei inserir pelo menos 5 registros nas tabelas principais;
-- [ ] testei restrições de integridade;
-- [ ] executei pelo menos 3 `UPDATE`;
-- [ ] os `UPDATE` possuem condição adequada;
-- [ ] executei pelo menos 2 `DELETE`;
-- [ ] os `DELETE` possuem condição adequada;
-- [ ] verifiquei dependências de `FOREIGN KEY`;
-- [ ] utilizei `SELECT` para conferência;
-- [ ] registrei os problemas encontrados;
-- [ ] salvei o código como `SPRINT3-5.sql`;
-- [ ] preenchi completamente o `SPRINT3-5.md`;
-- [ ] revisei os arquivos antes do commit.
+- [x] utilizei o banco criado na Sprint 2/5;
+- [x] utilizei `USE`;
+- [x] inseri dados coerentes com o projeto;
+- [x] respeitei a ordem das tabelas;
+- [x] procurei inserir pelo menos 5 registros nas tabelas principais;
+- [x] testei restrições de integridade;
+- [x] executei pelo menos 3 `UPDATE`;
+- [x] os `UPDATE` possuem condição adequada;
+- [x] executei pelo menos 2 `DELETE`;
+- [x] os `DELETE` possuem condição adequada;
+- [x] verifiquei dependências de `FOREIGN KEY`;
+- [x] utilizei `SELECT` para conferência;
+- [x] registrei os problemas encontrados;
+- [x] salvei o código como `SPRINT3-5.sql`;
+- [x] preenchi completamente o `SPRINT3-5.md`;
+- [x] revisei os arquivos antes do commit.
 
 ---
 
