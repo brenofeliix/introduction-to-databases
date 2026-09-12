@@ -132,7 +132,9 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+-- CREATE DATABASE IF NOT EXISTS bd_loja;
+
+USE bd_loja;
 
 ```
 
@@ -140,7 +142,7 @@ USE loja_virtual;
 
 ```text
 
-```
+``` bd_loja
 
 ---
 
@@ -210,12 +212,11 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | cliente      | armazena os cadastros dos clientes/compradores da loja  |
+| 2 | produto      | armazena, produto, preço e quantidade em estoque |
+| 3 | pedido       | registra as vendas realizadas nos caixas |
+| 4 | item_pedido  |  tabela associativa de produtos de cada compra |
+
 
 ---
 
@@ -246,12 +247,12 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. cliente
+2. produto
+3. pedido
+4. item_pedido
+
+
 
 ---
 
@@ -275,10 +276,10 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| cliente | id_cliente  | sim |
+| produto | id_produto | sim |
+| pedido  | id_pedido| sim |
+| item_pedido | id_item |sim |
 
 ---
 
@@ -297,11 +298,10 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 ## Campos obrigatórios implementados
 
 | Tabela | Campo | Por que é obrigatório? |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+| cliente | nome | para a identificação do meu cliente |
+|cliente  | cpf| identificação unica para não ter duplicidade  |
+| produto | nome | nome de identificação no caixa para sair na notinha da compra  |
+|---|--
 ---
 
 # 9. UNIQUE
@@ -324,7 +324,7 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
+| cliente |cpf | o sistema não pode aceitar o cadastro do mesmo CPF duas vezes |
 |  |  |  |
 
 Caso nenhuma seja necessária, justifique:
@@ -353,8 +353,8 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| produto |quantidade_estoque | 0  | se não informamos o produto fica zerado no estoque |
+| pedido |data_pedido | current_timestamp| salva data e hora da venda |
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +407,9 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| pedido | id_cliente| cliente id_cliente| Associa a compra ao cliente cadastrado (1:N). |
+|item_pedido |id_pedido | pedido id_pedido | Associa o item vendido ao pedido correspondente (1:N). |
+|item_pedido | id_produto|produto id_produto  | Associa o item ao produto no estoque (1:N). |
 
 ---
 
@@ -458,12 +458,12 @@ CREATE TABLE tabela_associativa (
 
 ## Seu banco possui relacionamento N:N?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> O relacionamento N:N entre Pedido e Produto foi resolvido através da criação da tabela associativa Item_Pedido, contendo as FKs de ambas as tabelas e guardando a quantidade e o preco_unitario de cada item.
 
 ---
 
@@ -497,13 +497,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+-- ALTER TABLE Cliente
+ADD COLUMN telefone VARCHAR(20) AFTER cpf;
 
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> vamos adicionar a coluna telefone na tabela cliente para termos o numero de contato do cliente.
 
 ---
 
@@ -528,7 +529,11 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+--CREATE TABLE tabela_teste (
+    id_teste INT PRIMARY KEY AUTO_INCREMENT
+);
+
+DROP TABLE tabela_teste;
 
 ```
 
@@ -546,7 +551,9 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> DELETE FROM tabela;: Apaga apenas as linhas da tabela, mantendo a estrutura e colunas prontas para novos cadastros.
+
+DROP TABLE tabela;: Apaga a tabela inteira, removendo colunas, estrutura, regras e todos os dados definitivo do banco.
 
 ---
 
@@ -704,6 +711,68 @@ Utilize:
 ```sql
 DESCRIBE nome_tabela;
 ```
+CREATE DATABASE IF NOT EXISTS bd_loja;
+USE bd_loja;
+
+-- 2. TABELAS INDEPENDENTES
+CREATE TABLE IF NOT EXISTS Cliente (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(120) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    email VARCHAR(150)
+);
+
+CREATE TABLE IF NOT EXISTS Produto (
+    id_produto INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    preco DECIMAL(10,2) NOT NULL,
+    quantidade_estoque INT NOT NULL DEFAULT 0
+);
+
+-- 3. TABELAS DEPENDENTES (COM FOREIGN KEY)
+CREATE TABLE IF NOT EXISTS Pedido (
+    id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT NOT NULL,
+    data_pedido DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    forma_pagamento VARCHAR(30) NOT NULL,
+    
+    CONSTRAINT fk_pedido_cliente
+        FOREIGN KEY (id_cliente)
+        REFERENCES Cliente(id_cliente)
+);
+
+CREATE TABLE IF NOT EXISTS Item_Pedido (
+    id_item INT PRIMARY KEY AUTO_INCREMENT,
+    id_pedido INT NOT NULL,
+    id_produto INT NOT NULL,
+    quantidade INT NOT NULL,
+    preco_unitario DECIMAL(10,2) NOT NULL,
+    
+    CONSTRAINT fk_item_pedido
+        FOREIGN KEY (id_pedido)
+        REFERENCES Pedido(id_pedido),
+        
+    CONSTRAINT fk_item_produto
+        FOREIGN KEY (id_produto)
+        REFERENCES Produto(id_produto)
+);
+
+-- 4. ALTERAÇÃO ESTRUTURAL
+ALTER TABLE Cliente
+ADD COLUMN telefone VARCHAR(20) AFTER cpf;
+
+-- 5. DROP TABLE CONTROLADO
+CREATE TABLE tabela_teste (
+    id_teste INT PRIMARY KEY AUTO_INCREMENT
+);
+
+DROP TABLE tabela_teste;
+
+-- 6. COMANDOS DE VALIDAÇÃO
+DESCRIBE Cliente;
+DESCRIBE Produto;
+DESCRIBE Pedido;
+DESCRIBE Item_Pedido;
 
 Exemplo:
 
@@ -717,10 +786,10 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| cliente | sim | sim |
+| produto |sim  | sim |
+|pedido  | sim | sim |
+| item_pedido |sim  | sim |
 
 ---
 
@@ -809,7 +878,7 @@ Verifique:
 
 | Problema | Causa identificada | Como foi resolvido |
 |---|---|---|
-|  |  |  |
+| erro de chave estrangeira a criar pedido | a tabela cliente ainda não tinha sido criada |verifiquei passo a passo do script para criar as tabela  |
 |  |  |  |
 |  |  |  |
 
@@ -903,26 +972,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
