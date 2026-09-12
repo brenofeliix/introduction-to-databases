@@ -799,22 +799,19 @@ SPRINT3-5.sql
 
 Quantidade aproximada de registros inseridos:
 
-```22 registros no total.
-```
+```22 registros no total.```
 
 ## UPDATE
 
 Quantidade de operações:
 
-```3 operações.
-```
+``` 3 operações.```
 
 ## DELETE
 
 Quantidade de operações:
 
-```2 operações.
-```
+```2 operações.```
 
 ---
 
