@@ -4,9 +4,9 @@
 -- ATIVIDADE INDIVIDUAL
 -- ============================================================
 --
--- ALUNO:
--- TEMA DO BANCO:
--- NOME DO BANCO:
+-- ALUNO:João Guilherme Barros de Lima
+-- TEMA DO BANCO: Anúncios de imóveis 
+-- NOME DO BANCO: real_estate_database
 --
 -- INSTRUÇÕES:
 -- 1. Este arquivo é um MODELO GENÉRICO.
