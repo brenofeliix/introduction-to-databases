@@ -48,13 +48,13 @@ O arquivo `.sql` conterá todas as consultas efetivamente executadas e testadas 
 5. Selecione o banco:
 
 ```sql
-USE nome_do_banco;
+USE real_estate_database;
 ```
 
 6. Confira os dados:
 
 ```sql
-SELECT * FROM nome_da_tabela;
+SELECT * FROM imovel;
 ```
 
 ---
@@ -85,11 +85,11 @@ SPRINT4-5.sql
 
 Recupere as perguntas que você definiu anteriormente para o banco.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais imóveis estão cadastrados na cidade de Rondonópolis?
+2. Quais imóveis custam menos de R$ 300.000,00?
+3. Quantos agendamentos estão com o status Pendente? (Adaptada da pergunta original sobre datas para focar na busca por status de confirmação)
+4. Quantos imóveis temos anunciados no total?
+5. Quais as datas de visita agendadas para o imóvel de ID 3 (Chácara)?
 
 Agora identifique quais delas exigem:
 
@@ -122,18 +122,18 @@ FROM nome_tabela;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais são todos os imóveis cadastrados no sistema?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT * FROM imovel;
 
 ```
 
 ### Explique o resultado
 
-> Escreva aqui.
+> Esta consulta retorna todas as colunas e todas as linhas da tabela imovel, exibindo o catálogo completo de anúncios do banco de dados.
 
 ---
 
@@ -185,18 +185,20 @@ WHERE preco > 100
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais imóveis estão localizados na cidade de Rondonópolis?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT titulo, valor, cidade 
+FROM imovel 
+WHERE cidade = 'Rondonópolis';
 
 ```
 
 ### Explique o filtro
 
-> Escreva aqui.
+> O comando WHERE cidade = 'Rondonópolis' verifica cada linha da tabela e retorna apenas aquelas onde o valor da coluna "cidade" é exatamente igual a 'Rondonópolis', filtrando os imóveis de outras cidades.
 
 ---
 
@@ -230,13 +232,15 @@ ORDER BY categoria ASC, preco DESC;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais imóveis custam menos de R$ 300.000,00, listados do mais barato para o mais caro?
 
 ### SQL
 
 ```sql
--- Cole aqui.
-
+SELECT titulo, valor, cidade 
+FROM imovel 
+WHERE valor < 300000.00 
+ORDER BY valor ASC;
 ```
 
 ---
@@ -289,7 +293,9 @@ FROM nome_tabela;
 ## COUNT
 
 ```sql
--- Cole aqui.
+ELECT COUNT(*) AS agendamentos_pendentes 
+FROM agendamento 
+WHERE status = 'Pendente';
 
 ```
 
@@ -300,39 +306,42 @@ FROM nome_tabela;
 ## SUM
 
 ```sql
--- Cole aqui.
+SELECT SUM(valor) AS soma_total_imoveis 
+FROM imovel;
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é a soma total em dinheiro de todos os imóveis atualmente em catálogo?
 
 Caso não seja aplicável ao domínio, justifique.
 
 ## AVG
 
 ```sql
--- Cole aqui.
-
+SELECT AVG(valor) AS media_precos 
+FROM imovel;
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é a média de preço dos imóveis anunciados no sistema?
 
 Caso não seja aplicável ao domínio, justifique.
 
 ## MIN ou MAX
 
 ```sql
--- Cole aqui.
+SELECT MIN(valor) AS imovel_mais_barato,
+       MAX(valor) AS imovel_mais_caro 
+FROM imovel;
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é o valor do imóvel mais barato e do imóvel mais caro anunciados pela imobiliária?
 
 ---
 
@@ -362,18 +371,20 @@ GROUP BY status;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quantos imóveis temos anunciados divididos por cada cidade?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT cidade, COUNT(*) AS total_por_cidade 
+FROM imovel 
+GROUP BY cidade;
 
 ```
 
 ### Explique o agrupamento
 
-> Escreva aqui.
+> O banco de dados agrupa as linhas que possuem o mesmo nome na coluna cidade (ex: junta todos os registros de Rondonópolis). Em seguida, aplica a função COUNT(*) para contar quantas linhas existem dentro de cada um desses grupos.
 
 ---
 
@@ -397,18 +408,21 @@ HAVING COUNT(*) > 5;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais clientes possuem mais de 1 agendamento de visita registrado no sistema?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_cliente, COUNT(*) AS quantidade_visitas 
+FROM agendamento 
+GROUP BY id_cliente 
+HAVING COUNT(*) > 1;
 
 ```
 
 ### Por que HAVING foi necessário?
 
-> Escreva aqui.
+> Porque o comando WHERE não pode ser utilizado junto com funções de agregação (como o COUNT). Precisamos primeiro agrupar os agendamentos por cliente com GROUP BY e só depois filtrar os grupos resultantes usando o HAVING para exibir apenas os que têm a contagem maior que 1.
 
 ---
 
@@ -437,13 +451,16 @@ FROM item_pedido;
 ## Consulta com expressão
 
 ```sql
--- Cole aqui.
+SELECT titulo, 
+       valor, 
+       valor * 0.05 AS comissao_corretor 
+FROM imovel;
 
 ```
 
 ### Explique o cálculo
 
-> Escreva aqui.
+> O cálculo valor * 0.05 pega o preço de cada imóvel cadastrado e multiplica por 5%, criando uma coluna virtual chamada comissao_corretor. Isso permite visualizar rapidamente o valor financeiro da comissão que o corretor ganhará ao vender aquele imóvel.
 
 Caso não seja aplicável ao domínio, justifique.
 
@@ -506,67 +523,67 @@ Quais produtos estão com estoque baixo?
 **Não entregue este código sem adaptação.**
 
 ```sql
-USE nome_do_banco;
+USE real_estate_database;
 
 -- SELECT básico
 SELECT *
-FROM tabela_a;
+FROM imovel;
 
 -- Colunas específicas
-SELECT campo_a1, campo_a2
-FROM tabela_a;
+SELECT titulo, valor
+FROM imovel;
 
 -- WHERE
 SELECT *
-FROM tabela_a
-WHERE campo_numerico > 10;
+FROM imovel
+WHERE valor > 300000;
 
 -- Duas condições
 SELECT *
-FROM tabela_a
-WHERE campo_numerico > 10
-  AND campo_status = 'ATIVO';
+FROM agendamento
+WHERE status = 'Pendente'
+  AND data_visita > '2026-10-16';
 
 -- ORDER BY
 SELECT *
-FROM tabela_a
-ORDER BY campo_a1 ASC;
+FROM imovel
+ORDER BY valor ASC;
 
 -- COUNT
-SELECT COUNT(*) AS total_registros
-FROM tabela_a;
+SELECT COUNT(*) AS total_imoveis
+FROM imovel;
 
 -- SUM
-SELECT SUM(campo_numerico) AS total
-FROM tabela_a;
+SELECT SUM(valor) AS valor_total_catalogo
+FROM imovel;
 
 -- AVG
-SELECT AVG(campo_numerico) AS media
-FROM tabela_a;
+SELECT AVG(valor) AS media_valor
+FROM imovel;
 
 -- MIN / MAX
-SELECT MIN(campo_numerico) AS menor_valor,
-       MAX(campo_numerico) AS maior_valor
-FROM tabela_a;
+SELECT MIN(valor) AS menor_valor,
+       MAX(valor) AS maior_valor
+FROM imovel;
 
 -- GROUP BY
-SELECT campo_categoria,
+SELECT cidade,
        COUNT(*) AS quantidade
-FROM tabela_a
-GROUP BY campo_categoria;
+FROM imovel
+GROUP BY cidade;
 
 -- HAVING
-SELECT campo_categoria,
-       COUNT(*) AS quantidade
-FROM tabela_a
-GROUP BY campo_categoria
+SELECT id_cliente,
+       COUNT(*) AS quantidade_visitas
+FROM agendamento
+GROUP BY id_cliente
 HAVING COUNT(*) > 1;
 
 -- Expressão
-SELECT campo_a1,
-       campo_numerico,
-       campo_numerico * 1.10 AS valor_calculado
-FROM tabela_a;
+SELECT titulo,
+       valor,
+       valor * 1.10 AS valor_com_inflacao
+FROM imovel;
 ```
 
 > Substitua `nome_do_banco`, `tabela_a`, `campo_a1`, `campo_numerico`, `campo_categoria` e demais nomes genéricos pelos nomes reais do seu projeto.
@@ -580,53 +597,59 @@ FROM tabela_a;
 -- IDENTIFICAÇÃO
 -- ============================================================
 
--- Aluno:
--- Banco:
+-- Aluno: João Guilherme Barros de Lima
+-- Banco: real_estate_database
 
 -- ============================================================
 -- SELECIONAR O BANCO
 -- ============================================================
 
-USE nome_do_banco;
+USE real_estate_database;
 
 -- ============================================================
 -- 1. CONSULTAS BÁSICAS
 -- ============================================================
-
+SELECT * FROM imovel;
+SELECT titulo, valor FROM imovel;
 
 -- ============================================================
 -- 2. WHERE
 -- ============================================================
-
+SELECT titulo, valor, cidade FROM imovel WHERE cidade = 'Rondonópolis';
+SELECT * FROM agendamento WHERE status = 'Pendente' AND data_visita > '2026-10-16';
 
 -- ============================================================
 -- 3. ORDER BY
 -- ============================================================
-
+SELECT titulo, valor FROM imovel WHERE valor < 300000.00 ORDER BY valor ASC;
 
 -- ============================================================
 -- 4. FUNÇÕES DE AGREGAÇÃO
 -- ============================================================
-
+SELECT COUNT(*) AS agendamentos_pendentes FROM agendamento WHERE status = 'Pendente';
+SELECT SUM(valor) AS soma_total_imoveis FROM imovel;
+SELECT AVG(valor) AS media_precos FROM imovel;
+SELECT MIN(valor) AS imovel_mais_barato, MAX(valor) AS imovel_mais_caro FROM imovel;
 
 -- ============================================================
 -- 5. GROUP BY
 -- ============================================================
-
+SELECT cidade, COUNT(*) AS total_por_cidade FROM imovel GROUP BY cidade;
 
 -- ============================================================
 -- 6. HAVING
 -- ============================================================
-
+SELECT id_cliente, COUNT(*) AS quantidade_visitas FROM agendamento GROUP BY id_cliente HAVING COUNT(*) > 1;
 
 -- ============================================================
 -- 7. EXPRESSÕES SQL
 -- ============================================================
-
+SELECT titulo, valor, valor * 0.05 AS comissao_corretor FROM imovel;
 
 -- ============================================================
 -- CONSULTAS EXTRAS
 -- ============================================================
+SELECT id_cliente, data_visita, status FROM agendamento WHERE id_imovel = 3 ORDER BY data_visita ASC;
 
 ```
 
@@ -637,13 +660,13 @@ USE nome_do_banco;
 ## Etapa 1 — Selecione o banco
 
 ```sql
-USE nome_do_banco;
+USE real_estate_database;
 ```
 
 ## Etapa 2 — Confira as tabelas
 
 ```sql
-SELECT * FROM nome_tabela;
+SELECT * FROM imovel;
 ```
 
 ## Etapa 3 — Escolha uma pergunta
