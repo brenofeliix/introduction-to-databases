@@ -35,13 +35,13 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
+> Leslie Bruna pires dos Santos
 
 **Nome escolhido para o banco de dados:**
 
 ```text
 
-```
+```db_loja
 
 ---
 
@@ -73,7 +73,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> loja
 
 ---
 
@@ -90,8 +90,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
-
+>O meu sistema vai abordar controle de venda e estoque, que vai ser utilizado pelos funcionários como operadores de caixa e a gerente da loja. Principais informações que vão ser armazenadas os dados básicos dos clientes, produtos disponíveis com preços e quantidade no estoque e o registro das vendas realizadas. O sistema vai permitir cadastrar clientes e produtos, registrar as vendas realizadas no caixa.
 ---
 
 # 4. Objetivo do banco de dados
@@ -100,7 +99,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+>Objetivo é substituir as anotações ou ate mesmo planilhas por um banco de dados simples onde podemos ter acesso, a cadastro de clientes, controle de estoque e histórico de vendas.
 
 ---
 
@@ -112,11 +111,12 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. 	Cadastro de novos clientes no banco de dados da loja.
+2.	Ter acesso ao estoque, quantidade de produtos, rebaixa de preços.
+3.	Registrar vendas vinculadas ao cliente e a data da compra.
+4.	Pode ter acessa a cada nota de compra com detalhe dos produtos e quantidade e variação.
+5.	Relatório do que foi vendido e verificar quais produtos tem menos quantidade
+
 
 ---
 
@@ -150,10 +150,10 @@ Pagamento
 
 | Nº | Entidade | O que representa? |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
+| 1 | cliente |pessoas cadastradas na loja  |
+| 2 | produto | Mercadorias físicas disponíveis para venda. |
+| 3 | pedido |registro de venda  |
+| 4 | item_pedido| comprovante de compra que mostra cada produto especificado |
 | 5 |  |  |
 | 6 |  |  |
 
@@ -175,11 +175,12 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|id_cliente|	Identificador único numérico do cliente	|INT	|Sim|
+|nome|	Nome completo do cliente|	VARCHAR	|Sim|
+|cpf|	Documento de identificação|	VARCHAR	|Sim|
+|telefone|	Número de telefone para contato|	VARCHAR	|Não|
+|email|	Endereço de e-mail|	VARCHAR	|Não|
+
 
 ## Entidade 2
 
@@ -191,11 +192,10 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|id_produto|	Identificador único numérico do produto	|INT	|Sim|
+|Nome	|Nome ou descrição do produto|	VARCHAR|	Sim|
+|Preço|	Preço atual de venda unitário ou preço produto peça|	DECIMAL|	Sim|
+|quantidade_estoque|	Quantidade disponível no estoque|	INT|	Sim|
 
 ## Entidade 3
 
@@ -207,11 +207,10 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|id_pedido|	Identificador único (número do cupom/venda)|	INT|	Sim|
+|id_cliente|Referência de qual cliente fez a compra|	INT|	Sim|
+|data_pedido|	Data e hora em que a venda foi registrada|	DATETIME|	Sim
+| forma_pagamento |Com o o pedido foi pago (Dinheiro, Pix,Cartão)	|VARCHAR Sim|
 
 ## Entidade 4
 
@@ -223,11 +222,12 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|id_item	|Identificador  do item vendido|	INT|	Sim|
+|id_pedido|	Referência à venda |	INT|	Sim|
+|id_produto	|Referência a qual produto foi comprado|	INT|	Sim|
+|Quantidade|	Quantas unidades daquele produto saíram	|INT	|Sim|
+|preco_unitario|	Valor cobrado pelo produto na hora da venda|	DECIMAL	|Sim|
+
 
 ## Outras entidades
 
@@ -235,10 +235,7 @@ Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 
 | Entidade | Principais atributos |
 |---|---|
-|  |  |
-|  |  |
-|  |  |
-
+|  
 ---
 
 # 8. Chaves primárias
@@ -246,12 +243,11 @@ Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
 | Entidade/Tabela | Chave primária prevista | Justificativa |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+|---|---|---| 
+|Cliente	|id_cliente|	Identificador numérico e sequencial único| (AUTO_INCREMENT)|
+|Produto	|id_produto|	Identificador numérico e sequencial único| (AUTO_INCREMENT)|
+|Pedido	|id_pedido|	Identificador numérico e sequencial único |(AUTO_INCREMENT)|
+|Item_Pedido|	id_item	|Identificador numérico único para cada linha vendida| (AUTO_INCREMENT)|
 Considere:
 
 - o valor identifica cada registro de forma única?
@@ -277,11 +273,9 @@ Produto aparece em Item_Pedido
 
 | Entidade A | Relacionamento | Entidade B |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente|	Realiza|	Pedido|
+|Pedido	|Possui|	Item_Pedido|
+|Produto|	aparece em|	Item_Pedido|
 
 ---
 
@@ -297,10 +291,9 @@ N:N  → muitos para muitos
 
 | Relacionamento | Cardinalidade prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente x Pedido|	1:N (um para muitos)|	Um mesmo cliente pode fazer diversas compras na mesma loja varias vezes.|
+|Pedido x Item_Pedido	|1:N (um para muitos)	|Em uma mesma compra, o cliente pode levar vários produtos diferentes.|
+|Produto x Item_Pedido	|1:N (um para muitos)	|O mesmo produto pode ser vendido em vários pedidos diferentes ao longo do tempo.|
 
 ---
 
@@ -308,10 +301,10 @@ N:N  → muitos para muitos
 
 | Tabela | Atributo previsto como FK | Referencia qual tabela? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|  Pedido	|id_cliente|	Cliente (id_cliente)|
+|Item_Pedido|	id_pedido|	Pedido (id_pedido)|
+|Item_Pedido	|id_produto|	Produto (id_produto)|
+
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
 
@@ -332,11 +325,11 @@ AUTO_INCREMENT
 
 | Tabela | Atributo | Restrição prevista | Motivo |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Cliente	| cpf	| UNIQUE| 	O sistema não pode aceitar o cadastro do mesmo CPF duas vezes.| 
+| Produto| 	preco	| NOT NULL| 	Todo produto deve ter um preço de venda cadastrado.| 
+| Pedido| 	data_pedido| 	DEFAULT| 	Se a data não for informada, o banco assumirá a data e hora atual.| 
+| Pedido| 	id_cliente| 	FOREIGN KEY	| Uma venda só pode ser associada a um cliente que já existe no banco.| 
+| Item_Pedido	| quantidade	| NOT NULL	| A quantidade de produtos vendidos na linha tem que ser informada.| 
 
 ---
 
@@ -355,12 +348,11 @@ Um empréstimo deve possuir uma data de realização.
 ```
 
 ### Regras do seu banco
-
-1. 
-2. 
-3. 
-4. 
-5. 
+1.	Um cliente não pode possuir dois cadastros com o mesmo CPF.
+2.	O preço de um produto cadastrado nunca pode ser um valor negativo.
+3.	Não pode existir um pedido "órfão", ou seja, sem estar vinculado a um cliente válido do banco.
+4.	O valor do preco_unitario no Item_Pedido deve ser copiado do cadastro do produto na hora da venda, para que o valor da venda passada não mude caso o produto sofra reajuste futuramente.
+5.	A quantidade vendida em um Item_Pedido deve ser obrigatoriamente maior que zero.
 
 ---
 
@@ -389,6 +381,35 @@ CLIENTE 1 ───── N PEDIDO
 ```text
 Escreva aqui a estrutura planejada.
 ```
+├── id_cliente (PK)
+├── nome
+├── cpf
+├── telefone
+└── email
+
+PRODUTO
+├── id_produto (PK)
+├── nome
+├── preco
+└── quantidade_estoque
+
+PEDIDO
+├── id_pedido (PK)
+├── id_cliente (FK)
+├── data_pedido
+└── forma_pagamento
+
+ITEM_PEDIDO
+├── id_item (PK)
+├── id_pedido (FK)
+├── id_produto (FK)
+├── quantidade
+└── preco_unitario
+
+Relacionamentos:
+CLIENTE 1 ───── N PEDIDO
+PEDIDO 1 ────── N ITEM_PEDIDO
+PRODUTO 1 ───── N ITEM_PEDIDO
 
 ---
 
@@ -396,10 +417,10 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1.	Cadastros de clientes da loja, informando nomes completos, CPFs e telefone de contato.
+2.	Cadastros de mercadorias no estoque, com preço e as quantidades em loja.
+3.	Cadastros de pedidos vendas que aconteceram no caixa, com datas e formas de pagamento diferentes.
+4.	Cadastros dos itens das vendas.
 
 ---
 
@@ -419,11 +440,12 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1.	Perguntas do seu Quais são todos os clientes cadastrados no sistema da loja?
+2.	Quais produtos estão com o estoque zerado (quantidade = 0)?
+3.	Quais produtos custam mais de R$ 50,00?
+4.	Quais foram todas as compras (pedidos) realizadas por um cliente específico?
+5.	Qual é o histórico detalhado dos produtos levados no pedido de número 1?
+
 
 ---
 
@@ -441,24 +463,24 @@ Caso não existam dúvidas:
 
 # 18. Checklist da Sprint 1/5
 
-- [ ] identifiquei o aluno responsável;
-- [ ] defini o tema do banco de dados;
-- [ ] descrevi o sistema;
-- [ ] defini o objetivo do banco;
-- [ ] defini o escopo inicial;
-- [ ] identifiquei pelo menos 4 entidades;
-- [ ] planejei os principais atributos;
-- [ ] defini as chaves primárias previstas;
-- [ ] identifiquei os relacionamentos;
-- [ ] defini as cardinalidades iniciais;
-- [ ] identifiquei possíveis chaves estrangeiras;
-- [ ] planejei restrições de integridade;
-- [ ] defini pelo menos 5 regras de negócio;
-- [ ] fiz um esboço da estrutura do banco;
-- [ ] defini os tipos de dados que futuramente serão cadastrados;
-- [ ] defini pelo menos 5 perguntas que o banco deverá responder;
-- [ ] registrei dúvidas ou decisões pendentes;
-- [ ] revisei o arquivo antes de finalizar.
+- [x] identifiquei o aluno responsável;
+- [x] defini o tema do banco de dados;
+- [x] descrevi o sistema;
+- [x] defini o objetivo do banco;
+- [x] defini o escopo inicial;
+- [x] identifiquei pelo menos 4 entidades;
+- [x] planejei os principais atributos;
+- [x] defini as chaves primárias previstas;
+- [x] identifiquei os relacionamentos;
+- [x] defini as cardinalidades iniciais;
+- [x] identifiquei possíveis chaves estrangeiras;
+- [x] planejei restrições de integridade;
+- [x] defini pelo menos 5 regras de negócio;
+- [x] fiz um esboço da estrutura do banco;
+- [x] defini os tipos de dados que futuramente serão cadastrados;
+- [x] defini pelo menos 5 perguntas que o banco deverá responder;
+- [x] registrei dúvidas ou decisões pendentes;
+- [x] revisei o arquivo antes de finalizar.
 
 ---
 
