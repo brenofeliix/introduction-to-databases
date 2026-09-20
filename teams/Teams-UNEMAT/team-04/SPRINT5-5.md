@@ -353,15 +353,15 @@ Preencha:
 
 | Recurso SQL | Possui consulta válida? | Pergunta respondida |
 |---|---|---|
-| SELECT |  |  |
-| WHERE |  |  |
-| ORDER BY |  |  |
-| COUNT |  |  |
-| SUM |  |  |
-| AVG |  |  |
-| MIN/MAX |  |  |
-| GROUP BY |  |  |
-| HAVING |  |  |
+| SELECT | SIM | Quais funcionários estão cadastrados e quais são suas datas de admissão? |
+| WHERE | SIM | Quais produtos estão com estoque abaixo de 40 unidades? |
+| ORDER BY | SIM | Quais cargos possuem os maiores salários? |
+| COUNT | SIM | Quantos funcionários existem? |
+| SUM | SIM | Qual é a soma dos salários-base dos cargos? |
+| AVG | SIM | Qual é o salário-base médio dos cargos? |
+| MIN/MAX | SIM | Qual é o menor e o maior salário-base? |
+| GROUP BY | SIM | Quantos funcionários existem em cada cargo ou filial? |
+| HAVING | SIM | Quais funcionários possuem mais de 50 horas extras no ano? |
 
 ---
 
@@ -1047,18 +1047,18 @@ Conclui Sprint 5 de 5 - validação final
 
 Confirme:
 
-- [ ] estou na minha branch individual;
-- [ ] todos os commits foram enviados ao GitHub;
-- [ ] não alterei arquivos de outro aluno;
-- [ ] não alterei arquivos de outra instituição;
-- [ ] não alterei arquivos administrativos do repositório;
-- [ ] os 9 arquivos da atividade estão presentes;
-- [ ] os arquivos `.md` estão preenchidos;
-- [ ] os arquivos `.sql` foram testados;
-- [ ] o `SPRINT5-5.sql` executa do início ao fim;
-- [ ] removi nomes genéricos dos modelos;
-- [ ] não deixei senhas ou credenciais;
-- [ ] compreendo o código entregue.
+- [X] estou na minha branch individual;
+- [X] todos os commits foram enviados ao GitHub;
+- [X] não alterei arquivos de outro aluno;
+- [X] não alterei arquivos de outra instituição;
+- [X] não alterei arquivos administrativos do repositório;
+- [X] os 9 arquivos da atividade estão presentes;
+- [X] os arquivos `.md` estão preenchidos;
+- [X] os arquivos `.sql` foram testados;
+- [X] o `SPRINT5-5.sql` executa do início ao fim;
+- [X] removi nomes genéricos dos modelos;
+- [X] não deixei senhas ou credenciais;
+- [X] compreendo o código entregue.
 
 ---
 
@@ -1222,7 +1222,7 @@ A validação automática é parte do processo de entrega.
 - [X] `CREATE DATABASE` funciona;
 - [X] `USE` funciona;
 - [X] todas as tabelas são criadas;
-- [ ] nenhuma tabela necessária está ausente.
+- [X] nenhuma tabela necessária está ausente.
 
 ## Estrutura
 
@@ -1231,20 +1231,20 @@ A validação automática é parte do processo de entrega.
 - [X] tipos de dados estão coerentes;
 - [X] `NOT NULL` está coerente;
 - [X] `UNIQUE` está coerente;
-- [ ] `DEFAULT` está coerente.
+- [X] `DEFAULT` está coerente.
 
 ## Dados
 
 - [X] INSERTs funcionam;
 - [X] dados são coerentes;
-- [ ] FKs são respeitadas.
+- [X] FKs são respeitadas.
 
 ## Manipulação
 
 - [X] UPDATEs funcionam;
 - [X] UPDATEs possuem `WHERE`;
 - [X] DELETEs funcionam;
-- [ ] DELETEs possuem `WHERE`.
+- [X] DELETEs possuem `WHERE`.
 
 ## Consultas
 
@@ -1256,19 +1256,19 @@ A validação automática é parte do processo de entrega.
 - [X] AVG funciona quando aplicável;
 - [X] MIN/MAX funcionam;
 - [X] GROUP BY funciona;
-- [ ] HAVING funciona.
+- [X] HAVING funciona.
 
 ## Arquivos
 
-- [ ] `SPRINT1-5.md`;
-- [ ] `SPRINT2-5.md`;
-- [ ] `SPRINT2-5.sql`;
-- [ ] `SPRINT3-5.md`;
-- [ ] `SPRINT3-5.sql`;
-- [ ] `SPRINT4-5.md`;
-- [ ] `SPRINT4-5.sql`;
-- [ ] `SPRINT5-5.md`;
-- [ ] `SPRINT5-5.sql`.
+- [X] `SPRINT1-5.md`;
+- [X] `SPRINT2-5.md`;
+- [X] `SPRINT2-5.sql`;
+- [X] `SPRINT3-5.md`;
+- [X] `SPRINT3-5.sql`;
+- [X] `SPRINT4-5.md`;
+- [X] `SPRINT4-5.sql`;
+- [X] `SPRINT5-5.md`;
+- [X] `SPRINT5-5.sql`.
 
 ---
 
@@ -1278,23 +1278,23 @@ Responda brevemente.
 
 ## O que você considera que aprendeu melhor?
 
-> Aprendi melhor a criar a estrutura de um banco em MySQL, relacionar as tabelas com PRIMARY KEY e FOREIGN KEY e realizar consultas usando filtros, ordenações e funções de agregação.
+> Estruturação de uma SQL. O que ela precisa, quais tabelas é necessaria e por quê 
 
 ## Qual conteúdo apresentou maior dificuldade?
 
-> A parte que apresentou maior dificuldade foi trabalhar com os relacionamentos entre as tabelas e entender as dependências das FOREIGN KEY, principalmente na hora de excluir registros.
+> entender exatamente como que as expressões funcionavam, ainda estou batendo a cabeça um pouco para entender tudo
 
 ## Qual erro mais contribuiu para seu aprendizado?
 
-> O erro que mais contribuiu foi tentar excluir um funcionário que ainda possuía um registro relacionado em EXPEDIENTE. Isso ajudou a entender melhor como a FOREIGN KEY protege os dados relacionados.
+> Criar uma tabela desnecessaria e tentar implementar ela, ver o que funciona e o que não funciona e ter que reimaginar como ela deveria funcionar para inicio de conversa
 
 ## Qual parte do banco você considera mais bem implementada?
 
-> Considero que a parte de relacionamentos e consultas ficou bem implementada, principalmente a relação entre FUNCIONARIO, CARGO, SETOR, FILIAL e EXPEDIENTE e as consultas que usam essas tabelas.
+> Os inserts
 
 ## Se tivesse mais tempo, o que melhoraria?
 
-> Melhoraria alguns tipos de dados e acrescentaria mais registros para deixar as consultas de agrupamento e horas extras mais completas. Também poderia melhorar a estrutura do estoque com mais informações sobre os produtos.
+> Sinceramente eu tive tempo o suficiente, adicionar mais tempo não iria mudar muita coisa, não por que não existe nada para melhorar, mas sim por que o projeto ficou parado por 1 semana e com certeza ficaria parado por mais 1 se extendesse o tempo.
 
 ---
 
