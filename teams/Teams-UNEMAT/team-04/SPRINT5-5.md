@@ -743,8 +743,6 @@ FOREIGN KEY (id_func) REFERENCES FUNCIONARIO(id_func)
 
 > Foi realizado um teste com um id_func inexistente. O MySQL rejeitou o INSERT, confirmando que a FOREIGN KEY impede o cadastro de um expediente para um funcionário que não existe. O comando inválido não foi mantido no SQL final.
 
-> Comandos propositalmente inválidos não devem permanecer ativos no SQL final. Caso queira documentá-los, mantenha-os comentados.
-
 ---
 
 # 23. Testando UNIQUE
