@@ -100,35 +100,35 @@ Verifique se o banco final ainda corresponde ao projeto proposto.
 ## Tema do banco
 
 ```text
-
+Site de anúncios imobiliários (real_estate_database)
 ```
 
 ## Objetivo principal
 
-> Escreva aqui.
+> Armazenar os dados dos imóveis, corretores e clientes de forma segura, permitindo cadastrar anúncios, associar cada imóvel a um corretor responsável e controlar os agendamentos de visita solicitados pelos clientes.
 
 ## Quantidade final de tabelas
 
 ```text
-
+4
 ```
 
 ## Principais entidades do banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. corretor
+2. cliente
+3. imovel
+4. agendamento
+5.
 
 ## O projeto final permaneceu igual ao planejamento inicial?
 
 - [ ] Sim
-- [ ] Não
+- [x] Não
 
 Caso tenha mudado, explique:
 
-> Escreva aqui.
+> A entidade planejada inicialmente como "interesse" (Sprint 1/5) foi implementada como "agendamento" a partir da Sprint 2/5, pois representa melhor a operação real do sistema (marcar uma visita, com data e status), e não apenas uma manifestação de interesse. Além disso, duas perguntas da Sprint 1/5 foram adaptadas na Sprint 4/5: a pergunta sobre "agendamentos na próxima semana" virou uma consulta sobre agendamentos com status "Pendente" (mais útil operacionalmente do que um filtro de data relativa), e a pergunta sobre visitas do imóvel de ID 50 foi ajustada para o imóvel de ID 3, já que o catálogo final possui apenas 5 imóveis ativos.
 
 ---
 
@@ -138,14 +138,10 @@ Registre alterações relevantes feitas desde a Sprint 1/5.
 
 | Alteração | Sprint em que ocorreu | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
-Caso não tenha ocorrido alteração:
-
-> O projeto permaneceu coerente com o planejamento inicial.
+| Entidade "interesse" renomeada para "agendamento" | Sprint 2/5 | Nome mais fiel à funcionalidade implementada (visita com data e status, não apenas um interesse) |
+| Pergunta sobre "agendamentos na próxima semana" adaptada para "agendamentos com status Pendente" | Sprint 4/5 | Um filtro de status é mais estável e operacionalmente útil do que uma janela de datas relativa |
+| Referência ao imóvel de ID 50 (Sprint 1/5) ajustada para ID 3 | Sprint 4/5 | O catálogo final possui poucos registros (5 imóveis após o DELETE), então o ID 50 não existe na base |
+| Imóvel "Cobertura Duplex" (id 6) removido do catálogo | Sprint 3/5 | Exercício obrigatório de DELETE proposto na atividade, sem imóvel dependente em agendamentos |
 
 ---
 
@@ -164,11 +160,10 @@ Preencha:
 
 | Tabela | PK correta? | FKs corretas? | Tipos corretos? | Restrições corretas? |
 |---|---|---|---|---|
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
+| corretor | Sim | Não se aplica (sem FK) | Sim | Sim |
+| cliente | Sim | Não se aplica (sem FK) | Sim | Sim |
+| imovel | Sim | Sim (id_corretor → corretor) | Sim | Sim |
+| agendamento | Sim | Sim (id_cliente → cliente, id_imovel → imovel) | Sim | Sim |
 
 ---
 
@@ -178,12 +173,14 @@ Liste as chaves primárias finais.
 
 | Tabela | PRIMARY KEY | AUTO_INCREMENT? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| corretor | id_corretor | Sim |
+| cliente | id_cliente | Sim |
+| imovel | id_imovel | Sim |
+| agendamento | id_agendamento | Sim |
 
 Verifique se cada registro pode ser identificado de forma única.
+
+> Sim, todas as tabelas possuem um identificador numérico único e crescente, o que garante a identificação individual de cada registro.
 
 ---
 
@@ -193,10 +190,9 @@ Liste as chaves estrangeiras finais.
 
 | Tabela | FOREIGN KEY | Tabela referenciada | Campo referenciado |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| imovel | id_corretor | corretor | id_corretor |
+| agendamento | id_cliente | cliente | id_cliente |
+| agendamento | id_imovel | imovel | id_imovel |
 
 Confira se:
 
@@ -205,6 +201,8 @@ Confira se:
 - os tipos são compatíveis;
 - o relacionamento faz sentido;
 - a ordem de criação das tabelas está correta.
+
+> Todas as condições acima foram confirmadas. A ordem de criação respeita a dependência: corretor e cliente (independentes) são criadas primeiro, depois imovel (depende de corretor) e por último agendamento (depende de cliente e imovel).
 
 ---
 
@@ -225,10 +223,11 @@ Registre exemplos:
 
 | Tabela | Campo | Restrição | Regra de negócio protegida |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| corretor | creci | UNIQUE | Um corretor não pode se cadastrar com um número de CRECI já existente |
+| corretor | email | UNIQUE | Um corretor não pode possuir dois cadastros com o mesmo e-mail |
+| cliente | email | UNIQUE | Um cliente não pode possuir dois cadastros com o mesmo e-mail |
+| agendamento | status | DEFAULT ('Pendente') | Todo agendamento nasce com uma situação definida, mesmo sem informação explícita |
+| imovel | id_corretor | FOREIGN KEY + NOT NULL | Um imóvel não pode ser cadastrado sem um corretor responsável associado |
 
 ---
 
@@ -240,11 +239,10 @@ Preencha:
 
 | Tabela | Quantidade aproximada de registros |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| corretor | 5 |
+| cliente | 5 |
+| imovel | 5 (6 inseridos, 1 excluído) |
+| agendamento | 5 (6 inseridos, 1 excluído) |
 
 Pergunte:
 
@@ -254,25 +252,26 @@ Pergunte:
 - existem valores suficientes para `SUM`, `AVG`, `MIN` e `MAX`?
 - existem registros que permitam testar `HAVING`?
 
+> Sim para todos os pontos. Os imóveis têm cidades distintas (Rondonópolis, Chapada dos Guimarães, Alagoas, Rondônia), suficientes para GROUP BY por cidade; os valores variam de R$ 150.000 a R$ 800.000, permitindo testar SUM, AVG, MIN e MAX com resultados não triviais; e o cliente de id 1 possui 2 agendamentos, o que permite validar o HAVING COUNT(*) > 1.
+
 ---
 
 # 10. Revisão dos INSERTs
 
 Confirme:
 
-- [ ] os INSERTs executam sem erro;
-- [ ] respeitam as chaves estrangeiras;
-- [ ] não existem duplicações indevidas;
-- [ ] respeitam `NOT NULL`;
-- [ ] respeitam `UNIQUE`;
-- [ ] os dados fazem sentido no domínio.
+- [x] os INSERTs executam sem erro;
+- [x] respeitam as chaves estrangeiras;
+- [x] não existem duplicações indevidas;
+- [x] respeitam `NOT NULL`;
+- [x] respeitam `UNIQUE`;
+- [x] os dados fazem sentido no domínio.
 
 Caso encontre problemas, registre:
 
 | Problema | Correção realizada |
 |---|---|
-|  |  |
-|  |  |
+| Nenhum problema encontrado nos INSERTs | Não se aplica |
 
 ---
 
@@ -280,16 +279,17 @@ Caso encontre problemas, registre:
 
 Confirme:
 
-- [ ] os UPDATEs possuem `WHERE`;
-- [ ] alteram os registros esperados;
-- [ ] não modificam toda a tabela acidentalmente;
-- [ ] mantêm a integridade do banco.
+- [x] os UPDATEs possuem `WHERE`;
+- [x] alteram os registros esperados;
+- [x] não modificam toda a tabela acidentalmente;
+- [x] mantêm a integridade do banco.
 
 Liste os principais UPDATEs finais:
 
 ```sql
--- Cole aqui os UPDATEs mais importantes.
-
+UPDATE agendamento SET status = 'Confirmado' WHERE id_agendamento = 1;
+UPDATE imovel SET valor = 240000.00 WHERE id_imovel = 2;
+UPDATE cliente SET telefone = '66000000000' WHERE id_cliente = 3;
 ```
 
 ---
@@ -298,16 +298,16 @@ Liste os principais UPDATEs finais:
 
 Confirme:
 
-- [ ] os DELETEs possuem `WHERE`;
-- [ ] não removem registros necessários ao funcionamento do projeto;
-- [ ] respeitam as dependências de `FOREIGN KEY`;
-- [ ] não comprometem consultas posteriores.
+- [x] os DELETEs possuem `WHERE`;
+- [x] não removem registros necessários ao funcionamento do projeto;
+- [x] respeitam as dependências de `FOREIGN KEY`;
+- [x] não comprometem consultas posteriores.
 
 Liste os DELETEs finais:
 
 ```sql
--- Cole aqui.
-
+DELETE FROM agendamento WHERE id_agendamento = 5;
+DELETE FROM imovel WHERE id_imovel = 6;
 ```
 
 ---
@@ -333,15 +333,15 @@ Preencha:
 
 | Recurso SQL | Possui consulta válida? | Pergunta respondida |
 |---|---|---|
-| SELECT |  |  |
-| WHERE |  |  |
-| ORDER BY |  |  |
-| COUNT |  |  |
-| SUM |  |  |
-| AVG |  |  |
-| MIN/MAX |  |  |
-| GROUP BY |  |  |
-| HAVING |  |  |
+| SELECT | Sim | Quais são todos os imóveis cadastrados no sistema? |
+| WHERE | Sim | Quais imóveis estão localizados em Rondonópolis? |
+| ORDER BY | Sim | Quais imóveis custam menos de R$ 300.000,00, do mais barato ao mais caro? |
+| COUNT | Sim | Quantos agendamentos estão com status "Pendente"? |
+| SUM | Sim | Qual a soma total em dinheiro de todos os imóveis do catálogo? |
+| AVG | Sim | Qual a média de preço dos imóveis anunciados? |
+| MIN/MAX | Sim | Qual o valor do imóvel mais barato e do mais caro? |
+| GROUP BY | Sim | Quantos imóveis existem por cidade? |
+| HAVING | Sim | Quais clientes possuem mais de 1 agendamento? |
 
 ---
 
@@ -351,82 +351,88 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 1
 
-> Escreva aqui.
+> Quais imóveis estão cadastrados na cidade de Rondonópolis?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 **Consulta utilizada:**
 
 ```sql
--- Cole aqui.
-
+SELECT titulo, valor, cidade
+FROM imovel
+WHERE cidade = 'Rondonópolis';
 ```
 
 ---
 
 ## Pergunta 2
 
-> Escreva aqui.
+> Quais imóveis custam menos de R$ 300.000,00?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
-
+SELECT titulo, valor, cidade
+FROM imovel
+WHERE valor < 300000.00
+ORDER BY valor ASC;
 ```
 
 ---
 
 ## Pergunta 3
 
-> Escreva aqui.
+> Quantos agendamentos estão com o status Pendente?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
-
+SELECT COUNT(*) AS agendamentos_pendentes
+FROM agendamento
+WHERE status = 'Pendente';
 ```
 
 ---
 
 ## Pergunta 4
 
-> Escreva aqui.
+> Quantos imóveis temos anunciados no total?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
-
+SELECT COUNT(*) AS total_imoveis
+FROM imovel;
 ```
 
 ---
 
 ## Pergunta 5
 
-> Escreva aqui.
+> Quais as datas de visita agendadas para o imóvel de ID 3 (Chácara)?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
-
+SELECT id_cliente, data_visita, status
+FROM agendamento
+WHERE id_imovel = 3
+ORDER BY data_visita ASC;
 ```
 
 ---
@@ -460,85 +466,241 @@ Use esta organização:
 -- IDENTIFICAÇÃO
 -- ============================================================
 
--- Aluno:
--- Tema:
--- Banco:
+-- Aluno: João Guilherme Barros de Lima
+-- Tema: Site de anúncios imobiliários
+-- Banco: real_estate_database
 
 
 -- ============================================================
 -- 1. CRIAÇÃO DO BANCO
 -- ============================================================
 
+CREATE DATABASE IF NOT EXISTS real_estate_database;
+
 
 -- ============================================================
 -- 2. SELEÇÃO DO BANCO
 -- ============================================================
+
+USE real_estate_database;
 
 
 -- ============================================================
 -- 3. CRIAÇÃO DAS TABELAS
 -- ============================================================
 
+CREATE TABLE corretor (
+    id_corretor INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    creci VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    telefone VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE cliente (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    data_nascimento DATE
+);
+
+CREATE TABLE imovel (
+    id_imovel INT PRIMARY KEY AUTO_INCREMENT,
+    id_corretor INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    quantidade_comodos INT NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+
+    CONSTRAINT fk_imovel_corretor
+        FOREIGN KEY (id_corretor)
+        REFERENCES corretor(id_corretor)
+);
+
+CREATE TABLE agendamento (
+    id_agendamento INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT NOT NULL,
+    id_imovel INT NOT NULL,
+    data_visita DATETIME NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'Pendente',
+
+    CONSTRAINT fk_agendamento_cliente
+        FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente),
+
+    CONSTRAINT fk_agendamento_imovel
+        FOREIGN KEY (id_imovel)
+        REFERENCES imovel(id_imovel)
+);
+
 
 -- ============================================================
 -- 4. RESTRIÇÕES E RELACIONAMENTOS
 -- ============================================================
+
+-- As restrições PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL e
+-- DEFAULT já foram declaradas junto com a criação das tabelas
+-- na seção anterior. Comandos de verificação:
+
+DESCRIBE corretor;
+DESCRIBE cliente;
+DESCRIBE imovel;
+DESCRIBE agendamento;
+
+SHOW CREATE TABLE corretor;
+SHOW CREATE TABLE cliente;
+SHOW CREATE TABLE imovel;
+SHOW CREATE TABLE agendamento;
 
 
 -- ============================================================
 -- 5. INSERTS
 -- ============================================================
 
+INSERT INTO corretor (nome, creci, email, telefone)
+VALUES
+    ('Paulo Roberto de Lima Junior', 'CRECI111', 'paulo@imob.com', '66999991111'),
+    ('Isa', 'CRECI222', 'isa@imob.com', '66999992222'),
+    ('Jao', 'CRECI333', 'jao@imob.com', '66999993333'),
+    ('Amanda', 'CRECI444', 'amanda@imob.com', '66999994444'),
+    ('Theus', 'CRECI555', 'theus@imob.com', '66999995555');
+
+INSERT INTO cliente (nome, email, senha, telefone, data_nascimento)
+VALUES
+    ('João Guilherme Barros de Lima', 'joao@email.com', 'senha123', '66988881111', '2006-11-29'),
+    ('Gi', 'gi@email.com', 'senha456', '66988882222', '2005-05-15'),
+    ('Carlos Santos', 'carlos@email.com', 'senha789', '66988883333', '1990-08-20'),
+    ('Mariana Silva', 'mariana@email.com', 'senha321', '66988884444', '1995-12-10'),
+    ('Lucas Almeida', 'lucas@email.com', 'senha654', '66988885555', '1988-03-30');
+
+INSERT INTO imovel (id_corretor, titulo, valor, quantidade_comodos, cidade)
+VALUES
+    (1, 'Casa com piscina', 450000.00, 4, 'Rondonópolis'),
+    (2, 'Apartamento Centro', 250000.00, 3, 'Rondonópolis'),
+    (3, 'Chácara para descanso', 600000.00, 5, 'Chapada dos Guimarães'),
+    (4, 'Casa na praia', 800000.00, 4, 'Alagoas'),
+    (1, 'Terreno amplo', 150000.00, 0, 'Rondônia'),
+    (5, 'Cobertura Duplex', 950000.00, 6, 'Rondonópolis');
+
+INSERT INTO agendamento (id_cliente, id_imovel, data_visita, status)
+VALUES
+    (1, 4, '2026-10-15 10:00:00', 'Pendente'),
+    (2, 3, '2026-10-16 14:30:00', 'Pendente'),
+    (1, 3, '2026-10-17 09:00:00', 'Pendente'),
+    (3, 2, '2026-10-18 11:00:00', 'Pendente'),
+    (4, 5, '2026-10-19 15:00:00', 'Cancelado'),
+    (5, 1, '2026-10-20 16:00:00', 'Pendente');
+
 
 -- ============================================================
 -- 6. UPDATES
 -- ============================================================
+
+UPDATE agendamento SET status = 'Confirmado' WHERE id_agendamento = 1;
+UPDATE imovel SET valor = 240000.00 WHERE id_imovel = 2;
+UPDATE cliente SET telefone = '66000000000' WHERE id_cliente = 3;
 
 
 -- ============================================================
 -- 7. DELETES
 -- ============================================================
 
+DELETE FROM agendamento WHERE id_agendamento = 5;
+DELETE FROM imovel WHERE id_imovel = 6;
+
 
 -- ============================================================
 -- 8. CONSULTAS BÁSICAS
 -- ============================================================
+
+SELECT * FROM imovel;
+SELECT titulo, valor FROM imovel;
 
 
 -- ============================================================
 -- 9. WHERE
 -- ============================================================
 
+SELECT titulo, valor, cidade
+FROM imovel
+WHERE cidade = 'Rondonópolis';
+
+SELECT *
+FROM agendamento
+WHERE status = 'Pendente'
+  AND data_visita > '2026-10-16';
+
 
 -- ============================================================
 -- 10. ORDER BY
 -- ============================================================
+
+SELECT titulo, valor, cidade
+FROM imovel
+WHERE valor < 300000.00
+ORDER BY valor ASC;
 
 
 -- ============================================================
 -- 11. FUNÇÕES DE AGREGAÇÃO
 -- ============================================================
 
+SELECT COUNT(*) AS agendamentos_pendentes
+FROM agendamento
+WHERE status = 'Pendente';
+
+SELECT SUM(valor) AS soma_total_imoveis
+FROM imovel;
+
+SELECT AVG(valor) AS media_precos
+FROM imovel;
+
+SELECT MIN(valor) AS imovel_mais_barato,
+       MAX(valor) AS imovel_mais_caro
+FROM imovel;
+
 
 -- ============================================================
 -- 12. GROUP BY
 -- ============================================================
+
+SELECT cidade, COUNT(*) AS total_por_cidade
+FROM imovel
+GROUP BY cidade;
 
 
 -- ============================================================
 -- 13. HAVING
 -- ============================================================
 
+SELECT id_cliente, COUNT(*) AS quantidade_visitas
+FROM agendamento
+GROUP BY id_cliente
+HAVING COUNT(*) > 1;
+
 
 -- ============================================================
 -- 14. EXPRESSÕES SQL
 -- ============================================================
+
+SELECT titulo,
+       valor,
+       valor * 0.05 AS comissao_corretor
+FROM imovel;
 
 
 -- ============================================================
 -- 15. VALIDAÇÃO FINAL
 -- ============================================================
 
+SHOW TABLES;
+
+SELECT * FROM corretor;
+SELECT * FROM cliente;
+SELECT * FROM imovel;
+SELECT * FROM agendamento;
 ```
 
 ---
@@ -624,16 +786,16 @@ Confira se todas as tabelas aparecem.
 Quantidade de tabelas:
 
 ```text
-
+4
 ```
 
 Quantidade encontrada:
 
 ```text
-
+4
 ```
 
-- [ ] corresponde ao esperado.
+- [x] corresponde ao esperado.
 
 ---
 
@@ -687,18 +849,18 @@ Registre:
 ### Tabela testada
 
 ```text
-
+imovel
 ```
 
 ### Restrição testada
 
 ```text
-
+FOREIGN KEY id_corretor → corretor(id_corretor)
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Ao tentar inserir um imóvel com um id_corretor inexistente (ex: 99), o MySQL rejeitou a operação com o erro "Cannot add or update a child row: a foreign key constraint fails", confirmando que a integridade referencial entre imovel e corretor está sendo respeitada.
 
 > Comandos propositalmente inválidos não devem permanecer ativos no SQL final. Caso queira documentá-los, mantenha-os comentados.
 
@@ -711,12 +873,12 @@ Caso exista uma restrição `UNIQUE`, teste seu funcionamento.
 ### Campo testado
 
 ```text
-
+email (tabela corretor)
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Ao tentar inserir um novo corretor utilizando um e-mail já cadastrado (ex: paulo@imob.com), o MySQL rejeitou a operação com o erro "Duplicate entry ... for key 'email'", confirmando que a restrição UNIQUE está ativa.
 
 ---
 
@@ -727,12 +889,12 @@ Caso exista `NOT NULL`, verifique se a restrição funciona.
 ### Campo testado
 
 ```text
-
+valor (tabela imovel)
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Ao tentar inserir um imóvel sem informar o campo valor, o MySQL rejeitou a operação com o erro "Field 'valor' doesn't have a default value", confirmando que a restrição NOT NULL está funcionando.
 
 ---
 
@@ -755,22 +917,23 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 ### Pergunta
 
-> Escreva aqui.
+> Quantos agendamentos estão atualmente com o status "Pendente" no sistema?
 
 ### SQL
 
 ```sql
--- Cole aqui.
-
+SELECT COUNT(*) AS agendamentos_pendentes
+FROM agendamento
+WHERE status = 'Pendente';
 ```
 
 ### Resultado esperado
 
-> Escreva aqui.
+> Com os dados finais (5 agendamentos restantes após o DELETE, sendo 1 atualizado para "Confirmado"), o resultado esperado é 4 agendamentos pendentes.
 
 ### Por que essa consulta é importante?
 
-> Escreva aqui.
+> Porque é a consulta que a equipe usaria no dia a dia para saber quantas visitas ainda precisam de confirmação. É um indicador operacional direto do sistema: se o número estiver alto, sinaliza agendamentos sem retorno do corretor ou do cliente, exigindo ação imediata.
 
 ---
 
@@ -778,13 +941,15 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 ### Pergunta
 
-> Escreva aqui.
+> Quais clientes possuem mais de 1 agendamento de visita registrado no sistema?
 
 ### SQL
 
 ```sql
--- Cole aqui.
-
+SELECT id_cliente, COUNT(*) AS quantidade_visitas
+FROM agendamento
+GROUP BY id_cliente
+HAVING COUNT(*) > 1;
 ```
 
 ### Conceitos utilizados
@@ -792,14 +957,14 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 - [ ] WHERE
 - [ ] ORDER BY
 - [ ] agregação
-- [ ] GROUP BY
-- [ ] HAVING
+- [x] GROUP BY
+- [x] HAVING
 - [ ] expressão
 - [ ] outro
 
 ### Explique
 
-> Escreva aqui.
+> WHERE filtra linhas individuais antes de qualquer agrupamento, mas "mais de 1 agendamento" só existe depois que as linhas já foram agrupadas por id_cliente e contadas. Por isso é necessário primeiro o GROUP BY, para formar os grupos por cliente, e depois o HAVING, para filtrar o resultado da agregação (COUNT) sobre esses grupos. Com os dados finais, apenas o cliente de id 1 possui 2 agendamentos, sendo o único retornado pela consulta.
 
 ---
 
@@ -807,21 +972,21 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 | Teste | Resultado | Correção necessária? |
 |---|---|---|
-| CREATE DATABASE |  |  |
-| CREATE TABLE |  |  |
-| PRIMARY KEY |  |  |
-| FOREIGN KEY |  |  |
-| NOT NULL |  |  |
-| UNIQUE |  |  |
-| INSERT |  |  |
-| UPDATE |  |  |
-| DELETE |  |  |
-| SELECT |  |  |
-| WHERE |  |  |
-| ORDER BY |  |  |
-| GROUP BY |  |  |
-| HAVING |  |  |
-| funções de agregação |  |  |
+| CREATE DATABASE | Executado com sucesso | Não |
+| CREATE TABLE | Executado com sucesso, 4 tabelas criadas | Não |
+| PRIMARY KEY | Funcionando em todas as tabelas | Não |
+| FOREIGN KEY | Funcionando, bloqueia registros órfãos | Não |
+| NOT NULL | Funcionando | Não |
+| UNIQUE | Funcionando | Não |
+| INSERT | Executado com sucesso | Não |
+| UPDATE | Executado com sucesso | Não |
+| DELETE | Executado com sucesso, sem violar FK | Não |
+| SELECT | Funcionando | Não |
+| WHERE | Funcionando | Não |
+| ORDER BY | Funcionando | Não |
+| GROUP BY | Funcionando | Não |
+| HAVING | Funcionando | Não |
+| funções de agregação | COUNT, SUM, AVG, MIN e MAX funcionando | Não |
 
 ---
 
@@ -829,14 +994,10 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Comando SELECT do COUNT de agendamentos pendentes estava digitado como "ELECT" (Sprint 4/5) | Erro de digitação ao copiar o comando no script | Corrigido para "SELECT" antes da integração no SPRINT5-5.sql |
+| Tentativa inicial de filtrar clientes com mais de 1 agendamento usando WHERE COUNT(*) > 1 (Sprint 4/5) | Uso de função de agregação dentro de WHERE, não permitido no MySQL | Substituído por GROUP BY id_cliente + HAVING COUNT(*) > 1 |
 
-Caso não tenha ocorrido nenhum problema:
-
-> Nenhum problema identificado após a execução completa do projeto.
+Nenhum problema novo foi identificado durante a reconstrução completa do banco nesta Sprint; os dois itens acima já haviam sido corrigidos ainda na Sprint 4/5 e foram apenas confirmados como resolvidos aqui.
 
 ---
 
@@ -981,18 +1142,18 @@ Conclui Sprint 5 de 5 - validação final
 
 Confirme:
 
-- [ ] estou na minha branch individual;
-- [ ] todos os commits foram enviados ao GitHub;
-- [ ] não alterei arquivos de outro aluno;
-- [ ] não alterei arquivos de outra instituição;
-- [ ] não alterei arquivos administrativos do repositório;
-- [ ] os 9 arquivos da atividade estão presentes;
-- [ ] os arquivos `.md` estão preenchidos;
-- [ ] os arquivos `.sql` foram testados;
-- [ ] o `SPRINT5-5.sql` executa do início ao fim;
-- [ ] removi nomes genéricos dos modelos;
-- [ ] não deixei senhas ou credenciais;
-- [ ] compreendo o código entregue.
+- [x] estou na minha branch individual;
+- [x] todos os commits foram enviados ao GitHub;
+- [x] não alterei arquivos de outro aluno;
+- [x] não alterei arquivos de outra instituição;
+- [x] não alterei arquivos administrativos do repositório;
+- [x] os 9 arquivos da atividade estão presentes;
+- [x] os arquivos `.md` estão preenchidos;
+- [x] os arquivos `.sql` foram testados;
+- [x] o `SPRINT5-5.sql` executa do início ao fim;
+- [x] removi nomes genéricos dos modelos;
+- [x] não deixei senhas ou credenciais;
+- [x] compreendo o código entregue.
 
 ---
 
@@ -1153,56 +1314,56 @@ A validação automática é parte do processo de entrega.
 
 ## Banco
 
-- [ ] `CREATE DATABASE` funciona;
-- [ ] `USE` funciona;
-- [ ] todas as tabelas são criadas;
-- [ ] nenhuma tabela necessária está ausente.
+- [x] `CREATE DATABASE` funciona;
+- [x] `USE` funciona;
+- [x] todas as tabelas são criadas;
+- [x] nenhuma tabela necessária está ausente.
 
 ## Estrutura
 
-- [ ] todas as tabelas possuem PK;
-- [ ] FKs estão corretas;
-- [ ] tipos de dados estão coerentes;
-- [ ] `NOT NULL` está coerente;
-- [ ] `UNIQUE` está coerente;
-- [ ] `DEFAULT` está coerente.
+- [x] todas as tabelas possuem PK;
+- [x] FKs estão corretas;
+- [x] tipos de dados estão coerentes;
+- [x] `NOT NULL` está coerente;
+- [x] `UNIQUE` está coerente;
+- [x] `DEFAULT` está coerente.
 
 ## Dados
 
-- [ ] INSERTs funcionam;
-- [ ] dados são coerentes;
-- [ ] FKs são respeitadas.
+- [x] INSERTs funcionam;
+- [x] dados são coerentes;
+- [x] FKs são respeitadas.
 
 ## Manipulação
 
-- [ ] UPDATEs funcionam;
-- [ ] UPDATEs possuem `WHERE`;
-- [ ] DELETEs funcionam;
-- [ ] DELETEs possuem `WHERE`.
+- [x] UPDATEs funcionam;
+- [x] UPDATEs possuem `WHERE`;
+- [x] DELETEs funcionam;
+- [x] DELETEs possuem `WHERE`.
 
 ## Consultas
 
-- [ ] SELECT funciona;
-- [ ] WHERE funciona;
-- [ ] ORDER BY funciona;
-- [ ] COUNT funciona;
-- [ ] SUM funciona quando aplicável;
-- [ ] AVG funciona quando aplicável;
-- [ ] MIN/MAX funcionam;
-- [ ] GROUP BY funciona;
-- [ ] HAVING funciona.
+- [x] SELECT funciona;
+- [x] WHERE funciona;
+- [x] ORDER BY funciona;
+- [x] COUNT funciona;
+- [x] SUM funciona quando aplicável;
+- [x] AVG funciona quando aplicável;
+- [x] MIN/MAX funcionam;
+- [x] GROUP BY funciona;
+- [x] HAVING funciona.
 
 ## Arquivos
 
-- [ ] `SPRINT1-5.md`;
-- [ ] `SPRINT2-5.md`;
-- [ ] `SPRINT2-5.sql`;
-- [ ] `SPRINT3-5.md`;
-- [ ] `SPRINT3-5.sql`;
-- [ ] `SPRINT4-5.md`;
-- [ ] `SPRINT4-5.sql`;
-- [ ] `SPRINT5-5.md`;
-- [ ] `SPRINT5-5.sql`.
+- [x] `SPRINT1-5.md`;
+- [x] `SPRINT2-5.md`;
+- [x] `SPRINT2-5.sql`;
+- [x] `SPRINT3-5.md`;
+- [x] `SPRINT3-5.sql`;
+- [x] `SPRINT4-5.md`;
+- [x] `SPRINT4-5.sql`;
+- [x] `SPRINT5-5.md`;
+- [x] `SPRINT5-5.sql`.
 
 ---
 
@@ -1212,23 +1373,23 @@ Responda brevemente.
 
 ## O que você considera que aprendeu melhor?
 
-> Escreva aqui.
+> A lógica de relacionamento entre tabelas usando FOREIGN KEY, e a diferença prática entre filtrar linhas (WHERE) e filtrar grupos já agregados (HAVING).
 
 ## Qual conteúdo apresentou maior dificuldade?
 
-> Escreva aqui.
+> Entender por que HAVING é necessário em vez de WHERE quando a condição depende de uma função de agregação (COUNT, SUM etc.), já que a princípio pareciam intercambiáveis.
 
 ## Qual erro mais contribuiu para seu aprendizado?
 
-> Escreva aqui.
+> A tentativa de usar WHERE COUNT(*) > 1 para filtrar clientes com mais de um agendamento, que gerou erro de sintaxe e me obrigou a entender a ordem lógica de execução do SQL (FROM → WHERE → GROUP BY → HAVING → SELECT).
 
 ## Qual parte do banco você considera mais bem implementada?
 
-> Escreva aqui.
+> A tabela agendamento, por concentrar as duas chaves estrangeiras (cliente e imóvel) e o campo status com DEFAULT, o que permitiu testar de forma clara integridade referencial, agregação e agrupamento.
 
 ## Se tivesse mais tempo, o que melhoraria?
 
-> Escreva aqui.
+> Adicionaria uma tabela de imagens do imóvel (relacionamento 1:N com imovel), já que isso estava previsto na descrição inicial do sistema (Sprint 1/5) mas não chegou a ser implementado como tabela própria.
 
 ---
 
