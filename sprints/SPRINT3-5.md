@@ -175,65 +175,92 @@ Ordem recomendada:
 
 | Tabela | Quantidade prevista | Depende de outra tabela? |
 |---|---:|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
 
+| cliente | 6 | Não |
+| produto | 6 | Não |
+| pedido | 5 | Sim (cliente) |
+| item_pedido | 6 | Sim (pedido, produto) |
 ---
 
 # 8. INSERTs realizados
 
 ## Tabela 1
 
-**Nome:**
+**Nome:** cliente
 
 ```text
 
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+--cliente
+```sql
+INSERT INTO cliente (nome, cpf, telefone, email)
+VALUES 
+    ('Maria Silva', 11111111111, '(11) 99999-1111', 'maria@email.com'),
+    ('João Carlos', 22222222222, '(11) 99999-2222', 'joao@email.com'),
+    ('Ana Beatriz', 33333333333, '(11) 99999-3333', 'ana@email.com'),
+    ('Pedro Paulo', 44444444444, '(11) 99999-4444', 'pedro@email.com'),
+    ('Lucas Fernandes', '555.555.555-55', '(11) 99999-5555', 'lucas@email.com'),
+    ('Cliente Para Excluir', '999.999.999-99', '(00) 00000-0000', 'excluir@email.com');
 
 ```
 
 ## Tabela 2
 
-**Nome:**
+**Nome:** produto
 
 ```text
 
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
-
+-- INSERT INTO produto (nome, preco, quantidade_estoque)
+VALUES
+    ('Camiseta Básica', 49.90, 100),
+    ('Calça Jeans', 119.90, 50),
+    ('Tênis Esportivo', 199.90, 30),
+    ('Boné', 29.90, 40),
+    ('Meia (Par)', 9.90, 200),
+    ('Produto Teste Exclusao', 99.99, 5);
 ```
 
 ## Tabela 3
 
-**Nome:**
+**Nome:** pedido
 
 ```text
 
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+-- INSERT INTO pedido (id_cliente, data_pedido, forma_pagamento)
+VALUES
+    (1, '2026-09-10 10:30:00', 'Pix'),
+    (2, '2026-09-11 14:15:00', 'Cartão de Crédito'),
+    (3, '2026-09-12 09:45:00', 'Dinheiro'),
+    (4, '2026-09-13 16:20:00', 'Pix'),
+    (1, '2026-09-14 11:00:00', 'Cartão de Débito');
 
 ```
 
 ## Tabela 4
 
-**Nome:**
+**Nome:** item_pedido
 
 ```text
 
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+-- INSERT INTO item_pedido (id_pedido, id_produto, quantidade, preco_unitario)
+VALUES
+    (1, 1, 2, 49.90),
+    (1, 4, 1, 29.90),
+    (2, 2, 1, 119.90),
+    (3, 3, 1, 199.90),
+    (4, 5, 3, 9.90),
+    (5, 1, 1, 49.90);
 
 ```
 
@@ -327,11 +354,9 @@ Registre os resultados:
 
 | Restrição testada | O que foi testado? | Resultado |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
-> Não mantenha comandos propositalmente inválidos no `SPRINT3-5.sql` final.
+UNIQUE | Tentei inserir um novo cliente com um CPF já cadastrado ('111.111.111-11').|	O banco bloqueou a inserção exibindo erro de "Duplicate entry" para a chave do CPF.
+FOREIGN KEY |Tentei inserir um pedido com id_cliente = 99 (cliente que não existe).|Erro de "Cannot add or update a child row", a restrição FK impediu o registro de um pedido sem cliente válido.
+NOT NULLTentei| cadastrar um produto deixando o campo preco como NULL.| Erro "Column 'preco' cannot be null", respeitando a regra de negócio do planejamento.
 
 ---
 
@@ -391,7 +416,9 @@ Execute pelo menos:
 ## UPDATE 1
 
 ```sql
--- Cole aqui.
+-- UPDATE cliente
+SET telefone = '(11) 98888-0000'
+WHERE id_cliente = 2;
 
 ```
 
@@ -402,7 +429,9 @@ Execute pelo menos:
 ## UPDATE 2
 
 ```sql
--- Cole aqui.
+-- UPDATE produto
+SET preco = 59.90
+WHERE id_produto = 1;
 
 ```
 
@@ -413,14 +442,14 @@ Execute pelo menos:
 ## UPDATE 3
 
 ```sql
--- Cole aqui.
-
+-- UPDATE pedido
+SET forma_pagamento = 'Cartão de Débito'
+WHERE id_pedido = 3;
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
-
+> A forma de pagamento do pedido 3 foi corrigida, pois a operadora do caixa havia registrado em 'Dinheiro' acidentalmente.
 ---
 
 # 15. DELETE — removendo registros
@@ -498,7 +527,8 @@ Execute pelo menos:
 ## DELETE 1
 
 ```sql
--- Cole aqui.
+-- DELETE FROM cliente
+WHERE cpf = '999.999.999-99';
 
 ```
 
@@ -509,14 +539,14 @@ Execute pelo menos:
 ## DELETE 2
 
 ```sql
--- Cole aqui.
+-- DELETE FROM produto
+WHERE nome = 'Produto Teste Exclusao';
 
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
-
+>Um produto temporário de teste que não estava vinculado a nenhum item_pedido, respeitando a restrição de FK.
 ---
 
 # 19. Conferindo os registros
@@ -722,14 +752,10 @@ SPRINT3-5.sql
 
 | Tabela | Quantidade aproximada de registros ao final |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-
----
-
+cliente 5
+produto 5
+pedido 5
+item_pedido 6
 # 24. Resumo das operações
 
 ## INSERT
@@ -737,7 +763,7 @@ SPRINT3-5.sql
 Quantidade aproximada de registros inseridos:
 
 ```text
-
+23
 ```
 
 ## UPDATE
@@ -745,7 +771,7 @@ Quantidade aproximada de registros inseridos:
 Quantidade de operações:
 
 ```text
-
+3
 ```
 
 ## DELETE
@@ -753,7 +779,7 @@ Quantidade de operações:
 Quantidade de operações:
 
 ```text
-
+2
 ```
 
 ---
@@ -762,10 +788,8 @@ Quantidade de operações:
 
 | Problema | Possível causa | Solução aplicada |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+Cannot delete or update a parent row	|Tentei excluir o cliente de ID 1 utilizando o DELETE, porém ele possuía vendas atreladas na tabela pedido.|	Criei um novo cliente e produto específicos de teste (ID 6) sem vínculos para que os DELETEs pudessem rodar com segurança, garantindo a integridade relacional.
+Duplicate entry|	Efetuei a tentativa de inserir dois clientes com o mesmo CPF.|	Alterei o CPF do segundo cliente durante a digitação dos inserts para garantir que a regra de negócio estabelecida na Sprint 1 fosse atendida.
 Mensagens que podem aparecer:
 
 ```text
@@ -797,22 +821,22 @@ Não exclua arquivos das etapas anteriores.
 
 # 27. Checklist da Sprint 3/5
 
-- [ ] utilizei o banco criado na Sprint 2/5;
-- [ ] utilizei `USE`;
-- [ ] inseri dados coerentes com o projeto;
-- [ ] respeitei a ordem das tabelas;
-- [ ] procurei inserir pelo menos 5 registros nas tabelas principais;
-- [ ] testei restrições de integridade;
-- [ ] executei pelo menos 3 `UPDATE`;
-- [ ] os `UPDATE` possuem condição adequada;
-- [ ] executei pelo menos 2 `DELETE`;
-- [ ] os `DELETE` possuem condição adequada;
-- [ ] verifiquei dependências de `FOREIGN KEY`;
-- [ ] utilizei `SELECT` para conferência;
-- [ ] registrei os problemas encontrados;
-- [ ] salvei o código como `SPRINT3-5.sql`;
-- [ ] preenchi completamente o `SPRINT3-5.md`;
-- [ ] revisei os arquivos antes do commit.
+- [x] utilizei o banco criado na Sprint 2/5;
+- [x] utilizei `USE`;
+- [x] inseri dados coerentes com o projeto;
+- [x] respeitei a ordem das tabelas;
+- [x] procurei inserir pelo menos 5 registros nas tabelas principais;
+- [x] testei restrições de integridade;
+- [x] executei pelo menos 3 `UPDATE`;
+- [x] os `UPDATE` possuem condição adequada;
+- [x] executei pelo menos 2 `DELETE`;
+- [x] os `DELETE` possuem condição adequada;
+- [x] verifiquei dependências de `FOREIGN KEY`;
+- [x] utilizei `SELECT` para conferência;
+- [x] registrei os problemas encontrados;
+- [x] salvei o código como `SPRINT3-5.sql`;
+- [x] preenchi completamente o `SPRINT3-5.md`;
+- [x] revisei os arquivos antes do commit.
 
 ---
 
