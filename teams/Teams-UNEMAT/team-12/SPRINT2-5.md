@@ -132,15 +132,13 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
-
+CREATE DATABASE IF NOT EXISTS real_estate_database;
+USE real_estate_database;
 ```
 
 ## Nome definitivo do banco
 
-```text
-
-```
+```real_estate_database```
 
 ---
 
@@ -210,12 +208,10 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | corretor | Tabela independente que armazena os dados dos profissionais que criarão os anúncios. |
+| 2 | cliente | Tabela independente que armazena os dados dos usuários que buscam imóveis. |
+| 3 | imovel | Tabela que armazena os anúncios e possui FK para o corretor responsável. |
+| 4 | agendamento | Tabela associativa que liga o cliente ao imóvel para registrar a intenção de visita. |
 
 ---
 
@@ -246,12 +242,10 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. corretor
+2. cliente
+3. imovel
+4. agendamento
 
 ---
 
@@ -275,10 +269,10 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| corretor | id_corretor | Sim |
+| cliente | id_cliente | Sim |
+| imovel | id_imovel | Sim |
+| agendamento | id_agendamento | Sim |
 
 ---
 
@@ -298,9 +292,9 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| corretor | nome | O nome do profissional é indispensável para o cadastro. |
+| imovel | valor | Um anúncio não pode existir sem informar o preço. |
+| cliente | senha | Necessário para realizar a autenticação no sistema. |
 
 ---
 
@@ -324,8 +318,9 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| corretor | email | Não podem existir duas contas de acesso para o mesmo e-mail. |
+| corretor | creci | É um documento de registro profissional único de cada corretor. |
+| cliente | email | Não podem existir duas contas de acesso para o mesmo e-mail. |
 
 Caso nenhuma seja necessária, justifique:
 
@@ -353,8 +348,7 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| agendamento | status | 'Pendente' | Todo agendamento recém-criado deve iniciar com o status Pendente até ser confirmado. |
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +401,9 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| imovel | id_corretor | corretor(id_corretor) | 1:N (Um corretor possui vários imóveis) |
+| agendamento | id_cliente | cliente(id_cliente) | 1:N (Um cliente faz vários agendamentos) |
+| agendamento | id_imovel | imovel(id_imovel) | 1:N (Um imóvel recebe vários agendamentos) |
 
 ---
 
@@ -458,12 +452,12 @@ CREATE TABLE tabela_associativa (
 
 ## Seu banco possui relacionamento N:N?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> O relacionamento de N:N entre Cliente e Imóvel (clientes visitam vários imóveis, e imóveis recebem vários clientes) foi resolvido através da criação da tabela associativa `agendamento`, que guarda as duas chaves estrangeiras (`id_cliente` e `id_imovel`) junto com a data da visita.
 
 ---
 
@@ -497,13 +491,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+ALTER TABLE cliente
+ADD COLUMN data_nascimento DATE;
 
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> Adicionei a coluna data_nascimento do tipo DATE na tabela cliente, que não havia sido prevista inicialmente, para permitir a segmentação do perfil dos clientes por idade no futuro.
 
 ---
 
@@ -528,7 +523,11 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+CREATE TABLE tabela_teste (
+    id_teste INT PRIMARY KEY
+);
+
+DROP TABLE tabela_teste;
 
 ```
 
@@ -546,7 +545,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> `DELETE FROM tabela;` apaga apenas os dados (linhas de registros) guardados dentro da tabela, mas a estrutura (colunas e regras) continua existindo no banco. Já o `DROP TABLE tabela;` apaga a tabela inteira do banco de dados, excluindo sua estrutura, configurações e todos os dados nela contidos de forma definitiva.
 
 ---
 
@@ -717,10 +716,10 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| corretor | Sim | Sim |
+| cliente | Sim | Sim |
+| imovel | Sim | Sim |
+| agendamento | Sim | Sim |
 
 ---
 
@@ -809,9 +808,8 @@ Verifique:
 
 | Problema | Causa identificada | Como foi resolvido |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Botão de raio (executar) indisponível no Workbench | Arquivo aberto sem estar vinculado a uma conexão ativa com o servidor MySQL. | Solução teórica: criar uma nova Query Tab com a conexão ativa e colar o código. |
+| Senha do banco de dados local desconhecida | Configuração de ambiente/senha padrão do MySQL não documentada. | Optamos por focar na estruturação do DDL e no preenchimento da documentação. |
 
 Caso não encontre problemas:
 
@@ -903,26 +901,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
