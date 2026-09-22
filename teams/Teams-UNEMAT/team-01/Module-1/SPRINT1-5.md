@@ -1,7 +1,7 @@
 # SPRINT 1/5 — Planejamento do Banco de Dados
 
 **Disciplina:** Laboratório de Banco de Dados  
-**Data:** 31/08/2026  
+**Data:** 01/09/2026  
 **Modalidade:** Atividade individual  
 
 ---
@@ -35,11 +35,13 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
+> RAQUEL SILVA DOS SANTOS
 
 **Nome escolhido para o banco de dados:**
 
 ```text
+
+series_watchlist_db
 
 ```
 
@@ -73,7 +75,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> Catálogo e lista pessoal de séries com notas e status de exibição (estilo Watchlist / Letterboxd de séries).
 
 ---
 
@@ -90,7 +92,13 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> Usuários precisam de uma forma fácil e centralizada de registrar quais séries estão assistindo, quais já terminaram, dar notas e salvar resenhas curtas.
+
+**Quem utilizaria:** Pessoas que assistem a séries e gostam de organizar suas maratonas e histórico.
+
+**Informações principais:** Dados dos usuários, catálogo de séries, plataformas de streaming onde as séries estão disponíveis e o registro de cada série assistida com nota e status.
+
+**Operações permitidas:** Cadastrar usuários, cadastrar séries e plataformas, adicionar séries à lista pessoal com nota/comentário.
 
 ---
 
@@ -100,7 +108,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> Gerenciar um catálogo simples de séries associado a plataformas de streaming e permitir que usuários controlem seu histórico e avaliações em uma única lista personalizada.
 
 ---
 
@@ -112,11 +120,11 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Cadastrar usuários com e-mails únicos.
+2. Cadastrar plataformas de streaming (Netflix, Prime Video, HBO Max, etc.).
+3. Cadastrar séries vinculadas à sua plataforma principal.
+4. Adicionar séries à lista do usuário com status ("Quero Ver", "Assistindo", "Finalizada").
+5. Registrar notas (0 a 10) e comentários na própria lista.
 
 ---
 
@@ -150,12 +158,10 @@ Pagamento
 
 | Nº | Entidade | O que representa? |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | Usuário | Pessoa cadastrada que possui uma lista de séries. |
+| 2 | Plataforma | Serviço de streaming onde a série é exibida (ex.: Netflix, Max). |
+| 3 | Serie | Série catalogada no sistema com título, ano e gênero. |
+| 4 | Item_watchlist | Registro que vincula o usuário à série com seu status, nota e comentário. |
 
 > Como referência para esta atividade, planeje **pelo menos 4 tabelas relacionadas**.
 
@@ -170,16 +176,16 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 **Nome da entidade:**
 
 ```text
-
+USUÁRIO
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_usuario | Código identificador do usuário | INT | Sim |
+| nome | Nome completo do usuário | VARCHAR(100) | Sim |
+| email | E-mail de cadastro | VARCHAR(100) | Sim |
+| data_cadastro | Data de criação da conta | DATE | Sim |
+
 
 ## Entidade 2
 
@@ -187,47 +193,47 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 ```text
 
+PLATAFORMA
+
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Id_plataforma | Código da plataforma | INT| Sim |
+| Nome_plataforma | Nome do streaming (Netflix, Max, etc.) | VARCHAR(50) | Sim |
 
 ## Entidade 3
 
 **Nome da entidade:**
 
 ```text
+SERIE
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Id_serie | Código identificador da série | INT | sim |
+| Titulo | Título da série | VARCHAR(100) | Sim |
+| Genero | Gênero da serie (Drama, Comédia, Sci-Fi) | VARCHAR(50) | Sim |
+| Ano_lancamento | Ano de estreia da serie | INT | Sim |
+| Id_plataforma | Plataforma onde é exibida (FK) | INT | Sim |
 
 ## Entidade 4
 
 **Nome da entidade:**
 
 ```text
-
+Item_watchlist
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Id_usuário | Usuário dono da lista (FK) |  INT| Sim |
+| Id_serie | Série adicionada (FK) | INT | Sim |
+| Status_assistindo | Status ("Quero Ver", "Assistindo", "Finalizada") | VARCHAR(20) | Sim |
+| Nota | Nota atribuída pelo usuário (0 a 10) | DECIMAL(3,1) | Não |
+| Comentário | Breve resenha pessoal | VARCHAR(255) | Não |
 
 ## Outras entidades
 
@@ -247,10 +253,10 @@ Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
 | Entidade/Tabela | Chave primária prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Usuario |  Id_usuario | Código numérico sequencial único gerado via AUTO_INCREMENT. |
+| Plataforma | Id_plataforma |Código numérico sequencial único via AUTO_INCREMENT.  |
+| Serie | Id_serie | Identificador numérico único para evitar duplicidade de títulos. |
+| Item_watchlist |(id_usuario, id_serie) | Chave primária composta pelas duas FKs, identificando unicamente a relação N:N sem necessidade de um ID surrogate. | |
 
 Considere:
 
@@ -277,11 +283,10 @@ Produto aparece em Item_Pedido
 
 | Entidade A | Relacionamento | Entidade B |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Plataforma | disponibiliza | serie |
+| usuário | adiciona na lista | item_watchlist |
+| serie | é registrada em | item_watchlist |
+
 
 ---
 
@@ -297,9 +302,9 @@ N:N  → muitos para muitos
 
 | Relacionamento | Cardinalidade prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Plataforma- serie | 1:N | Uma plataforma pode ter várias series cadastradas. |
+| Usuario - item_watchlist | 1:N | Um usuário pode ter vários registros na lista. |
+| Serie - Item_watchlist | 1:N | Uma serie pode estar na lista de vários usuários. |
 |  |  |  |
 
 ---
@@ -308,10 +313,9 @@ N:N  → muitos para muitos
 
 | Tabela | Atributo previsto como FK | Referencia qual tabela? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| SERIE | Id_plataforma | Plataforma (id_plataforma) |
+| ITEM_WATCHLIST | Id_usuario | Usuario (Id_usuário) |
+| ITEM_WATCHLIST | Id_serie | Serie (Id_serie) |
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
 
@@ -332,12 +336,11 @@ AUTO_INCREMENT
 
 | Tabela | Atributo | Restrição prevista | Motivo |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-
+| USUARIO | email | UNIQUE, NOT NULL | Impede que existam dois usuários com o mesmo e-mail. |
+| PLATAFORMA | nome_plataforma | UNIQUE, NOT NULL | Evita duplicidade de cadastro da mesma plataforma de streaming. |
+| ITEM_WATCHLIST | (id_usuario, id_serie) | PRIMARY KEY | Identifica a linha de forma única e impede que o mesmo usuário repita a mesma série na lista. |
+| ITEM_WATCHLIST | status_assistindo | DEFAULT 'Quero Ver' | Caso o usuário não especifique, a série entra automaticamente como "Quero Ver". |
+| USUARIO, PLATAFORMA, SERIE | id_* | PRIMARY KEY, AUTO_INCREMENT | Garante a identificação única e o preenchimento automático das chaves primárias das entidades base. |
 ---
 
 # 13. Regras de negócio
@@ -356,11 +359,11 @@ Um empréstimo deve possuir uma data de realização.
 
 ### Regras do seu banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Não é permitido cadastrar dois usuários com o mesmo endereço de e-mail.
+2. Cada série só pode ser adicionada uma única vez na lista de um mesmo usuário.
+3. A nota atribuída deve ser um número entre 0 e 10 (ou nula, se o usuário ainda não assistiu).
+4. O status de exibição deve assumir apenas os valores: "Quero Ver", "Assistindo" ou "Finalizada".
+5. Uma série obrigatoriamente deve estar vinculada a uma plataforma cadastrada.
 
 ---
 
@@ -387,7 +390,33 @@ CLIENTE 1 ───── N PEDIDO
 ### Esboço do seu banco
 
 ```text
-Escreva aqui a estrutura planejada.
+PLATAFORMA
+├── id_plataforma (PK)
+└── nome_plataforma
+
+SERIE
+├── id_serie (PK)
+├── titulo
+├── genero
+├── ano_lancamento
+└── id_plataforma (FK)
+
+USUARIO
+├── id_usuario (PK)
+├── nome
+├── email
+└── data_cadastro
+
+ITEM_WATCHLIST
+├── id_usuario (PK, FK)
+├── id_serie (PK, FK)
+├── status_assistindo
+├── nota
+└── comentario
+
+PLATAFORMA  1 ───── N  SERIE
+USUARIO     1 ───── N  ITEM_WATCHLIST
+SERIE       1 ───── N  ITEM_WATCHLIST
 ```
 
 ---
@@ -396,10 +425,10 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1. Plataformas de streaming: Netflix, Prime Video, HBO Max, Disney+.
+2. Séries: Títulos como Breaking Bad, Stranger Things, The Last of Us, com gênero e ano de estreia.
+3. Usuários: Perfis de exemplo com nome, e-mail e data de cadastro.
+4. Itens na watchlist: Associações com status (ex.: "Finalizada", "Assistindo"), notas (ex.: 9.5, 8.0) e pequenos comentários de resenha.
 
 ---
 
@@ -419,11 +448,11 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais séries cadastradas pertencem à plataforma "Netflix"?
+2. Qual é a média das notas de cada série calculada a partir das avaliações dos usuários?
+3. Quantas séries cada usuário tem marcadas com o status "Finalizada"?
+4. Quais séries cadastradas são do gênero "Drama" e foram lançadas a partir de 2020?
+5. Qual é o top 3 de séries com as maiores notas médias entre os usuários?
 
 ---
 
@@ -441,24 +470,24 @@ Caso não existam dúvidas:
 
 # 18. Checklist da Sprint 1/5
 
-- [ ] identifiquei o aluno responsável;
-- [ ] defini o tema do banco de dados;
-- [ ] descrevi o sistema;
-- [ ] defini o objetivo do banco;
-- [ ] defini o escopo inicial;
-- [ ] identifiquei pelo menos 4 entidades;
-- [ ] planejei os principais atributos;
-- [ ] defini as chaves primárias previstas;
-- [ ] identifiquei os relacionamentos;
-- [ ] defini as cardinalidades iniciais;
-- [ ] identifiquei possíveis chaves estrangeiras;
-- [ ] planejei restrições de integridade;
-- [ ] defini pelo menos 5 regras de negócio;
-- [ ] fiz um esboço da estrutura do banco;
-- [ ] defini os tipos de dados que futuramente serão cadastrados;
-- [ ] defini pelo menos 5 perguntas que o banco deverá responder;
-- [ ] registrei dúvidas ou decisões pendentes;
-- [ ] revisei o arquivo antes de finalizar.
+- [x] identifiquei o aluno responsável;
+- [x] defini o tema do banco de dados;
+- [x] descrevi o sistema;
+- [x] defini o objetivo do banco;
+- [x] defini o escopo inicial;
+- [x] identifiquei pelo menos 4 entidades;
+- [x] planejei os principais atributos;
+- [x] defini as chaves primárias previstas;
+- [x] identifiquei os relacionamentos;
+- [x] defini as cardinalidades iniciais;
+- [x] identifiquei possíveis chaves estrangeiras;
+- [x] planejei restrições de integridade;
+- [x] defini pelo menos 5 regras de negócio;
+- [x] fiz um esboço da estrutura do banco;
+- [x] defini os tipos de dados que futuramente serão cadastrados;
+- [x] defini pelo menos 5 perguntas que o banco deverá responder;
+- [x] registrei dúvidas ou decisões pendentes;
+- [x] revisei o arquivo antes de finalizar.
 
 ---
 

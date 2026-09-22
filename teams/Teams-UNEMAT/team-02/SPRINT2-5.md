@@ -132,13 +132,17 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+CREATE DATABASE IF NOT EXISTS gerenciamento_incidentes;
+
+USE gerenciamento_incidentes;
 
 ```
 
 ## Nome definitivo do banco
 
 ```text
+
+gerenciamento_incidentes;
 
 ```
 
@@ -210,12 +214,12 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | analistas  | Armazena os profissionais responsáveis pelos incidentes |
+| 2 | dispositivos  | Armazena computadores, servidores e equipamentos monitorados |
+| 3 | tipos_ameacas | Armazena as classificações de ameaças |
+| 4 | alertas | Armazena os alertas de segurança gerados pelos dispositivos |
+| 5 | incidentes | Armazena os incidentes de segurança identificados |
+| 6 | acoes_resposta | Armazena as ações realizadas durante o tratamento de um incidente |
 
 ---
 
@@ -246,12 +250,12 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. analistas (independente)
+2. dispositivos (independente)
+3. tipos_ameacas (independente)
+4. alertas (depende de dispositivos)
+5. incidentes (depende de analistas, dispositivos, tipos_ameacas e alertas)
+6. acoes_resposta (depende de incidentes)
 
 ---
 
@@ -275,10 +279,12 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|analistas  | id_analista | Sim |
+| dispositivos | id_dispositivo | Sim |
+| tipos_ameacas | id_ameaca | Sim |
+| alertas | id_alerta | Sim |
+| incidentes | id_incidente | Sim |
+| acoes_resposta | id_acao | Sim |
 
 ---
 
@@ -298,9 +304,11 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| analistas | nome, email | Todo analista precisa ser identificável e contatável |
+| dispositivos | nome_dispositivo, tipo_dispositivo, ip_address | São necessários para identificar o equipamento monitorado |
+| incidentes | titulo, descricao, severidade, status | Definidos como obrigatórios pela regra de negócio 1 da Sprint 1/5 |
+| alertas |titulo, status  | Todo alerta precisa ter um identificador textual e uma situação|
+| acoes_resposta  | descricao, id_incidente | Toda ação precisa de uma descrição e estar vinculada a um incidente |
 
 ---
 
@@ -324,8 +332,8 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| analistas | email | Evita analistas duplicados com o mesmo e-mail |
+| dispositivos | ip_address | Evita dispositivos duplicados com o mesmo IP  |
 
 Caso nenhuma seja necessária, justifique:
 
@@ -353,8 +361,14 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| dispositivos | ativo | TRUE | Um dispositivo cadastrado é considerado ativo até que se informe o contrário |
+| alertas | status | ABERTO |  Todo alerta recém-gerado começa como aberto|
+| alertas | data_alerta | 'ABERTO' | Registra automaticamente o momento em que o alerta foi criado |
+| incidentes | status | 'ABERTO' | Reflete a regra de negócio 2 da Sprint 1/5 (status inicial do incidente) |
+| incidentes | data_identificacao | CURRENT_TIMESTAMP | Registra automaticamente o momento em que o incidente foi identificado |
+| acoes_resposta | data_acao | CURRENT_TIMESTAMP | Registra automaticamente o momento em que a ação foi executada |
+
+
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +421,13 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| alertas | id_dispositivo | dispositivos | Um dispositivo pode gerar vários alertas |
+| incidentes | id_analista | analistas | Um analista pode acompanhar vários incidentes |
+|incidentes  | id_dispositivo | dispositivos | Um dispositivo pode estar relacionado a vários incidentes |
+|incidentes  | id_ameaca | tipos_ameacas | Um tipo de ameaça pode classificar vários incidentes |
+| incidentes | id_alerta | alertas | Um alerta pode dar origem a um incidente |
+| acoes_resposta | id_incidente |incidentes  | Um incidente pode possuir várias ações de resposta |
+
 
 ---
 
@@ -459,11 +477,11 @@ CREATE TABLE tabela_associativa (
 ## Seu banco possui relacionamento N:N?
 
 - [ ] Sim
-- [ ] Não
+- [ x ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> Todos os relacionamentos planejados na Sprint 1/5 são do tipo 1:N, portanto não foi necessária nenhuma tabela associativa.
 
 ---
 
@@ -497,13 +515,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+-- ALTER TABLE incidentes
+-- ADD COLUMN observacoes TEXT;
 
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> Foi adicionado o campo observacoes à tabela incidentes para permitir o registro de anotações livres do analista sobre o andamento do caso — informação que não havia sido prevista na Sprint 1/5, mas que se mostrou útil durante a implementação.
 
 ---
 
@@ -528,7 +547,11 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+-- CREATE TABLE tabela_teste (
+--    id_teste INT PRIMARY KEY
+--);
+
+--DROP TABLE tabela_teste;
 
 ```
 
@@ -546,7 +569,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> DELETE FROM tabela; remove apenas os registros (linhas) armazenados na tabela, mas mantém a estrutura (colunas, chaves, restrições) intacta, a tabela continua existindo, apenas vazia. Já DROP TABLE tabela; remove a tabela inteira, incluindo sua estrutura, dados e restrições; depois desse comando, a tabela deixa de existir no banco.
 
 ---
 
@@ -564,48 +587,53 @@ Adapte tudo ao tema escolhido na Sprint 1/5.
 -- MODELO GENÉRICO DE BANCO RELACIONAL
 -- ============================================================
 
-CREATE DATABASE nome_do_banco;
+CREATE DATABASE IF NOT EXISTS gerenciamento_incidentes;
 
-USE nome_do_banco;
+USE gerenciamento_incidentes;
 
 -- ------------------------------------------------------------
--- TABELA 1 — independente
+-- TABELA 1 — ANALISTAS (independente)
 -- ------------------------------------------------------------
 
-CREATE TABLE tabela_a (
-    id_a INT PRIMARY KEY AUTO_INCREMENT,
-    campo_a1 VARCHAR(100) NOT NULL,
-    campo_a2 VARCHAR(150) UNIQUE,
-    campo_a3 DATE
+CREATE TABLE analistas (
+id_analista INT PRIMARY KEY AUTO_INCREMENT,
+nome VARCHAR(100) NOT NULL,
+email VARCHAR(150) NOT NULL UNIQUE,
+cargo VARCHAR(100)
 );
 
 -- ------------------------------------------------------------
--- TABELA 2 — independente
+-- TABELA 2 — DISPOSITIVOS (independente)
 -- ------------------------------------------------------------
 
-CREATE TABLE tabela_b (
-    id_b INT PRIMARY KEY AUTO_INCREMENT,
-    campo_b1 VARCHAR(100) NOT NULL,
-    campo_b2 DECIMAL(10,2) NOT NULL,
-    campo_b3 BOOLEAN NOT NULL DEFAULT TRUE
+CREATE TABLE dispositivos (
+id_dispositivo INT PRIMARY KEY AUTO_INCREMENT,
+nome_dispositivo VARCHAR(100) NOT NULL,
+tipo_dispositivo VARCHAR(50) NOT NULL,
+ip_address VARCHAR(45) NOT NULL UNIQUE,
+ativo BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 -- ------------------------------------------------------------
--- TABELA 3 — relacionada à tabela_a
+-- TABELA 3 — ALERTAS (depende de DISPOSITIVOS)
 -- ------------------------------------------------------------
 
-CREATE TABLE tabela_c (
-    id_c INT PRIMARY KEY AUTO_INCREMENT,
-    id_a INT NOT NULL,
-    campo_c1 DATE NOT NULL,
+CREATE TABLE alertas (
+id_alerta INT PRIMARY KEY AUTO_INCREMENT,
+titulo VARCHAR(100) NOT NULL UNIQUE,
+descricao TEXT,
+data_alerta DATETIME NOT NULL,
+status VARCHAR(30) NOT NULL DEFAULT 'Novo',
+id_dispositivo INT NOT NULL,
 
-    CONSTRAINT fk_tabela_c_tabela_a
-        FOREIGN KEY (id_a)
-        REFERENCES tabela_a(id_a)
+CONSTRAINT fk_alertas_dispositivos
+        FOREIGN KEY (id_dispositivo)
+        REFERENCES dispositivos(id_dispositivo)
+
 );
 
 -- ------------------------------------------------------------
--- TABELA 4 — exemplo de tabela associativa
+-- TABELA 4 — exemplo de tabela associativa -NÃO EXISTE
 -- ------------------------------------------------------------
 
 CREATE TABLE tabela_d (
@@ -628,8 +656,8 @@ CREATE TABLE tabela_d (
 -- ALTER TABLE
 -- ------------------------------------------------------------
 
-ALTER TABLE tabela_a
-ADD COLUMN campo_novo VARCHAR(100);
+ALTER TABLE incidentes
+ADD COLUMN observacoes TEXT;
 
 -- ------------------------------------------------------------
 -- TABELA TEMPORÁRIA PARA PRATICAR DROP TABLE
@@ -638,7 +666,7 @@ ADD COLUMN campo_novo VARCHAR(100);
 CREATE TABLE tabela_teste (
     id_teste INT PRIMARY KEY
 );
-
+ 
 DROP TABLE tabela_teste;
 ```
 
@@ -717,10 +745,13 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| analistas | Sim | Sim |
+| dispositivos | Sim | Sim |
+| tipos_ameacas | Sim | Sim |
+| alertas | Sim | Sim |
+| incidentes | Sim | Sim |
+| acoes_resposta | Sim| Sim |
+
 
 ---
 
@@ -809,9 +840,9 @@ Verifique:
 
 | Problema | Causa identificada | Como foi resolvido |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Erro de sintaxe ao criar analistas | O tipo INT(100) planejado na Sprint 1/5 não é válido para uma chave primária simples | Substituído por INT |
+| Erro de FOREIGN KEY em incidentes | A tabela alertas ainda não existia no momento da tentativa de criar incidentes | Ajustada a ordem de criação: alertas passou a ser criada antes de incidentes |
+
 
 Caso não encontre problemas:
 
@@ -903,26 +934,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 

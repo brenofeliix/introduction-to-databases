@@ -59,6 +59,10 @@ A Sprint 2/5 deve ser uma implementação do que foi planejado anteriormente.
 
 Caso seja necessário alterar alguma decisão da Sprint 1/5, isso é permitido, mas a mudança deverá ser registrada neste arquivo.
 
+--text
+Em relação à Sprint 1/5, ajustou-se a tabela associativa item_watchlist para utilizar diretamente uma chave primária composta (id_usuario, id_serie), dispensando o identificador surrogate id_item.
+--
+
 ---
 
 # 2. Passo a passo no MySQL Workbench
@@ -133,12 +137,17 @@ USE loja_virtual;
 
 ```sql
 -- Copie aqui o código utilizado.
+CREATE DATABASE IF NOT EXISTS series_watchlist_db;
+
+USE series_watchlist_db;
 
 ```
 
 ## Nome definitivo do banco
 
 ```text
+
+series_watchlist_db
 
 ```
 
@@ -173,6 +182,7 @@ preco DECIMAL(10,2)
 ativo BOOLEAN
 descricao TEXT
 ```
+
 
 ## Atenção
 
@@ -210,12 +220,11 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | PLATAFORMAS | Armazena os serviços de streaming onde as séries são exibidas. |
+| 2 | USUÁRIO | Armazena os dados cadastrais das pessoas que possuem uma lista de séries. |
+| 3 | SERIE | Catálogo de produções disponíveis com gênero, ano e plataforma vinculada. |
+| 4 | ITEM_WATCHLIST | Tabela associativa (N:N) que conecta o usuário às séries, registrando status de exibição, notas e resenhas. |
+
 
 ---
 
@@ -246,12 +255,11 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. PLATAFORMA
+2. USUÁRIO
+3. SERIE
+4. ITEM_WATCHLIST (tabela associativa N:N entre usuario e serie)
+
 
 ---
 
@@ -275,10 +283,10 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| PLATAFORMA| Id_plataforma | Sim |
+| USUARIO | Id_usuario | Sim |
+| SERIE | Id_serie | Sim |
+| ITEM_WATCHLIST | (id_usuario, id_serie)| Não (chave composta)|
 
 ---
 
@@ -298,9 +306,10 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|PLATAFORMA  | Nome_plataforma | Uma plataforma não pode existir sem identificação textual. |
+| USUARIO | nome, email, data_cadastro | Dados cadastrais essenciais para identificar a conta e o momento de entrada. |
+| SERIE | titulo, genero, ano_lancamento, id_plataforma | Garantem a consistência mínima do catálogo e a associação a um streaming.  |
+| ITEM_WATCHLIST | id_usuario, id_serie, status_assistindo | É mandatório saber quem favoritou, qual série e qual o estado atual de visualização. |
 
 ---
 
@@ -324,8 +333,10 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| USUARIO | email | Impede vários cadastros com a mesma conta de e-mail. |
+| PLATAFORMA | nome_plataforma | Evita duplicidade de cadastro para a mesma plataforma de streaming. |
+| ITEM_WATCHLIST | (id_usuario, id_serie) | Garante que um usuário só adicione uma mesma série uma única vez à sua lista. |
+
 
 Caso nenhuma seja necessária, justifique:
 
@@ -353,8 +364,8 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| ITEM_WATCHLIST | status_assistindo | Quero Ver | Caso o usuário salve uma série sem definir o status, o sistema assume que ele pretende assisti-la. |
+| SERIE | pais_origem | 'EUA' | Valor padrão adicionado via ALTER TABLE para nacionalidade da produção quando não informada. |
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +418,9 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| SERIE | id_plataforma | PLATAFORMA (id_plataforma) | 1:N |
+| ITEM_WATCHLIST | id_usuario | USUARIO (id_usuario) |  1:N|
+| ITEM_WATCHLIST | id_serie | SERIE (id_serie) | 1:N |
 
 ---
 
@@ -458,12 +469,13 @@ CREATE TABLE tabela_associativa (
 
 ## Seu banco possui relacionamento N:N?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> O relacionamento N:N ocorre entre **usuario** e **serie**: um usuário pode ter várias séries na sua lista, e uma série pode estar na lista de vários usuários.
+> Para resolver isso, foi criada a tabela associativa **item_watchlist**, que liga as duas tabelas usando os campos `id_usuario` e `id_serie` juntos como chave primária (`PRIMARY KEY (id_usuario, id_serie)`). Isso conecta os dois lados e impede que a mesma série seja adicionada duas vezes pelo mesmo usuário.
 
 ---
 
@@ -497,13 +509,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
-
+-- 
+ALTER TABLE serie
+ADD COLUMN pais_origem VARCHAR(50) NULL DEFAULT 'EUA';
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> Adiciona a coluna pais_origem à tabela serie para permitir o registro da nacionalidade da produção, com valor padrão 'EUA'.
 
 ---
 
@@ -529,7 +542,12 @@ DROP TABLE tabela_teste;
 
 ```sql
 -- Cole aqui o teste realizado.
+CREATE TABLE tabela_teste (
+    id_teste INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(50)
+);
 
+DROP TABLE tabela_teste;
 ```
 
 ## Explique a diferença
@@ -546,7 +564,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> DELETE FROM tabela; é um comando que apaga os dados (registros/linhas) armazenados na tabela, mantendo sua estrutura, colunas e restrições intactas. Já o DROP TABLE tabela; é um comando que elimina toda a estrutura da tabela do banco de dados, excluindo colunas, índices, constraints e os dados juntos de forma definitiva.
 
 ---
 
@@ -717,10 +735,10 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| PLATAFORMA | Sim | Sim |
+| USUARIO | Sim | Sim |
+| SERIE | Sim | Sim |
+| ITEM_WATCHLIST | Sim | Sim |
 
 ---
 
@@ -903,26 +921,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 

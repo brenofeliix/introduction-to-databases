@@ -132,14 +132,112 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+-- ============================================================
+-- 11. ESPAÇO PARA O SCRIPT FINAL DO ALUNO
+-- ============================================================
+--
+-- SCRIPT COMPLETO E DEFINITIVO — SPRINT 2/5 (DDL)
+-- ALUNO: Vinícius Eduardo Lima de Assis
+-- TEMA DO BANCO: Viagens
+-- NOME DO BANCO: pacote_viagens
+--
+-- ============================================================
+
+-- 1. CRIAÇÃO E SELEÇÃO DO BANCO DE DADOS
+CREATE DATABASE IF NOT EXISTS pacote_viagens;
+USE pacote_viagens;
+
+
+-- 2. TABELAS INDEPENDENTES
+CREATE TABLE destino (
+    id_destino INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    pais VARCHAR(60) NOT NULL,
+    estado VARCHAR(60),
+    descricao TEXT
+);
+
+CREATE TABLE cliente (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    telefone VARCHAR(20),
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE transporte (
+    id_transporte INT PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR(50) NOT NULL,
+    empresa VARCHAR(100) NOT NULL,
+    origem VARCHAR(100) NOT NULL,
+    destino VARCHAR(100) NOT NULL
+);
+
+
+-- 3. TABELA COM FOREIGN KEY (1:N)
+CREATE TABLE hospedagem (
+    id_hospedagem INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(200) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    valor_diaria DECIMAL(10,2) NOT NULL,
+    id_destino INT NOT NULL,
+
+    CONSTRAINT fk_hospedagem_destino
+        FOREIGN KEY (id_destino)
+        REFERENCES destino(id_destino)
+);
+
+
+-- 4. TABELA ASSOCIATIVA (N:N COM CHAVE PRIMÁRIA PRÓPRIA)
+CREATE TABLE reserva_pacote (
+    id_reserva INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT NOT NULL,
+    id_hospedagem INT NOT NULL,
+    id_transporte INT NOT NULL,
+    data_reserva DATE NOT NULL,
+    quantidade_pessoas INT NOT NULL DEFAULT 1,
+
+    CONSTRAINT fk_reserva_cliente
+        FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente),
+
+    CONSTRAINT fk_reserva_hospedagem
+        FOREIGN KEY (id_hospedagem)
+        REFERENCES hospedagem(id_hospedagem),
+        
+    CONSTRAINT fk_reserva_transporte
+        FOREIGN KEY (id_transporte)
+        REFERENCES transporte(id_transporte)        
+);
+
+
+-- 5. VALIDAÇÃO DA ESTRUTURA DAS TABELAS
+DESCRIBE cliente;
+DESCRIBE destino;
+DESCRIBE transporte;
+DESCRIBE hospedagem;
+DESCRIBE reserva_pacote;
+
+
+-- 6. VERIFICAÇÃO DE CHAVES E RESTRIÇÕES GERADAS PELO MYSQL
+SHOW CREATE TABLE cliente;
+SHOW CREATE TABLE destino;
+SHOW CREATE TABLE transporte;
+SHOW CREATE TABLE hospedagem;
+SHOW CREATE TABLE reserva_pacote;
+
+-- ============================================================
+-- FIM DA SPRINT 2/5
+-- ============================================================
 
 ```
 
 ## Nome definitivo do banco
 
 ```text
-
+pacote_viagens
 ```
 
 ---
@@ -209,13 +307,12 @@ CREATE TABLE nome_tabela (
 ## Tabelas planejadas
 
 | Nº | Nome da tabela | Finalidade |
-|---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+|---|---|---|
+| 1 | destino | Armazena a lista de destinos turísticos cadastrados |
+| 2 | cliente | Guarda os dados pessoais e de contato dos clientes |
+| 3 | transporte | Registra as opções e empresas de transporte (aéreo, terrestre, etc.) |
+| 4 | hospedagem | Registra os estabelecimentos de hospedagem vinculados aos destinos |
+| 5 | reserva_pacote | Tabela associativa que consolida as compras de pacotes por clientes |
 
 ---
 
@@ -246,12 +343,11 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. destino
+2. cliente
+3. transporte
+4. hospedagem
+5. reserva_pacote
 
 ---
 
@@ -275,10 +371,11 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| destino | id_destino | Sim |
+| cliente | id_cliente | Sim |
+| transporte | id_transporte | Sim |
+| hospedagem | id_hospedagem | Sim |
+| reserva_pacote | id_reserva | Sim |
 
 ---
 
@@ -298,9 +395,10 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| cliente | nome | O nome do cliente é indispensável para identificação e emissão de bilhetes |
+| cliente | cpf | Identificador obrigatório para emissão de contrato e notas fiscais |
+| hospedagem | valor_diaria | Informação necessária para o cálculo do valor final da reserva |
+| reserva_pacote | data_reserva | Imprescindível para a gestão de datas de agendamento e disponibilidade |
 
 ---
 
@@ -324,8 +422,8 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| cliente | cpf | O CPF é um documento individual e único no Brasil, não devendo ser duplicado |
+| cliente | email | Utilizado como login de acesso principal ao sistema, devendo ser exclusivo |
 
 Caso nenhuma seja necessária, justifique:
 
@@ -353,8 +451,8 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| cliente | ativo | TRUE | Novos cadastros entram como ativos por padrão até alteração explícita |
+| reserva_pacote | quantidade_pessoas | 1 | Ao efetuar uma reserva, a quantidade mínima padrão é de 1 pessoa |
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +505,10 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| hospedagem | id_destino | destino(id_destino) | 1:N (Um destino possui várias hospedagens) |
+| reserva_pacote | id_cliente | cliente(id_cliente) | 1:N (Um cliente pode realizar várias reservas) |
+| reserva_pacote | id_hospedagem | hospedagem(id_hospedagem) | 1:N (Uma hospedagem pode integrar várias reservas) |
+| reserva_pacote | id_transporte | transporte(id_transporte) | 1:N (Um transporte pode servir a várias reservas) |
 
 ---
 
@@ -458,12 +557,12 @@ CREATE TABLE tabela_associativa (
 
 ## Seu banco possui relacionamento N:N?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> O relacionamento N:N entre Cliente, Hospedagem e Transporte, foi implementado por meio da tabela associativa reserva_pacote. Ela contêm chaves estrangeiras para as entidades principais e atributos próprios da transação (data_reserva e quantidade_pessoas).
 
 ---
 
@@ -497,13 +596,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+-- ALTER TABLE cliente
+ADD COLUMN ativo BOOLEAN NOT NULL DEFAULT TRUE;
 
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> Foi adicionada a coluna ativo do tipo BOOLEAN com valor padrão TRUE na tabela cliente, permitindo controlar o status do cadastro do cliente (ativo/inativo) no sistema sem perder o histórico do registro.
 
 ---
 
@@ -528,7 +628,12 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+--
+CREATE TABLE tabela_teste (
+    id INT PRIMARY KEY
+);
+
+DROP TABLE tabela_teste;
 
 ```
 
@@ -546,7 +651,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> DELETE FROM tabela; apaga somente os registros/linhas mantendo a estrutura da tabela pronta para novos inserts. Já DROP TABLE tabela; exclui a tabela por completo, removendo os dados e sua definição de estrutura do banco de dados.
 
 ---
 
@@ -717,10 +822,11 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| cliente | Sim | Sim |
+| destino | Sim | Sim |
+| transporte | Sim | Sim |
+| hospedagem | Sim | Sim |
+| reserva_pacote | Sim | Sim |
 
 ---
 
@@ -903,26 +1009,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N, caso existam;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [x] executei `DESCRIBE` nas tabelas;
+- [x] verifiquei as tabelas no painel Schemas;
+- [x] corrigi erros de execução;
+- [x] organizei o script final;
+- [x] salvei o script como `SPRINT2-5.sql`;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
