@@ -35,12 +35,12 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
+> Marcos Aurélio Bastos Stanguerlin.
 
 **Nome escolhido para o banco de dados:**
 
-```text
-
+```
+Rh_sorveteria
 ```
 
 ---
@@ -73,7 +73,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> Recusos Humanos de uma multifilial (sorveteria).
 
 ---
 
@@ -90,7 +90,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> Um sistema de banco de dados que gerencia todos os funcionarios e suas funções dentro de uma sorveteria e açaiteria. Essa empresa possui multiplas filiais e com esse banco de dado buscamos estar organizando todos os dados relacionados aos funcioarios, seus cargos e permissões relacionadas ao cargo, carga horaria. Esse banco será utilizado pelo RH e Administração, em sua maior parte sera mais utilizado para verificação da ponto batido
 
 ---
 
@@ -100,7 +100,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> Organizar e estruturar todos os dados dos funcionários da empresa. facilitar acesso esses dados e auxiliar durante o pagamento e fechamento de ponto no final do mês.
 
 ---
 
@@ -112,11 +112,11 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Puxar horaras trabalhadas do funcionario
+2. Puxar o salario base do funcionario
+3. Puxar qual o setor e filial de qualquer funcionario
+4. Adicionar e atualizar dados dos funcionarios
+5. Adicionar e verificar sobre horas extras dos colaboradores
 
 ---
 
@@ -149,13 +149,13 @@ Pagamento
 ### Entidades do seu banco
 
 | Nº | Entidade | O que representa? |
-|---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+|---|---|---|
+| 1 | Funcionário | Funcionário no nível individual sem duplicamento |
+| 2 | Cargo | Quais atividade o funcionário pratica na empresa |
+| 3 | Setor | Em qual local o funcionário atua |
+| 4 | Filial | Em qual cidade o funcionário trabalho |
+| 5 | Estoque | Estoque interno da filial |
+| 6 | Expediente | Horario trabalho pelo funcionario |
 
 > Como referência para esta atividade, planeje **pelo menos 4 tabelas relacionadas**.
 
@@ -169,65 +169,65 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 
 **Nome da entidade:**
 
-```text
+```Funcionário
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Nome | Nome do funcionário | VARCHAR | SIM |
+| data_nascimento | data de nascimento do func | INT | SIM |
+| CPF_func | Cpf do func | VARCHAR | SIM |
+| Tempo_empresa | Tempo de empresa do func | INT | SIM |
+| Id_func | Id usado internamente do func | INT | SIM |
+| id_cargo | Qual a funcao desse func na empresa | FK | SIM |
 
 ## Entidade 2
 
 **Nome da entidade:**
 
-```text
+```Filial
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| data_abertura | Quando foi aberta a filial | INT | SIM |
+| Modulo | Qual o proposito da filial? (estoque, loja, adm, etc.) | VARCHAR | SIM |
+| Localizacao | Aonde está localizado a filial | VARCHAR | SIM |
+| Id_Filial | Id de identificação da filial | INT | SIM |
 |  |  |  |  |
 
 ## Entidade 3
 
 **Nome da entidade:**
 
-```text
+```Expediente
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_expediente | Identificação da jornada de trabalho | PK | SIM |
+| Func_funcionario | Qual a sua função na empresa | Chave_estrangeira | SIM |
+| Jornada_trabalho | Qual foi a jornada realizada nesse dia | INT | SIM |
+| Hora_extra | hora extra realizada em data especifica | INT | NÃO |
+| Hora_extra_justificativa | Justificativa sobre hora extra | VARCHAR | NÃO |
 
 ## Entidade 4
 
 **Nome da entidade:**
 
-```text
+```Estoque
 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_estoque | Id do estoque |  |  |
+| id_filial | Id da filial que está guardando o item | FK | SIM |
+| id_produto | Id do produto | FK | SIM |
+| Qtd_item | Quantidade do produto no estoque | INT | SIM |
 
 ## Outras entidades
 
@@ -247,10 +247,10 @@ Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
 | Entidade/Tabela | Chave primária prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Funcionário | Id_func | Identificador do funcionario |
+| Filial | id_filial | Identificador da filial |
+| Expediente | id_expediente | Identificador da jornada de trabalho |
+| Estoque | Id_estoque | Identificador do estoque em especifico |
 
 Considere:
 
@@ -277,10 +277,10 @@ Produto aparece em Item_Pedido
 
 | Entidade A | Relacionamento | Entidade B |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Funcionário | trabalaha em | Filial |
+| Funcionário | exerce | Tablea de expediente |
+| Filial | possui | estoque |
+| Estoque | possui | Produtos |
 |  |  |  |
 
 ---
@@ -297,10 +297,10 @@ N:N  → muitos para muitos
 
 | Relacionamento | Cardinalidade prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Funcionario - Filial | N:1 | Multiplos funcionarios trabalham em cada filial |
+| Funcionario - Expediente | 1:N | Cada funcionario possuie um expediente a comprir |
+| Filial - Estoque | 1:1 | Todas as filials precisam de um estoque de materiais |
+| Produto - Estoque | N:N | Um produto pode existir em multiplos estoques diferentes |
 
 ---
 
@@ -308,9 +308,9 @@ N:N  → muitos para muitos
 
 | Tabela | Atributo previsto como FK | Referencia qual tabela? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Funcionario | id_filial id_cargo id_setor | Filial, Cargo e Setor |
+| Expediente | Id_func | Funcionario |
+| Estoque | id_filial id_produto | Filial e Filiais |
 |  |  |  |
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
@@ -332,9 +332,9 @@ AUTO_INCREMENT
 
 | Tabela | Atributo | Restrição prevista | Motivo |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_fun - id_estoque - id_item - id_expediente | Primary Key AUTO_INCREMENT UNIQUE | NOT NULL | Ids propostos como PK, sempre incrementão e não são nulos |
+| Jornada_trabalho | AUTO_INCREMENT DEFAULT (0) |  | Caso não seja adicionado valor, ele não trabalhou, volta para default 0 |
+| Func_funcionario |  | NOT NULL | Sempre deve haver um valor dentro dessa chave |
 |  |  |  |  |
 |  |  |  |  |
 
@@ -356,11 +356,11 @@ Um empréstimo deve possuir uma data de realização.
 
 ### Regras do seu banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Hora extra deve sempre ser adicionada com justificativa
+2. Funcionario não deve existir sem todos os dados preenchidos
+3. Filiais não devem existir sem um modulo
+4. Nenhum ID deve ser duplicado
+5. Hora extra deve ser apenas preenchida caso o horario trabalhado seja maior que o expediente da função
 
 ---
 
@@ -387,7 +387,47 @@ CLIENTE 1 ───── N PEDIDO
 ### Esboço do seu banco
 
 ```text
-Escreva aqui a estrutura planejada.
+FUNCIONARIO
+├── id_func (PK)
+├── nome
+├── cpf
+├── data_nascimento
+├── data_admissao
+├── id_cargo (FK)
+├── id_setor (FK)
+└── id_filial (FK)
+
+Filial
+├── id_filial (PK)
+├── Moludo
+├── Localizaação
+└── QTD_Funcionario
+
+CARGO
+├── id_cargo (PK)
+├── nome_cargo
+├── salario_base
+└── carga_horaria
+
+EXPEDIENTE
+├── id_expediente (PK)
+├── id_funcionario (FK)
+├── data
+├── hora_entrada
+├── hora_saida
+├── hora_extra
+└── justificativa_hora_extra
+
+PRODUTO
+├── id_produto
+├── nome
+└── unidade_medida
+
+ESTOQUE
+├── id_estoque
+├── id_filial
+├── id_produto
+└── quantidade
 ```
 
 ---
@@ -396,10 +436,10 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1. Dados pessoais dos funcionarios
+2. Dados base referente a profissão exercida pelos funcionarios
+3. Dados relacionados aos locais de trabalho
+4. Dados referente aos items dentro das filiais
 
 ---
 
@@ -419,17 +459,17 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quem Foi contratado no dia 1° de setembro?
+2. Quantos funcionarios foram contratados no ultimo mês?
+3. Quantas filiais foram abertas nos ultimos 4 anos?
+4. Quem fez mais de 50 horas extras nesse ano?
+5. Quais items estão quase acabando no estoque?
 
 ---
 
 # 17. Decisões e dúvidas pendentes
 
-- 
+- Nenhuma dúvida pendente nesta Sprint.
 - 
 - 
 
@@ -441,24 +481,24 @@ Caso não existam dúvidas:
 
 # 18. Checklist da Sprint 1/5
 
-- [ ] identifiquei o aluno responsável;
-- [ ] defini o tema do banco de dados;
-- [ ] descrevi o sistema;
-- [ ] defini o objetivo do banco;
-- [ ] defini o escopo inicial;
-- [ ] identifiquei pelo menos 4 entidades;
-- [ ] planejei os principais atributos;
-- [ ] defini as chaves primárias previstas;
-- [ ] identifiquei os relacionamentos;
-- [ ] defini as cardinalidades iniciais;
-- [ ] identifiquei possíveis chaves estrangeiras;
-- [ ] planejei restrições de integridade;
-- [ ] defini pelo menos 5 regras de negócio;
-- [ ] fiz um esboço da estrutura do banco;
-- [ ] defini os tipos de dados que futuramente serão cadastrados;
-- [ ] defini pelo menos 5 perguntas que o banco deverá responder;
-- [ ] registrei dúvidas ou decisões pendentes;
-- [ ] revisei o arquivo antes de finalizar.
+- [X] identifiquei o aluno responsável;
+- [X] defini o tema do banco de dados;
+- [X] descrevi o sistema;
+- [X] defini o objetivo do banco;
+- [X] defini o escopo inicial;
+- [X] identifiquei pelo menos 4 entidades;
+- [X] planejei os principais atributos;
+- [X] defini as chaves primárias previstas;
+- [X] identifiquei os relacionamentos;
+- [X] defini as cardinalidades iniciais;
+- [X] identifiquei possíveis chaves estrangeiras;
+- [X] planejei restrições de integridade;
+- [X] defini pelo menos 5 regras de negócio;
+- [X] fiz um esboço da estrutura do banco;
+- [X] defini os tipos de dados que futuramente serão cadastrados;
+- [X] defini pelo menos 5 perguntas que o banco deverá responder;
+- [X] registrei dúvidas ou decisões pendentes;
+- [X] revisei o arquivo antes de finalizar.
 
 ---
 

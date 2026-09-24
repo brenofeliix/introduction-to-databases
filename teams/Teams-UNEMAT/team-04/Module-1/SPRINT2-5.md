@@ -61,6 +61,10 @@ Caso seja necessário alterar alguma decisão da Sprint 1/5, isso é permitido, 
 
 ---
 
+## Alterações realizadas em relação à Sprint 1/5
+
+> Durante a implementação foram adicionadas as tabelas `PRODUTO`, `EXPEDIENTE` e `ESTOQUE`. A carga horária, que inicialmente havia sido pensada como uma entidade separada, passou a fazer parte da tabela `CARGO`. Também foram definidos os relacionamentos do funcionário com cargo, setor e filial, além do controle de expediente e do estoque de produtos por filial.
+
 # 2. Passo a passo no MySQL Workbench
 
 ## Passo 1 — Abrir o MySQL Workbench
@@ -132,14 +136,17 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+DROP DATABASE IF EXISTS Rh_sorveteria;
 
+CREATE DATABASE Rh_sorveteria;
+
+USE Rh_sorveteria;
 ```
 
 ## Nome definitivo do banco
 
 ```text
-
+Rh_sorveteria
 ```
 
 ---
@@ -210,12 +217,13 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | FILIAL | Armazena as informações das filiais da sorveteria e açaiteria. |
+| 2 | CARGO | Armazena os cargos, salário base e carga horária dos funcionários. |
+| 3 | PRODUTO | Armazena os produtos utilizados no controle de estoque. |
+| 4 | SETOR | Armazena os setores onde os funcionários trabalham. |
+| 5 | FUNCIONARIO | Armazena os dados individuais dos funcionários e relaciona cada funcionário ao cargo, setor e filial. |
+| 6 | EXPEDIENTE | Armazena os batimentos de ponto, horários, horas extras e justificativas dos funcionários. |
+| 7 | ESTOQUE | Controla a quantidade de cada produto existente em cada filial. |
 
 ---
 
@@ -246,12 +254,15 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. FILIAL
+2. CARGO
+3. PRODUTO
+4. SETOR
+5. FUNCIONARIO
+6. EXPEDIENTE
+7. ESTOQUE
+
+As tabelas `FILIAL`, `CARGO`, `PRODUTO` e `SETOR` são criadas primeiro porque não dependem de outras tabelas. Depois é criada `FUNCIONARIO`, que possui chaves estrangeiras para `CARGO`, `SETOR` e `FILIAL`. Em seguida é criada `EXPEDIENTE`, que depende de `FUNCIONARIO`, e por último `ESTOQUE`, que relaciona `FILIAL` e `PRODUTO`.
 
 ---
 
@@ -275,10 +286,13 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| FILIAL | id_filial | Sim |
+| CARGO | id_cargo | Sim |
+| PRODUTO | id_produto | Sim |
+| SETOR | id_setor | Sim |
+| FUNCIONARIO | id_func | Sim |
+| EXPEDIENTE | id_expediente | Sim |
+| ESTOQUE | id_filial + id_produto | Não. Utiliza chave primária composta. |
 
 ---
 
@@ -298,9 +312,13 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| FILIAL | Modulo, Localizacao, data_abertura | São informações necessárias para identificar e organizar cada filial. |
+| CARGO | nome_cargo, salario_base, carga_horaria | O cargo precisa possuir nome, salário base e carga horária definidos. |
+| PRODUTO | nome_produto | Todo produto precisa possuir um nome cadastrado. |
+| SETOR | nome_setor | Todo setor precisa possuir um nome cadastrado. |
+| FUNCIONARIO | nome_func, cpf_func, data_nascimento, data_admissao, id_cargo, id_setor, id_filial | São dados necessários para identificar o funcionário e definir onde e em qual função ele trabalha. |
+| EXPEDIENTE | data_batimento, hora_entrada, hora_saida, id_func | O registro de expediente precisa informar a data, os horários e o funcionário relacionado. |
+| ESTOQUE | quantidade, id_filial, id_produto | O estoque precisa informar a quantidade e qual produto pertence a qual filial. |
 
 ---
 
@@ -324,12 +342,9 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| FUNCIONARIO | cpf_func | O CPF identifica cada funcionário de forma individual e não deve existir mais de um cadastro com o mesmo CPF. |
 
-Caso nenhuma seja necessária, justifique:
-
-> Escreva aqui.
+A restrição `UNIQUE` foi utilizada somente no CPF do funcionário, pois é o campo do projeto que precisa ser único entre os registros.
 
 ---
 
@@ -353,12 +368,9 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| EXPEDIENTE | hora_extra | 0 | Quando não houver hora extra registrada, o campo inicia com valor padrão igual a zero. |
 
-Caso não utilize `DEFAULT`, justifique:
-
-> Escreva aqui.
+O `DEFAULT` foi utilizado no campo `hora_extra` para evitar que um novo registro de expediente fique sem um valor inicial para hora extra.
 
 ---
 
@@ -407,9 +419,12 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| FUNCIONARIO | id_cargo | CARGO(id_cargo) | Um cargo pode estar relacionado a vários funcionários. |
+| FUNCIONARIO | id_setor | SETOR(id_setor) | Um setor pode possuir vários funcionários. |
+| FUNCIONARIO | id_filial | FILIAL(id_filial) | Uma filial pode possuir vários funcionários. |
+| EXPEDIENTE | id_func | FUNCIONARIO(id_func) | Um funcionário pode possuir vários registros de expediente. |
+| ESTOQUE | id_filial | FILIAL(id_filial) | Uma filial pode possuir vários produtos em estoque. |
+| ESTOQUE | id_produto | PRODUTO(id_produto) | Um produto pode existir no estoque de várias filiais. |
 
 ---
 
@@ -458,12 +473,12 @@ CREATE TABLE tabela_associativa (
 
 ## Seu banco possui relacionamento N:N?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Se sim, explique como foi implementado:
 
-> Escreva aqui.
+> Existe um relacionamento N:N entre `FILIAL` e `PRODUTO`. Uma filial pode possuir vários produtos e o mesmo produto pode existir em várias filiais. Esse relacionamento foi implementado através da tabela `ESTOQUE`, que possui as chaves estrangeiras `id_filial` e `id_produto`. As duas colunas juntas formam uma chave primária composta, impedindo o mesmo produto de ser cadastrado mais de uma vez para a mesma filial.
 
 ---
 
@@ -497,13 +512,13 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
-
+ALTER TABLE FUNCIONARIO
+RENAME COLUMN cpf TO cpf_func;
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> O comando foi utilizado para alterar o nome da coluna `cpf` da tabela `FUNCIONARIO` para `cpf_func`. A mudança deixa o nome do campo mais específico e facilita identificar que o CPF pertence ao funcionário.
 
 ---
 
@@ -528,8 +543,11 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+CREATE TABLE tabela_teste (
+    id INT PRIMARY KEY
+);
 
+DROP TABLE tabela_teste;
 ```
 
 ## Explique a diferença
@@ -546,7 +564,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> O comando `DELETE FROM tabela` apaga os registros existentes dentro da tabela, mas mantém a estrutura da tabela no banco de dados. Já o comando `DROP TABLE tabela` remove a tabela inteira, incluindo sua estrutura e seus dados.
 
 ---
 
@@ -717,10 +735,13 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| FILIAL | Não consta no script final | Não validado por `DESCRIBE` no arquivo |
+| CARGO | Não consta no script final | Não validado por `DESCRIBE` no arquivo |
+| PRODUTO | Não consta no script final | Não validado por `DESCRIBE` no arquivo |
+| SETOR | Não consta no script final | Não validado por `DESCRIBE` no arquivo |
+| FUNCIONARIO | Não consta no script final | Não validado por `DESCRIBE` no arquivo |
+| EXPEDIENTE | Não consta `DESCRIBE`, mas foi utilizado `SHOW CREATE TABLE` | Estrutura consultada pelo `SHOW CREATE TABLE` |
+| ESTOQUE | Sim | Estrutura consultada pelo `DESCRIBE ESTOQUE` |
 
 ---
 
@@ -745,6 +766,14 @@ Esse comando ajuda a verificar:
 - `UNIQUE`;
 - nomes de constraints;
 - estrutura final da tabela.
+
+## Validação utilizada no projeto
+
+```sql
+SHOW CREATE TABLE EXPEDIENTE;
+```
+
+> O comando foi utilizado para visualizar a estrutura final da tabela `EXPEDIENTE`.
 
 ---
 
@@ -809,13 +838,27 @@ Verifique:
 
 | Problema | Causa identificada | Como foi resolvido |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Necessidade de executar novamente o script durante os testes | O banco já poderia existir de uma execução anterior | Foi utilizado `DROP DATABASE IF EXISTS Rh_sorveteria` antes da criação do banco. |
+| Nome do campo CPF pouco específico | A coluna havia sido criada inicialmente apenas como `cpf` | Foi utilizado `ALTER TABLE` para renomear a coluna para `cpf_func`. |
 
-Caso não encontre problemas:
+> Após os ajustes presentes no script final, não ficou registrado outro problema de execução.
 
-> Nenhum problema identificado após a execução final.
+---
+
+# 21.1. Estrutura implementada no projeto
+
+O banco final desta Sprint possui as seguintes relações principais:
+
+```text
+CARGO 1 ───── N FUNCIONARIO
+SETOR 1 ───── N FUNCIONARIO
+FILIAL 1 ───── N FUNCIONARIO
+FUNCIONARIO 1 ───── N EXPEDIENTE
+
+FILIAL 1 ───── N ESTOQUE N ───── 1 PRODUTO
+```
+
+A tabela `ESTOQUE` funciona como tabela associativa entre `FILIAL` e `PRODUTO`.
 
 ---
 
@@ -903,26 +946,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [x] utilizei como base a `SPRINT1-5.md`;
+- [x] criei um banco de dados;
+- [x] utilizei `USE`;
+- [x] criei pelo menos 4 tabelas relacionadas;
+- [x] todas as tabelas possuem chave primária;
+- [x] utilizei tipos de dados coerentes;
+- [x] apliquei `NOT NULL` quando necessário;
+- [x] apliquei `UNIQUE` quando necessário;
+- [x] apliquei `DEFAULT` quando necessário;
+- [x] implementei as chaves estrangeiras necessárias;
+- [x] respeitei a ordem de criação das tabelas;
+- [x] tratei corretamente relacionamentos N:N;
+- [x] executei pelo menos um `ALTER TABLE`;
+- [x] pratiquei `DROP TABLE` em tabela temporária;
+- [X] executei `DESCRIBE` em todas as tabelas
+- [ ] verifiquei as tabelas no painel Schemas
+- [x] corrigi ajustes estruturais registrados no script;
+- [x] organizei o script final;
+- [x] possuo o arquivo SQL da Sprint 2;
+- [x] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
