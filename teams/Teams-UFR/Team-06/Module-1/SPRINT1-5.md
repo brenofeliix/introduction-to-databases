@@ -35,11 +35,12 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
+> Anna Beatriz Oliveira Moura
 
 **Nome escolhido para o banco de dados:**
 
 ```text
+Locação de Filmes
 
 ```
 
@@ -73,7 +74,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> Locadora
 
 ---
 
@@ -90,7 +91,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> O sistema representa uma locadora de filmes, considerando um contexto anterior à popularização dos serviços de streaming. A locadora possui clientes, funcionários e um catálogo de filmes disponíveis para locação. Cada filme possui informações como título, ano de lançamento, avaliação, gênero e diretor. O sistema deverá permitir o cadastro e gerenciamento dos clientes, funcionários, filmes e gêneros, além do registro das locações realizadas. Dessa forma, será possível controlar quais filmes foram alugados, por quais clientes, qual funcionário realizou o atendimento e as informações relacionadas a cada locação.
 
 ---
 
@@ -100,7 +101,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> O principal objetivo do banco de dados é organizar e armazenar as informações de uma locadora de filmes, permitindo controlar o cadastro de clientes, funcionários, filmes e gêneros, além de registrar as locações realizadas. O banco deverá possibilitar a consulta e o gerenciamento dessas informações de forma estruturada, mantendo os relacionamentos entre os diferentes dados da locadora e garantindo a integridade das informações cadastradas.
 
 ---
 
@@ -112,11 +113,11 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Cadastrar e armazenar informações dos clientes da locadora.
+2. Cadastrar e armazenar informações dos funcionários responsáveis pelo atendimento.
+3. Cadastrar filmes e suas principais informações, como título, ano, avaliação, diretor e gênero.
+4. Registrar as locações realizadas pelos clientes e os funcionários responsáveis pelo atendimento.
+5. Consultar informações sobre filmes, clientes, funcionários, gêneros e histórico de locações.
 
 ---
 
@@ -150,12 +151,12 @@ Pagamento
 
 | Nº | Entidade | O que representa? |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | Cliente | Pessoas cadastradas que podem realizar locações de filmes. |
+| 2 | Funcionário | Funcionários responsáveis pelo atendimento e registro das locações. |
+| 3 | Filme | Filmes disponíveis no catálogo da locadora. |
+| 4 | Gênero | Categorias utilizadas para classificar os filmes. |
+| 5 | Locação | Registro de uma locação realizada por um cliente e atendida por um funcionário. |
+| 6 | Item_Locação | Representa cada filme incluído em uma determinada locação. |
 
 > Como referência para esta atividade, planeje **pelo menos 4 tabelas relacionadas**.
 
@@ -170,64 +171,65 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 **Nome da entidade:**
 
 ```text
-
+Cliente
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_cliente | Identificador único do cliente | INT | Sim |
+| nome | Nome completo do cliente | VARCHAR(100) | Sim |
+| cpf | CPF do cliente | VARCHAR(14) | Sim |
+| telefone | Telefone de contato | VARCHAR(20) | Não |
+| email | E-mail do cliente | VARCHAR(100) | Não |
 
 ## Entidade 2
 
 **Nome da entidade:**
 
 ```text
-
+Funcionário
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_funcionario | Identificador único do funcionário | INT | Sim |
+| nome | Nome completo do funcionário | VARCHAR(100) | Sim |
+| cpf | CPF do funcionário | VARCHAR(14) | Sim |
+| cargo | Função exercida na locadora | VARCHAR(50) | Sim |
+| telefone | Telefone de contato | VARCHAR(20) | Não |
 
 ## Entidade 3
 
 **Nome da entidade:**
 
 ```text
-
+Filme
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_filme | Identificador único do filme | INT | Sim |
+| titulo | Título do filme | VARCHAR(150) | SIM |
+| ano_lancamento | Ano de lançamento do filme | YEAR | Sim |
+| avaliacao | Avaliação atribuída ao filme | DECIMAL(3,1) | Não |
+| diretor | Nome do diretor do filme | VARCHAR(100) | Sim |
+| id_genero | Identificador do gênero do filme | INT | Sim |
 
 ## Entidade 4
 
 **Nome da entidade:**
 
 ```text
-
+Gênero
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_genero | Identificador único do gênero | INT | Sim |
+| nome | Nome do gênero cinematográfico | VARCHAR(50) | Sim |
+| descricao | Descrição do gênero | VARCHAR(200) | Não |
+| classificado | Classificação ou característica do gênero | VARCHAR(50) | Não |
+| ativo | Indica se o gênero está disponível para uso | BOOLEAN | Sim |
 
 ## Outras entidades
 
@@ -235,8 +237,8 @@ Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 
 | Entidade | Principais atributos |
 |---|---|
-|  |  |
-|  |  |
+| Locação | id_locacao, id_cliente, id_funcionario, data_locacao, data_devolucao |
+| Item_Locação | id_item, id_locacao, id_filme, valor_diaria |
 |  |  |
 
 ---
@@ -247,17 +249,21 @@ Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
 | Entidade/Tabela | Chave primária prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente | id_cliente | Identifica cada cliente de forma única e não depende de informações pessoais que podem ser alteradas. |
+| Funcionário | id_funcionario | Identifica cada funcionário individualmente de forma única dentro da locadora. |
+| Filme | id_filme | Identifica cada gênero de forma única. |
+| Gênero | id_genero | Identifica cada gênero de forma única. |
+| Locação | id_locacao | Identifica cada operação de locação realizada. |
+| Item_Locação | id_item | Identifica cada item de filme associado a uma locação. |
 
 Considere:
 
 - o valor identifica cada registro de forma única?
 - o valor poderá se repetir?
 - será utilizado um identificador numérico?
-- será necessário `AUTO_INCREMENT`?
+- será necessário `AUTO_INCREMENT`?]
+
+> Os identificadores serão numéricos e está previsto o uso de AUTO_INCEMENT para gerar automaticamente os valores das chaves primárias.
 
 ---
 
@@ -277,11 +283,11 @@ Produto aparece em Item_Pedido
 
 | Entidade A | Relacionamento | Entidade B |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente | realiza | Locação |
+| Funcionário | registra | Locação |
+| Locação | possui | Item_Locação |
+| Filme | aparece em | Item_Locação |
+| Gênero | classifica | Filme |
 
 ---
 
@@ -297,10 +303,11 @@ N:N  → muitos para muitos
 
 | Relacionamento | Cardinalidade prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente realiza Locação | 1 | Um cliente pode realizar várias locações, enquanto cada locação pertence a um único cliente. |
+| Funcionário registra Locação | 1 | Um funcionário pode registrar várias locações, enquanto cada locação é registrada por um único funcionário. |
+| Locação possui Item_Locação | 1 | Uma locação pode possuir um ou mais filmes, e cada item pertence a uma única locação. |
+| Filme aparece em Item_Locação | 1 | Um mesmo filme pode aparecer em várias locações ao longo do tempo, enquanto cada item de locação se refere a um único filme. |
+| Gênero classifica Filme | 1 | Um gênero pode estar associado a vários filmes, enquanto cada filme possui um gênero definido. |
 
 ---
 
@@ -308,10 +315,11 @@ N:N  → muitos para muitos
 
 | Tabela | Atributo previsto como FK | Referencia qual tabela? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Filme | id_genero | Gênero(id_genero) |
+| Locação | id_cliente | Cliente(id_cliente) |
+| Locação | id_funcionario | Funcionário(id_funcionario) |
+| Item_Locação | id_locacao | Locação(id_locacao) |
+| Item_Locação | id_filme | Filme(id_filme) |
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
 
@@ -332,11 +340,16 @@ AUTO_INCREMENT
 
 | Tabela | Atributo | Restrição prevista | Motivo |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Cliente | id_cliente | PRIMARY KEY, AUTO_INCRMENT | Identificar cada cliente de forma única e gerar o identificador automaticamente. |
+| Cliente | cpf | UNIQUE, NOT NULL | Evitar o cadastro de dois clientes com o mesmo CPF. |
+| Funcionário | id_funcionario | PRIMARY KEY, AUTO_INCREMENT | Identificar cada funcionário de forma única. |
+| Funcionário | cpf | UNIQUE, NOT NULL | Evitar o cadastro de dois funcionários com o mesmo CPF. |
+| Filme | id_genero | FOREGEIN KEY, NOT NULL | Garantir que o gênero informado exista na tabela Gênero. |
+| Filme | titulo | NOT NULL | Garantir que todo filme possua um título.|
+| Gênero | nome | UNIQUE, NOT NULL | Evitar gêneros duplicados e garantir que todo gênero possua um nome. |
+| Locação | id_cliente | FOREGEIN KEY, NOT NULL | Garantir que a locação esteja associada a um cliente existente. |
+| Locação | id_funcionario | FOREGEIN KEY, NOT NULL | Garantir que a locação esteja associada a um funcionário existente. |
+| Item_Locação | id_filme | FOREGEIN KEY, NOT NULL | Garantir que o item esteja associado a um filme existente. | 
 
 ---
 
@@ -356,11 +369,14 @@ Um empréstimo deve possuir uma data de realização.
 
 ### Regras do seu banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Um cliente deve estar cadastrado no sistema para poder realizar uma locação.
+2. Uma locação deve estar associada a um cliente e a um funcionário cadastrados.
+3. Um filme deve estar associado a um gênero existente na tabela de gêneros.
+4. O CPF não pode ser repetido entre os clientes e também não pode ser repetido entre os funcionários. 
+5. Uma locação deve possuir pelo menos um filme associado por meio da tabela Item_Locação.
+6. Um filme pode participar de várias locações ao longo do tempo.
+7. O ano de lançamento de um filme deve representar um ano válido de lançamento.
+8. A avaliação de um filme deve estar dentro de uma faixa previamente definida pela aplicação da locadora.
 
 ---
 
@@ -387,7 +403,59 @@ CLIENTE 1 ───── N PEDIDO
 ### Esboço do seu banco
 
 ```text
-Escreva aqui a estrutura planejada.
+CLIENTE
+├── id_cliente (PK)
+├── nome
+├── cpf (UNIQUE)
+├── telefone
+└── email
+
+FUNCIONÁRIO
+├── id_funcionario (PK)
+├── nome
+├── cpf (UNIQUE)
+├── cargo
+└── telefone
+
+GÊNERO
+├── id_genero (PK)
+├── nome (UNIQUE)
+├── descricao
+├── classificado
+└── ativo
+
+FILME
+├── id_filme (PK)
+├── titulo
+├── ano_lancamento
+├── avaliacao
+├── diretor
+└── id_genero (FK)
+
+LOCAÇÃO
+├── id_locacao (PK)
+├── id_cliente (FK)
+├── id_funcionario (FK)
+├── data_locacao
+└── data_devolucao
+
+ITEM_LOCAÇÃO
+├── id_item (PK)
+├── id_locacao (FK)
+├── id_filme (FK)
+└── valor_diaria
+
+RELACIONAMENTOS
+
+CLIENTE 1 ───── N LOCAÇÃO
+
+FUNCIONÁRIO 1 ───── N LOCAÇÃO
+
+LOCAÇÃO 1 ───── N ITEM_LOCAÇÃO
+
+FILME 1 ───── N ITEM_LOCAÇÃO
+
+GÊNERO 1 ───── N FILME
 ```
 
 ---
@@ -396,10 +464,10 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1. Dados cadastrais dos clientes, como nome, CPF, telefone, e e-mail.
+2. Dados dos funcionários, como nome, CPF, cargo e telefone.
+3. Informações dos filmes disponíveis na locadora, incluindo título, ano de lançamento, avaliação, diretor e gênero.
+4. Registros das locações realizadas, contendo cliente, funcionário, datas e filmes alugados.
 
 ---
 
@@ -419,19 +487,21 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais clientes estão cadastrados na locadora?
+2. Quais filmes estão cadastrados e quais são seus respectivos gêneros?
+3. Quantas locações cada cliente realizou?
+4. Quais filmes foram mais alugados?
+5. Quantos filmes existem cadastrados em cada gênero?
+6. Quais funcionários registraram locações?
+7. Qual foi o valor total de uma determinada locação? 
 
 ---
 
 # 17. Decisões e dúvidas pendentes
 
-- 
-- 
-- 
+- O banco será desenvolvido inicialmente com foco no cadastro de filmes, clientes, funcionários, gêneros e no registro das locações.
+- A disponibilidade física de cópias de cada filme poderá ser definida ou acrescentada em uma etapa posterior, caso seja necessária para o funcionamento da locadora.
+- Os valores de diária e outras regras comerciais poderão ser ajustados durante a implementação das próximas Sprints.
 
 Caso não existam dúvidas:
 
