@@ -59,23 +59,23 @@ Não altere nem apague os arquivos do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Marcos Aurélio Bastos Stanguerlin
 
 **Branch:**
 
 ```text
-team-XX
+team-04
 ```
 
 **Nome do banco:**
 
-```text
+```Rh Sorveteria
 
 ```
 
 **Tema do projeto:**
 
-> Escreva aqui.
+> Recusos Humanos de uma multifilial (sorveteria).
 
 ---
 
@@ -151,15 +151,20 @@ INNER JOIN tabela_b AS b
 
 **Pergunta:**
 
-> Escreva aqui.
+> quem foi contradato no mes de Setembro?
 
 ```sql
--- Cole aqui.
+-- SELECT
+    f.nome_func AS funcionario,
+    f.data_admissao AS data_admissao
+FROM FUNCIONARIO f
+WHERE MONTH(f.data_admissao) = 9
+ORDER BY f.data_admissao ASC;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> "código"."nome coluna" AS "Nome coluna" é usado para escolher o nome novo de cada coluna para a nova tabela de pesquisa, com a primeira parte correspondendo aos valores e a segunda ao nome novo da coluna. O f. é o comando usado para puxar variaveis de tabelas diferentes, com o FROM "tabela" "código" indicando qual tabela e qual código deve usar. Nessa pesquisa o WHERE MONTH = 9 está escaneando a coluna data_admissao dentro de f. (funcionario) e mostrando todas as datas com mês 9
 
 ---
 
@@ -171,15 +176,20 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual cargo corresponde a cada funcionario?
 
 ```sql
--- Cole aqui.
+-- SELECT
+	f.nome_func AS Nome_funcionario,
+	c.nome_cargo AS cargo
+FROM CARGO c
+LEFT JOIN FUNCIONARIO f
+    ON c.id_cargo = f.id_cargo
 ```
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> Escreva aqui.
+> Ele permite visualizar todos os valores dentro de CARGO para realizar a comparação em "ON c.id_cargo = f.id_cargo" e para adicionar as informações do nome do funcionario dentro da planilha nova 
 
 ---
 
@@ -194,12 +204,17 @@ O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando nã
 > Escreva aqui.
 
 ```sql
--- Cole aqui.
+-- SELECT
+    c.nome_cargo AS cargo,
+    f.nome_func AS funcionario
+FROM FUNCIONARIO f
+RIGHT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+> Nesse caso, nada mudou, a diferença entre eles é quais valores aparecem como nulo e quais mantem o seu valor quando estiver faltando dados.
 
 ---
 
