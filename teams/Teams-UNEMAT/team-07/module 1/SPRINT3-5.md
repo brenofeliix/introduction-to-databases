@@ -191,11 +191,29 @@ Ordem recomendada:
 **Nome:**
 
 ```text
-
+paciente
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+INSERT INTO paciente (
+    nome,
+    cpf,
+    data_nascimento,
+    sexo,
+    telefone,
+    endereco
+)
+VALUES
+    ('Maria Aparecida da Silva', '10000000001', '1958-03-12', 'F', '(66) 99901-0001', 'Rua das Palmeiras, 120 - Centro'),
+    ('José Carlos Pereira',      '10000000002', '1949-07-25', 'M', '(66) 99901-0002', 'Av. Brasil, 845 - Jardim Esperança'),
+    ('Ana Beatriz Souza',        '10000000003', '1992-11-03', 'F', '(66) 99901-0003', 'Rua Goiás, 310 - Vila Nova'),
+    ('Pedro Henrique Lima',      '10000000004', '2018-05-20', 'M', '(66) 99901-0004', 'Rua Sete de Setembro, 77 - Vila Nova'),
+    ('Luciana Ferreira Alves',   '10000000005', '1985-09-14', 'F', '(66) 99901-0005', 'Rua Mato Grosso, 502 - Centro'),
+    ('Carlos Eduardo Santos',    '10000000006', '1975-01-30', 'M', '(66) 99901-0006', 'Av. das Flores, 1500 - Zona Sul'),
+    ('Francisca Oliveira Rocha', '10000000007', '1940-12-08', 'F', '(66) 99901-0007', 'Rua Amazonas, 64 - Jardim Esperança'),
+    ('Gabriel Almeida Costa',    '10000000008', '2001-06-17', 'M', '(66) 99901-0008', 'Rua Ipê Amarelo, 230 - Zona Sul'),
+    ('Rita de Cássia Nunes',     '10000000009', '1968-04-22', 'F', '(66) 99901-0009', 'Rua Tiradentes, 18 - Vila Nova'),
+    ('Thiago Martins Barbosa',   '10000000010', '2023-02-09', 'M', '(66) 99901-0010', 'Rua das Acácias, 905 - Vila Nova');
 
 ```
 
@@ -204,11 +222,26 @@ Ordem recomendada:
 **Nome:**
 
 ```text
-
+profissional 
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+INSERT INTO profissional (
+    nome,
+    registro_conselho,
+    cargo,
+    setor,
+    telefone
+)
+VALUES
+    ('Helena Martins Costa',      'CRM-MT 12345',    'Médica',                    'Clínica Geral',          '(66) 98801-0001'),
+    ('Rafael Oliveira Santos',    'CRM-MT 23456',    'Médico',                    'Pediatria',              '(66) 98801-0002'),
+    ('Camila Ferreira Lima',      'COREN-MT 345678', 'Enfermeira',                'Imunização',             '(66) 98801-0003'),
+    ('Bruno Almeida Rocha',       'CRM-MT 45678',    'Médico',                    'Cardiologia',            '(66) 98801-0004'),
+    ('Juliana Pereira Souza',     'COREN-MT 567890', 'Enfermeira',                'Urgência e Emergência',  '(66) 98801-0005'),
+    ('Patrícia Nunes Barbosa',    'CRP-MT 06/1234',  'Psicóloga',                 'Saúde Mental',           '(66) 98801-0006'),
+    ('Marcos Vinícius Teixeira',  NULL,              'Assistente Administrativo', 'Recepção',               NULL),
+    ('Sandra Regina Gomes',       NULL,              'Coordenadora Administrativa', 'Gestão',               NULL);
 
 ```
 
@@ -217,11 +250,22 @@ Ordem recomendada:
 **Nome:**
 
 ```text
-
+unidade_saude
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+INSERT INTO unidade_saude (
+    nome,
+    endereco,
+    tipo
+)
+VALUES
+    ('UBS Centro',                       'Rua Barão do Rio Branco, 450 - Centro',        'UBS'),
+    ('UBS Vila Nova',                    'Rua Piauí, 200 - Vila Nova',                   'UBS'),
+    ('UPA 24h Zona Sul',                 'Av. das Flores, 2100 - Zona Sul',              'UPA'),
+    ('Hospital Municipal',               'Av. Brasil, 1000 - Jardim Esperança',          'HOSPITAL'),
+    ('CAPS Esperança',                   'Rua Cuiabá, 35 - Centro',                      'CAPS'),
+    ('Posto de Saúde Rural Boa Vista',   'Estrada Boa Vista, km 12 - Zona Rural',        'POSTO');
 
 ```
 
@@ -328,9 +372,9 @@ Registre os resultados:
 
 | Restrição testada | O que foi testado? | Resultado |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| DEFAULT status (Tabela: atendimento)    | Inserção de agendamentos futuros sem enviar a coluna status no INSERT.    | O MySQL preencheu automaticamente o status como 'AGENDADO'.    |
+| FOREIGN KEY (Tabelas Dependentes)    | Garantia de inserção apenas de IDs de paciente, profissional e unidade_saude previamente existentes nos cadastros.    | O MySQL registrou as linhas corretamente respeitando o vínculo referencial planejado.    |
+| UNIQUE id_atendimento (Tabela: prontuario)    | Inserção de exatamente um único prontuário para cada atendimento realizado.    | Registros efetuados com sucesso; o banco garantiria erro (Duplicate Entry) caso o mesmo atendimento recebesse mais de um prontuário. |
 
 > Não mantenha comandos propositalmente inválidos no `SPRINT3-5.sql` final.
 
@@ -392,35 +436,43 @@ Execute pelo menos:
 ## UPDATE 1
 
 ```sql
--- Cole aqui.
 
+UPDATE atendimento
+SET data_hora = '2026-11-05 08:30:00'
+WHERE id_atendimento = 14;
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Reagendamento de um atendimento, modificando sua respectiva data e hora.
 
 ## UPDATE 2
 
 ```sql
--- Cole aqui.
+
+UPDATE paciente
+SET telefone = '(66) 99905-0555',
+    endereco = 'Rua das Acácias, 88 - Jardim Primavera'
+WHERE id_paciente = 5;
 
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Atualização de contato telefônico e endereço residencial da paciente de ID 5.
 
 ## UPDATE 3
 
 ```sql
--- Cole aqui.
+UPDATE profissional
+SET telefone = '(66) 98801-0007'
+WHERE id_profissional = 7;
 
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Preenchimento do número de telefone de um profissional administrativo (coluna adicionada via ALTER TABLE na Sprint 2/5).
 
 ---
 
@@ -499,24 +551,26 @@ Execute pelo menos:
 ## DELETE 1
 
 ```sql
--- Cole aqui.
+DELETE FROM estoque_item
+WHERE id_item = 9;
 
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> Descarte de lote vencido do estoque referente à Vacina Febre Amarela, com validade '2026-09-30'.
 
 ## DELETE 2
 
 ```sql
--- Cole aqui.
+DELETE FROM atendimento
+WHERE id_atendimento = 12;
 
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> Exclusão de um atendimento que havia sido 'CANCELADO', sem nenhum prontuário vinculado, testando exclusão segura (onde não há restrição de FOREIGN KEY ativa bloqueando).
 
 ---
 
@@ -723,11 +777,13 @@ SPRINT3-5.sql
 
 | Tabela | Quantidade aproximada de registros ao final |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| paciene | 10 |
+| profissional | 8 |
+| unidade_saude | 6 |
+| atendimento | 15(16 inseridos, 1 deletado) |
+| prontuario | 11 |
+| estoque_item | 10 | 
+| obito | 2 |
 
 ---
 
@@ -738,7 +794,7 @@ SPRINT3-5.sql
 Quantidade aproximada de registros inseridos:
 
 ```text
-
+INSERT: 58 registros totais inseridos. 
 ```
 
 ## UPDATE
@@ -746,7 +802,7 @@ Quantidade aproximada de registros inseridos:
 Quantidade de operações:
 
 ```text
-
+UPDATE: 4 operações executadas.
 ```
 
 ## DELETE
@@ -754,7 +810,7 @@ Quantidade de operações:
 Quantidade de operações:
 
 ```text
-
+DELETE: 2 operações executadas.
 ```
 
 ---
@@ -763,7 +819,7 @@ Quantidade de operações:
 
 | Problema | Possível causa | Solução aplicada |
 |---|---|---|
-|  |  |  |
+| Nenhum problema fatal de integridade | Planejamento da DDL da Sprint 2/5 cobriu as chaves corretas. | Ordem de inserção das tabelas (independentes depois dependentes) foi rigorosamente seguida. |
 |  |  |  |
 |  |  |  |
 
@@ -798,22 +854,22 @@ Não exclua arquivos das etapas anteriores.
 
 # 27. Checklist da Sprint 3/5
 
-- [ ] utilizei o banco criado na Sprint 2/5;
-- [ ] utilizei `USE`;
-- [ ] inseri dados coerentes com o projeto;
-- [ ] respeitei a ordem das tabelas;
-- [ ] procurei inserir pelo menos 5 registros nas tabelas principais;
-- [ ] testei restrições de integridade;
-- [ ] executei pelo menos 3 `UPDATE`;
-- [ ] os `UPDATE` possuem condição adequada;
-- [ ] executei pelo menos 2 `DELETE`;
-- [ ] os `DELETE` possuem condição adequada;
-- [ ] verifiquei dependências de `FOREIGN KEY`;
-- [ ] utilizei `SELECT` para conferência;
-- [ ] registrei os problemas encontrados;
-- [ ] salvei o código como `SPRINT3-5.sql`;
-- [ ] preenchi completamente o `SPRINT3-5.md`;
-- [ ] revisei os arquivos antes do commit.
+- [x] utilizei o banco criado na Sprint 2/5;
+- [x] utilizei `USE`;
+- [x] inseri dados coerentes com o projeto;
+- [x] respeitei a ordem das tabelas;
+- [x] procurei inserir pelo menos 5 registros nas tabelas principais;
+- [x] testei restrições de integridade;
+- [x] executei pelo menos 3 `UPDATE`;
+- [x] os `UPDATE` possuem condição adequada;
+- [x] executei pelo menos 2 `DELETE`;
+- [x] os `DELETE` possuem condição adequada;
+- [x] verifiquei dependências de `FOREIGN KEY`;
+- [x] utilizei `SELECT` para conferência;
+- [x] registrei os problemas encontrados;
+- [x] salvei o código como `SPRINT3-5.sql`;
+- [x] preenchi completamente o `SPRINT3-5.md`;
+- [x] revisei os arquivos antes do commit.
 
 ---
 
