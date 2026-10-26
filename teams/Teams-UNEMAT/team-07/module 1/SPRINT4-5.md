@@ -85,11 +85,12 @@ SPRINT4-5.sql
 
 Recupere as perguntas que você definiu anteriormente para o banco.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais pacientes estão cadastrados em determinada unidade?
+2. Quantos atendimentos cada profissional realizou no mês?
+3. Quais unidades têm estoque baixo de determinada vacina?
+4. Qual o número de óbitos registrados por unidade/período?
+5. Quais pacientes têm atendimentos agendados para os próximos dias?
+6. Qual o tipo de atendimento mais frequente por unidade?
 
 Agora identifique quais delas exigem:
 
@@ -122,18 +123,19 @@ FROM nome_tabela;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Consulta básica geral.
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_paciente, nome, cpf 
+FROM paciente;
 
 ```
 
 ### Explique o resultado
 
-> Escreva aqui.
+> Retorna a identificação básica dos pacientes cadastrados no banco para visualização rápida.
 
 ---
 
@@ -185,18 +187,20 @@ WHERE preco > 100
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais unidades têm estoque baixo de determinada vacina?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_unidade, nome, quantidade 
+FROM estoque_item 
+WHERE tipo = 'VACINA' AND quantidade < 50;
 
 ```
 
 ### Explique o filtro
 
-> Escreva aqui.
+> O filtro WHERE utiliza o operador AND para garantir que o item seja especificamente uma 'VACINA' e que o seu nível de estoque seja crítico (menor que 50).
 
 ---
 
@@ -230,12 +234,15 @@ ORDER BY categoria ASC, preco DESC;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quais pacientes têm atendimentos agendados para os próximos dias?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_paciente, data_hora, tipo_atendimento 
+FROM atendimento 
+WHERE status = 'AGENDADO' AND data_hora >= '2026-10-26'
+ORDER BY data_hora ASC;
 
 ```
 
@@ -289,50 +296,57 @@ FROM nome_tabela;
 ## COUNT
 
 ```sql
--- Cole aqui.
+SELECT COUNT(*) AS total_obitos 
+FROM obito;
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual o total de óbitos registrados na rede municipal?
 
 ## SUM
 
 ```sql
--- Cole aqui.
+SELECT SUM(quantidade) AS total_vacinas_rede 
+FROM estoque_item 
+WHERE tipo = 'VACINA';
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Quantas doses de vacina somadas existem na rede inteira?
 
 Caso não seja aplicável ao domínio, justifique.
 
 ## AVG
 
 ```sql
--- Cole aqui.
+SELECT AVG(quantidade) AS media_estoque_medicamentos 
+FROM estoque_item
+WHERE tipo = 'MEDICAMENTO';
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é a média de quantidade por medicamento em estoque nas unidades?
 
 Caso não seja aplicável ao domínio, justifique.
 
 ## MIN ou MAX
 
 ```sql
--- Cole aqui.
+SELECT MIN(data_hora) AS proximo_atendimento, MAX(data_hora) AS ultimo_agendamento
+FROM atendimento 
+WHERE status = 'AGENDADO';
 
 ```
 
 **Pergunta respondida:**
 
-> Escreva aqui.
+> Qual é a data/hora do atendimento mais próximo e a do atendimento mais distante já agendado?
 
 ---
 
@@ -362,19 +376,20 @@ GROUP BY status;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Qual o número de óbitos registrados por unidade?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT unidade_responsavel, COUNT(*) AS total_obitos 
+FROM obito 
+GROUP BY unidade_responsavel;
 
 ```
 
 ### Explique o agrupamento
 
-> Escreva aqui.
-
+> Agrupa os registros da tabela obito com base no ID da unidade_responsavel e conta quantos óbitos ocorreram em cada uma.
 ---
 
 # 10. HAVING
@@ -397,18 +412,22 @@ HAVING COUNT(*) > 5;
 
 ### Pergunta respondida
 
-> Escreva aqui.
+> Quantos atendimentos cada profissional realizou no mês (filtrando apenas os que realizaram 2 ou mais)?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_profissional, COUNT(*) AS total_atendimentos 
+FROM atendimento 
+WHERE status = 'REALIZADO' 
+GROUP BY id_profissional 
+HAVING COUNT(*) >= 2;
 
 ```
 
 ### Por que HAVING foi necessário?
 
-> Escreva aqui.
+> O WHERE filtrou apenas os atendimentos "REALIZADOS", mas o HAVING foi necessário para filtrar o resultado da agregação (COUNT), mostrando apenas profissionais com 2 ou mais atendimentos.
 
 ---
 
@@ -437,13 +456,14 @@ FROM item_pedido;
 ## Consulta com expressão
 
 ```sql
--- Cole aqui.
+SELECT nome, quantidade, (quantidade * 0.10) AS meta_reposicao 
+FROM estoque_item;
 
 ```
 
 ### Explique o cálculo
 
-> Escreva aqui.
+> Calcula uma margem de segurança de 10% baseada no estoque atual para prever uma meta mínima de reposição na próxima compra.
 
 Caso não seja aplicável ao domínio, justifique.
 
@@ -695,14 +715,13 @@ SPRINT4-5.sql
 
 | Nº | Pergunta | Recursos SQL utilizados | Funcionou? |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
-| 6 |  |  |  |
-| 7 |  |  |  |
-| 8 |  |  |  |
+| 1 | Pacientes vinculados à unidade 1 | SELECT, WHERE | Sim |
+| 2 | Atendimentos por profissional | SELECT, WHERE, GROUP BY, HAVING | Sim |
+| 3 | Estoque baixo de vacinas | SELECT, WHERE (AND) | Sim |
+| 4 | Óbitos por unidade | SELECT, GROUP BY, COUNT | Sim |
+| 5 | Agendamentos próximos | SELECT, WHERE, ORDER BY | Sim |
+| 6 | Tipo atendimento mais frequente | SELECT, GROUP BY, ORDER BY | Sim |
+
 
 ---
 
@@ -710,18 +729,21 @@ SPRINT4-5.sql
 
 ### Pergunta
 
-> Escreva aqui.
+> Quais pacientes têm atendimentos agendados para os próximos dias?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_paciente, id_unidade, data_hora, tipo_atendimento 
+FROM atendimento 
+WHERE status = 'AGENDADO' AND data_hora >= '2026-10-26'
+ORDER BY data_hora ASC;
 
 ```
 
 ### Por que ela é útil?
 
-> Escreva aqui.
+> Ela permite que a recepção das unidades de saúde saiba exatamente quem será atendido nos próximos dias e em qual ordem cronológica, essencial para o funcionamento diário da clínica.
 
 ---
 
@@ -729,18 +751,21 @@ SPRINT4-5.sql
 
 ### Pergunta
 
-> Escreva aqui.
+> Qual o tipo de atendimento mais frequente por unidade?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_unidade, tipo_atendimento, COUNT(*) AS frequencia 
+FROM atendimento 
+GROUP BY id_unidade, tipo_atendimento 
+ORDER BY id_unidade, frequencia DESC;
 
 ```
 
 ### Qual foi a dificuldade?
 
-> Escreva aqui.
+> Foi necessário agrupar por duas colunas diferentes (id_unidade e tipo_atendimento) simultaneamente, e ordenar pelo resultado da contagem decrescente para ver os mais frequentes no topo.
 
 ---
 
@@ -812,26 +837,26 @@ Não exclua arquivos anteriores.
 
 # 23. Checklist da Sprint 4/5
 
-- [ ] utilizei o banco das Sprints anteriores;
-- [ ] confirmei que existem dados suficientes;
-- [ ] utilizei `SELECT`;
-- [ ] selecionei colunas específicas;
-- [ ] utilizei `WHERE`;
-- [ ] utilizei mais de uma condição;
-- [ ] utilizei `ORDER BY`;
-- [ ] utilizei `COUNT`;
-- [ ] utilizei `SUM`, quando aplicável;
-- [ ] utilizei `AVG`, quando aplicável;
-- [ ] utilizei `MIN` ou `MAX`;
-- [ ] utilizei `GROUP BY`;
-- [ ] utilizei `HAVING`;
-- [ ] utilizei aliases com `AS`;
-- [ ] utilizei expressão SQL quando aplicável;
-- [ ] minhas consultas respondem perguntas reais;
-- [ ] testei as consultas no MySQL Workbench;
-- [ ] salvei o código em `SPRINT4-5.sql`;
-- [ ] preenchi completamente o `SPRINT4-5.md`;
-- [ ] revisei os arquivos antes do commit.
+- [x] utilizei o banco das Sprints anteriores;
+- [x] confirmei que existem dados suficientes;
+- [x] utilizei `SELECT`;
+- [x] selecionei colunas específicas;
+- [x] utilizei `WHERE`;
+- [x] utilizei mais de uma condição;
+- [x] utilizei `ORDER BY`;
+- [x] utilizei `COUNT`;
+- [x] utilizei `SUM`, quando aplicável;
+- [x] utilizei `AVG`, quando aplicável;
+- [x] utilizei `MIN` ou `MAX`;
+- [x] utilizei `GROUP BY`;
+- [x] utilizei `HAVING`;
+- [x] utilizei aliases com `AS`;
+- [x] utilizei expressão SQL quando aplicável;
+- [x] minhas consultas respondem perguntas reais;
+- [x] testei as consultas no MySQL Workbench;
+- [x] salvei o código em `SPRINT4-5.sql`;
+- [x] preenchi completamente o `SPRINT4-5.md`;
+- [x] revisei os arquivos antes do commit.
 
 ---
 
