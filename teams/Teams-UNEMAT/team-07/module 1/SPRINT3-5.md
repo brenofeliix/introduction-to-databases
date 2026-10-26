@@ -175,12 +175,13 @@ Ordem recomendada:
 
 | Tabela | Quantidade prevista | Depende de outra tabela? |
 |---|---:|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+| unidade_saude | 5 | Não |
+| paciente | 5 | Não |
+| profissional | 5 | Não |
+| atendimento | 5 | Sim (paciente, profissional, unidade_saude) |
+| prontuario | 3 | Sim (paciente, atendimento) |
+| estoque_item | 5 | Sim (unidade_saude) |
+| obito | 1 | Sim (paciente, unidade_saude) | 
 ---
 
 # 8. INSERTs realizados
