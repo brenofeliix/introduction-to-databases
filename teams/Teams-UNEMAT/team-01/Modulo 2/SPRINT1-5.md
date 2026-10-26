@@ -77,7 +77,7 @@ series_watchlist_db
 
 **Tema do projeto:**
 
-> Sistema de Catálogo de Séries e Gerenciamento de Watchlist com Avaliações de Usuários por Plataforma de Streaming.
+> Catálogo e lista pessoal de séries com notas e status de exibição (estilo Watchlist / Letterboxd de séries).
 
 ---
 
