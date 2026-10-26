@@ -538,19 +538,19 @@ USE nome_do_banco;
 # 19. Checklist
 
 - [ ] utilizei o mesmo banco do Module-1;
-- [ ] identifiquei PKs e FKs;
-- [ ] produzi 2 `INNER JOIN`;
-- [ ] produzi 1 `LEFT JOIN`;
-- [ ] produzi 1 `RIGHT JOIN`;
-- [ ] produzi consultas com 3 ou mais tabelas;
-- [ ] utilizei `WHERE`;
-- [ ] utilizei `ORDER BY`;
-- [ ] utilizei agregação e `GROUP BY`;
-- [ ] as consultas respondem perguntas reais;
-- [ ] testei tudo no MySQL Workbench;
-- [ ] consigo explicar as consultas;
-- [ ] salvei `SPRINT1-5.md`;
-- [ ] salvei `SPRINT1-5.sql`.
+- [x] identifiquei PKs e FKs;
+- [x] produzi 2 `INNER JOIN`;
+- [x] produzi 1 `LEFT JOIN`;
+- [x] produzi 1 `RIGHT JOIN`;
+- [x] produzi consultas com 3 ou mais tabelas;
+- [x] utilizei `WHERE`;
+- [x] utilizei `ORDER BY`;
+- [x] utilizei agregação e `GROUP BY`;
+- [x] as consultas respondem perguntas reais;
+- [x] testei tudo no MySQL Workbench;
+- [x] consigo explicar as consultas;
+- [x] salvei `SPRINT1-5.md`;
+- [x] salvei `SPRINT1-5.sql`.
 
 ---
 
