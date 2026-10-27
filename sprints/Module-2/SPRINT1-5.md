@@ -9,38 +9,16 @@
 
 # Objetivo da Sprint 1/5
 
-Nesta primeira Sprint do **Module-2**, cada aluno deverá continuar utilizando o mesmo banco de dados desenvolvido no `Module-1`.
+Nesta primeira Sprint do **Module-2**, será utilizado o mesmo banco de dados desenvolvido no `Module-1`.
 
-O foco agora será a consulta de dados relacionados entre duas ou mais tabelas por meio de:
-
-```sql
-INNER JOIN
-LEFT JOIN
-RIGHT JOIN
-ON
-AS
-WHERE
-ORDER BY
-GROUP BY
-COUNT
-SUM
-AVG
-MIN
-MAX
-```
-
-Ao final da Sprint, o aluno deverá ser capaz de identificar as tabelas necessárias, reconhecer PK e FK envolvidas, construir consultas com `JOIN`, interpretar os resultados e explicar presencialmente como cada consulta funciona.
-
-> **Importante:** não crie um novo banco. Utilize o mesmo projeto desenvolvido no `Module-1`.
-
----
+O foco é consultar dados relacionados entre duas ou mais tabelas por meio de `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `ON`, `AS`, `WHERE`, `ORDER BY`, `GROUP BY` e funções de agregação.
 
 # 1. Estrutura do repositório
 
 Os arquivos desta Sprint deverão ficar em:
 
 ```text
-teams/Teams-UNEMAT/team-XX/Module-2/
+teams/Teams-UNEMAT/team-04/Module-2/
 ```
 
 Ao final:
@@ -50,10 +28,6 @@ Module-2/
 ├── SPRINT1-5.md
 └── SPRINT1-5.sql
 ```
-
-Não altere nem apague os arquivos do `Module-1`.
-
----
 
 # 2. Identificação
 
@@ -69,27 +43,27 @@ team-04
 
 **Nome do banco:**
 
-```Rh Sorveteria
-
+```text
+Rh_sorveteria
 ```
 
 **Tema do projeto:**
 
-> Recusos Humanos de uma multifilial (sorveteria).
+> Recursos Humanos de uma sorveteria com várias filiais.
 
 ---
 
 # 3. Retomada do banco
 
-Liste as principais tabelas que serão utilizadas.
-
 | Nº | Tabela | PK | Principais FKs |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | FUNCIONARIO | `id_func` | `id_cargo`, `id_setor`, `id_filial` |
+| 2 | CARGO | `id_cargo` | Não possui |
+| 3 | SETOR | `id_setor` | Não possui |
+| 4 | FILIAL | `id_filial` | Não possui |
+| 5 | EXPEDIENTE | `id_expediente` | `id_func` |
+| 6 | PRODUTO | `id_produto` | Não possui |
+| 7 | ESTOQUE | (`id_filial`, `id_produto`) | `id_filial`, `id_produto` |
 
 ---
 
@@ -97,74 +71,89 @@ Liste as principais tabelas que serão utilizadas.
 
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| CARGO | 1:N | FUNCIONARIO | `FUNCIONARIO.id_cargo` |
+| SETOR | 1:N | FUNCIONARIO | `FUNCIONARIO.id_setor` |
+| FILIAL | 1:N | FUNCIONARIO | `FUNCIONARIO.id_filial` |
+| FUNCIONARIO | 1:N | EXPEDIENTE | `EXPEDIENTE.id_func` |
+| FILIAL | N:N | PRODUTO, por meio de ESTOQUE | `ESTOQUE.id_filial` e `ESTOQUE.id_produto` |
 
 ---
 
 # 5. INNER JOIN
 
-O `INNER JOIN` retorna registros que possuem correspondência nas tabelas relacionadas.
-
-Exemplo genérico:
-
-```sql
-SELECT
-    a.campo,
-    b.campo
-FROM tabela_a AS a
-INNER JOIN tabela_b AS b
-    ON a.id = b.id_a;
-```
+O `INNER JOIN` retorna os registros que possuem correspondência nas tabelas relacionadas.
 
 ## Consulta INNER JOIN 1
 
 **Pergunta em linguagem natural:**
 
-> Escreva aqui.
+> Qual é o cargo e o salário-base de cada funcionário?
 
 **Tabelas utilizadas:**
 
 ```text
-
+FUNCIONARIO e CARGO
 ```
 
 **PK/FK utilizadas:**
 
 ```text
-
+PK: CARGO.id_cargo
+FK: FUNCIONARIO.id_cargo
 ```
 
 **SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+O `f.` e o `c.` identificam de qual tabela cada coluna vem. O `INNER JOIN` junta `FUNCIONARIO` e `CARGO`, e o `ON f.id_cargo = c.id_cargo` compara os IDs para mostrar o cargo e o salário correspondente a cada funcionário. Como é `INNER JOIN`, só aparecem funcionários que possuem um cargo correspondente.
 
 ## Consulta INNER JOIN 2
 
 **Pergunta:**
 
-> quem foi contradato no mes de Setembro?
+> Quem foi contratado no mês de setembro e qual é o seu cargo?
+
+**Tabelas utilizadas:**
+
+```text
+FUNCIONARIO e CARGO
+```
+
+**PK/FK utilizadas:**
+
+```text
+PK: CARGO.id_cargo
+FK: FUNCIONARIO.id_cargo
+```
+
+**SQL:**
 
 ```sql
--- SELECT
+SELECT
     f.nome_func AS funcionario,
-    f.data_admissao AS data_admissao
+    f.data_admissao AS data_admissao,
+    c.nome_cargo AS cargo
 FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
 WHERE MONTH(f.data_admissao) = 9
 ORDER BY f.data_admissao ASC;
 ```
 
 **Explique:**
 
-> "código"."nome coluna" AS "Nome coluna" é usado para escolher o nome novo de cada coluna para a nova tabela de pesquisa, com a primeira parte correspondendo aos valores e a segunda ao nome novo da coluna. O f. é o comando usado para puxar variaveis de tabelas diferentes, com o FROM "tabela" "código" indicando qual tabela e qual código deve usar. Nessa pesquisa o WHERE MONTH = 9 está escaneando a coluna data_admissao dentro de f. (funcionario) e mostrando todas as datas com mês 9
+O `INNER JOIN` relaciona o funcionário ao seu cargo pelo ID. O `WHERE MONTH(f.data_admissao) = 9` mostra somente quem foi contratado em setembro, e o `ORDER BY f.data_admissao ASC` organiza as datas da mais antiga para a mais recente. Com os dados atuais, aparece Anna Paula, admitida em `2023-09-01`.
 
 ---
 
@@ -176,35 +165,39 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 
 **Pergunta:**
 
-> Qual cargo corresponde a cada funcionario?
+> Quais cargos existem e quais funcionários ocupam cada cargo?
+
+**SQL:**
 
 ```sql
--- SELECT
-	f.nome_func AS Nome_funcionario,
-	c.nome_cargo AS cargo
+SELECT
+    c.nome_cargo AS cargo,
+    f.nome_func AS funcionario
 FROM CARGO c
 LEFT JOIN FUNCIONARIO f
-    ON c.id_cargo = f.id_cargo
+    ON c.id_cargo = f.id_cargo;
 ```
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> Ele permite visualizar todos os valores dentro de CARGO para realizar a comparação em "ON c.id_cargo = f.id_cargo" e para adicionar as informações do nome do funcionario dentro da planilha nova 
+O `LEFT JOIN` mantém todos os cargos e adiciona o nome do funcionário quando encontra um ID correspondente em `FUNCIONARIO`. O `ON c.id_cargo = f.id_cargo` faz essa comparação. Se um cargo não tiver funcionário, ele continua aparecendo e o nome do funcionário fica como `NULL`.
 
 ---
 
 # 7. RIGHT JOIN
 
-O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando não existe correspondência na tabela da esquerda.
+O `RIGHT JOIN` mantém todos os registros da tabela à direita, mesmo quando não existe correspondência na tabela da esquerda.
 
 ## Consulta obrigatória
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais cargos existem, incluindo os que não possuem funcionários associados?
+
+**SQL:**
 
 ```sql
--- SELECT
+SELECT
     c.nome_cargo AS cargo,
     f.nome_func AS funcionario
 FROM FUNCIONARIO f
@@ -214,33 +207,66 @@ RIGHT JOIN CARGO c
 
 **Explique o resultado:**
 
-> Nesse caso, nada mudou, a diferença entre eles é quais valores aparecem como nulo e quais mantem o seu valor quando estiver faltando dados.
+O `RIGHT JOIN` mantém todos os cargos porque `CARGO` está à direita, mesmo que algum não tenha funcionário correspondente. Nesse caso, o nome do funcionário aparece como `NULL`. O resultado é parecido com o `LEFT JOIN` anterior, pois ambos mantêm todos os cargos; muda apenas a posição das tabelas.
 
 ---
 
 # 8. JOIN com três ou mais tabelas
 
-Crie duas consultas envolvendo pelo menos três tabelas.
-
 ## Consulta 1
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o nome do funcionário, seu cargo, setor, filial e salário-base?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    s.nome_setor AS setor,
+    fi.Localizacao AS filial,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+INNER JOIN SETOR s
+    ON f.id_setor = s.id_setor
+INNER JOIN FILIAL fi
+    ON f.id_filial = fi.id_filial
+ORDER BY fi.Localizacao ASC, f.nome_func ASC;
 ```
+
+Os `INNER JOIN` relacionam `FUNCIONARIO` com `CARGO`, `SETOR` e `FILIAL` usando os IDs indicados em cada `ON`. Assim, a consulta mostra os dados dessas tabelas em uma só pesquisa. O `ORDER BY` organiza primeiro pela localização da filial e depois pelo nome do funcionário.
 
 ## Consulta 2
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos funcionários existem em cada filial, qual é o total de horas extras registrado e qual é o salário médio dos funcionários?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    fi.Localizacao AS filial,
+    COUNT(DISTINCT f.id_func) AS quantidade_funcionarios,
+    SUM(CAST(e.hora_extra AS DECIMAL(10,2))) AS total_horas_extras,
+    AVG(c.salario_base) AS salario_medio
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+LEFT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+LEFT JOIN EXPEDIENTE e
+    ON f.id_func = e.id_func
+GROUP BY fi.id_filial, fi.Localizacao
+HAVING COUNT(DISTINCT f.id_func) >= 1
+ORDER BY total_horas_extras DESC;
 ```
+
+A consulta reúne os dados das quatro tabelas por filial. O `COUNT(DISTINCT f.id_func)` conta os funcionários sem repetir o mesmo ID, o `SUM(...)` soma as horas extras e o `AVG(c.salario_base)` calcula o salário médio. O `GROUP BY` separa os resultados por filial, o `HAVING` mantém apenas as filiais com pelo menos um funcionário e o `ORDER BY ... DESC` organiza do maior total de horas extras para o menor.
 
 ---
 
@@ -248,15 +274,23 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais produtos possuem menos de 40 unidades em estoque?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    p.nome_produto AS produto,
+    e.quantidade AS quantidade_estoque
+FROM ESTOQUE e
+INNER JOIN PRODUTO p
+    ON e.id_produto = p.id_produto
+WHERE e.quantidade < 40;
 ```
 
 **Explique o filtro:**
 
-> Escreva aqui.
+O `INNER JOIN` relaciona cada registro de `ESTOQUE` ao nome correspondente em `PRODUTO`. O `WHERE e.quantidade < 40` mostra somente os produtos que têm menos de 40 unidades registradas no estoque.
 
 ---
 
@@ -264,47 +298,60 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Como ficam os funcionários organizados pela localização da filial e pelo nome?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    f.data_admissao AS data_admissao
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+ORDER BY c.nome_cargo ASC, f.nome_func ASC;
 ```
+
+Essa consulta relaciona as tabelas FUNCIONARIO e CARGO para mostrar o nome de cada funcionário, seu cargo e a data de admissão
 
 ---
 
 # 11. JOIN + GROUP BY + agregação
 
-Crie uma consulta que combine tabelas e utilize ao menos uma função de agregação.
-
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos funcionários existem em cada cargo?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    c.nome_cargo AS cargo,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM CARGO c
+LEFT JOIN FUNCIONARIO f
+    ON c.id_cargo = f.id_cargo
+GROUP BY c.id_cargo, c.nome_cargo;
 ```
 
 **Explique o agrupamento:**
 
-> Escreva aqui.
+O `GROUP BY c.id_cargo, c.nome_cargo` separa os resultados por cargo, e o `COUNT(f.id_func)` conta quantos funcionários estão relacionados a cada um. O `LEFT JOIN` mantém também os cargos sem funcionários; nesses casos, a contagem fica em zero.
 
 ---
 
 # 12. Quantidade mínima exigida
 
-O `SPRINT1-5.sql` deverá conter, no mínimo:
-
-```text
-2 INNER JOIN
-1 LEFT JOIN
-1 RIGHT JOIN
-2 consultas envolvendo 3 ou mais tabelas
-1 JOIN + WHERE
-1 JOIN + ORDER BY
-1 JOIN + GROUP BY + agregação
-```
-
-As consultas devem responder perguntas reais sobre o banco.
+| Requisito | Consulta utilizada |
+|---|---|
+| 2 `INNER JOIN` | Seção 5, consultas 1 e 2 |
+| 1 `LEFT JOIN` | Seção 6 |
+| 1 `RIGHT JOIN` | Seção 7 |
+| 2 consultas envolvendo 3 ou mais tabelas | Seção 8, consultas 1 e 2 |
+| 1 `JOIN` + `WHERE` | Seção 9 |
+| 1 `JOIN` + `ORDER BY` | Seção 10 |
+| 1 `JOIN` + `GROUP BY` + agregação | Seção 11 |
 
 ---
 
@@ -312,35 +359,61 @@ As consultas devem responder perguntas reais sobre o banco.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são os funcionários, seus cargos, setores, filiais e salários-base?
+
+**SQL:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    s.nome_setor AS setor,
+    fi.Localizacao AS filial,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+INNER JOIN SETOR s
+    ON f.id_setor = s.id_setor
+INNER JOIN FILIAL fi
+    ON f.id_filial = fi.id_filial
+ORDER BY fi.Localizacao ASC, f.nome_func ASC;
 ```
 
 **Por que ela é útil?**
 
-> Escreva aqui.
+Escolhi essa consulta porque permite ver em uma única pesquisa o funcionário, seu cargo, setor, filial e salário-base, informações úteis para o setor de Recursos Humanos.
 
 ---
 
 # 14. Validação prática obrigatória
 
-Escolha uma consulta produzida nesta Sprint.
+**Consulta selecionada:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    s.nome_setor AS setor,
+    fi.Localizacao AS filial,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+INNER JOIN SETOR s
+    ON f.id_setor = s.id_setor
+INNER JOIN FILIAL fi
+    ON f.id_filial = fi.id_filial
+ORDER BY fi.Localizacao ASC, f.nome_func ASC;
 ```
 
-Explique:
+**Explicação:**
 
-1. quais tabelas participam;
-2. qual PK está sendo utilizada;
-3. qual FK está sendo utilizada;
-4. o que a cláusula `ON` faz;
-5. o que ocorreria se a condição de relacionamento estivesse errada.
-
-> Escreva aqui.
+1. As tabelas usadas são `FUNCIONARIO`, `CARGO`, `SETOR` e `FILIAL`.
+2. As PKs são `CARGO.id_cargo`, `SETOR.id_setor` e `FILIAL.id_filial`.
+3. As FKs são `FUNCIONARIO.id_cargo`, `FUNCIONARIO.id_setor` e `FUNCIONARIO.id_filial`.
+4. Cada `ON` compara a FK do funcionário com a PK da tabela relacionada para encontrar o registro correspondente.
+5. Se a condição do `ON` estivesse errada, as informações poderiam ser relacionadas incorretamente.
 
 ---
 
@@ -349,16 +422,22 @@ Explique:
 **Consulta executada:**
 
 ```sql
--- Cole aqui.
+SELECT
+    c.nome_cargo AS cargo,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM CARGO c
+LEFT JOIN FUNCIONARIO f
+    ON c.id_cargo = f.id_cargo
+GROUP BY c.id_cargo, c.nome_cargo;
 ```
 
 **Resultado esperado:**
 
-> Escreva aqui.
+A pesquisa deve mostrar todos os cargos que estão cadastrados e contar quantos funcionarios estão relacionados com cada um. Caso algum cargo não tenha funcionario, ele continua aparecendo por causa do `LEFT JOIN`, mas a quantidade de funcionarios fica em zero.
 
 **Resultado obtido:**
 
-> Escreva aqui.
+Com os dados cadastrados e as alterações realizadas no projeto, a consulta deve mostrar os cargos e suas contagens atuais. A conferência final deve ser feita executando o SQL no MySQL Workbench.
 
 ---
 
@@ -374,77 +453,122 @@ Explique:
 
 # 17. Uso de LLMs
 
-LLMs podem ser utilizadas como apoio, mas todo código deverá ser:
-
-```text
-COMPREENDIDO
-→ ADAPTADO
-→ EXECUTADO
-→ TESTADO
-→ VALIDADO
-```
-
-O aluno deverá ser capaz de explicar presencialmente qualquer consulta entregue.
+LLMs podem ser utilizadas como apoio, mas todo código deverá ser compreendido, adaptado, executado, testado e validado. O aluno deverá ser capaz de explicar presencialmente qualquer consulta entregue.
 
 ---
 
 # 18. Estrutura recomendada do SPRINT1-5.sql
 
 ```sql
--- MODULE 2 — SPRINT 1/5
--- JOINS E CONSULTAS RELACIONAIS
+USE Rh_sorveteria;
 
--- Aluno:
--- Banco:
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo;
 
-USE nome_do_banco;
+SELECT
+    f.nome_func AS funcionario,
+    f.data_admissao AS data_admissao,
+    c.nome_cargo AS cargo
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE MONTH(f.data_admissao) = 9
+ORDER BY f.data_admissao ASC;
 
--- INNER JOIN 1
+SELECT
+    c.nome_cargo AS cargo,
+    f.nome_func AS funcionario
+FROM CARGO c
+LEFT JOIN FUNCIONARIO f
+    ON c.id_cargo = f.id_cargo;
 
--- INNER JOIN 2
+SELECT
+    c.nome_cargo AS cargo,
+    f.nome_func AS funcionario
+FROM FUNCIONARIO f
+RIGHT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo;
 
--- LEFT JOIN
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    s.nome_setor AS setor,
+    fi.Localizacao AS filial,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+INNER JOIN SETOR s
+    ON f.id_setor = s.id_setor
+INNER JOIN FILIAL fi
+    ON f.id_filial = fi.id_filial
+ORDER BY fi.Localizacao ASC, f.nome_func ASC;
 
--- RIGHT JOIN
+SELECT
+    fi.Localizacao AS filial,
+    COUNT(DISTINCT f.id_func) AS quantidade_funcionarios,
+    SUM(CAST(e.hora_extra AS DECIMAL(10,2))) AS total_horas_extras,
+    AVG(c.salario_base) AS salario_medio
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+LEFT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+LEFT JOIN EXPEDIENTE e
+    ON f.id_func = e.id_func
+GROUP BY fi.id_filial, fi.Localizacao
+HAVING COUNT(DISTINCT f.id_func) >= 1
+ORDER BY total_horas_extras DESC;
 
--- JOIN COM 3+ TABELAS 1
+SELECT
+    p.nome_produto AS produto,
+    e.quantidade AS quantidade_estoque
+FROM ESTOQUE e
+INNER JOIN PRODUTO p
+    ON e.id_produto = p.id_produto
+WHERE e.quantidade < 40;
 
--- JOIN COM 3+ TABELAS 2
-
--- JOIN + WHERE
-
--- JOIN + ORDER BY
-
--- JOIN + GROUP BY + AGREGAÇÃO
+SELECT
+    c.nome_cargo AS cargo,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM CARGO c
+LEFT JOIN FUNCIONARIO f
+    ON c.id_cargo = f.id_cargo
+GROUP BY c.id_cargo, c.nome_cargo;
 ```
 
 ---
 
 # 19. Checklist
 
-- [ ] utilizei o mesmo banco do Module-1;
-- [ ] identifiquei PKs e FKs;
-- [ ] produzi 2 `INNER JOIN`;
-- [ ] produzi 1 `LEFT JOIN`;
-- [ ] produzi 1 `RIGHT JOIN`;
-- [ ] produzi consultas com 3 ou mais tabelas;
-- [ ] utilizei `WHERE`;
-- [ ] utilizei `ORDER BY`;
-- [ ] utilizei agregação e `GROUP BY`;
-- [ ] as consultas respondem perguntas reais;
-- [ ] testei tudo no MySQL Workbench;
-- [ ] consigo explicar as consultas;
-- [ ] salvei `SPRINT1-5.md`;
-- [ ] salvei `SPRINT1-5.sql`.
+- [x] Utilize o mesmo banco do Module-1.
+- [x] Identifiquei PKs e FKs.
+- [x] Preparei 2 consultas com `INNER JOIN`.
+- [x] Preparei 1 consulta com `LEFT JOIN`.
+- [x] Preparei 1 consulta com `RIGHT JOIN`.
+- [x] Preparei consultas com 3 ou mais tabelas.
+- [x] Utilizei `WHERE`.
+- [x] Utilizei `ORDER BY`.
+- [x] Utilizei agregação e `GROUP BY`.
+- [x] As consultas respondem perguntas sobre o banco.
+- [X] Executei e conferi todas as consultas no MySQL Workbench.
+- [X] Confirmei os resultados obtidos no MySQL Workbench.
+- [x] Salvei o arquivo `SPRINT1-5.md`.
+- [X] Salvei o arquivo `SPRINT1-5.sql`.
 
 ---
 
 # 20. Git/GitHub
 
-Continue utilizando:
+Continue utilizando a branch:
 
 ```text
-team-XX
+team-04
 ```
 
 Arquivos do commit:
@@ -460,7 +584,7 @@ Mensagem sugerida:
 Conclui Module 2 Sprint 1 de 5 - JOINs
 ```
 
-**Não abra o Pull Request final nesta Sprint.**
+Não abra o Pull Request final nesta Sprint.
 
 ---
 
@@ -473,5 +597,6 @@ IN
 NOT IN
 EXISTS
 NOT EXISTS
-subconsultas correlacionadas
 ```
+
+Também serão estudadas subconsultas correlacionadas.
