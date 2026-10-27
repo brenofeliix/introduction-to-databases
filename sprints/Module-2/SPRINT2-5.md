@@ -72,11 +72,11 @@ Neste exemplo:
 
 Defina pelo menos cinco perguntas do seu domínio que possam ser resolvidas com subconsultas.
 
-1. Quantos funcionários com cargo de Caixa foram admitidos entre janeiro e junho?
-2. Quantas horas extras foram registradas para cada funcionário?
-3. Quantos funcionários foram admitidos nos três primeiros meses após a abertura da filial 4?
-4. Quais funcionários acumularam mais de 10 horas extras e ocupam um cargo com salário-base menor que R$ 3.000?
-5. Qual filial possui o maior número de funcionários?
+1. Quais funcionários ocupam cargos de Caixa ou Atendente?
+2. Quais funcionários recebem salário-base acima da média dos salários cadastrados?
+3. Qual filial possui a maior quantidade de funcionários?
+4. Qual é o maior salário-base cadastrado e quais cargos recebem esse valor?
+5. Quais funcionários não possuem expediente cadastrado?
 
 ---
 
