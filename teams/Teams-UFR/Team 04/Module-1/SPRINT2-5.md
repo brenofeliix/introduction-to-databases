@@ -45,7 +45,7 @@ O arquivo `.sql` conterá o **script SQL executável produzido no MySQL Workbenc
 
 Abra a sua `SPRINT1-5.md` e revise:
 
-- tema escolhido;
+- tema escolhido; estoque de mercado
 - entidades;
 - atributos;
 - chaves primárias;
@@ -140,7 +140,7 @@ USE loja_virtual;
 
 ```text
 
-```
+```Mercado 
 
 ---
 

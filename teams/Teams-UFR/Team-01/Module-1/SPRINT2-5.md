@@ -210,11 +210,19 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
+<<<<<<< Updated upstream
 | 1 |  |  |
 | 2 |  |  |
 | 3 |  |  |
 | 4 |  |  |
 | 5 |  |  |
+=======
+| 1 |Agendamento|Realizar agendamento de clientes|
+| 2 |Clientes|Realizar cadastro e edição de clientes|
+| 3 |Colaborador|Realizar cadastro e edição de colaborador|
+| 4 |Produtos|Realizar cadastro e manejo de produtos do estabelecimento|
+| 5 |SERVICOS|Realizar cadastro de serviços prestados pelo estabelecimento|
+>>>>>>> Stashed changes
 | 6 |  |  |
 
 ---
@@ -246,11 +254,19 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
+<<<<<<< Updated upstream
 1. 
 2. 
 3. 
 4. 
 5. 
+=======
+1. Agendamento 
+2. Clientes
+3. Colaborador
+4. Produtos
+5. Serviços
+>>>>>>> Stashed changes
 6. 
 
 ---
@@ -275,10 +291,18 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
+<<<<<<< Updated upstream
 |  |  |  |
 |  |  |  |
 |  |  |  |
 |  |  |  |
+=======
+|Agendamento|DATA_AGENDAMENTO|Não|
+|Clientes|CPF|Não|
+|Colaborador|ID_COLABORADOR|Sim|
+|Produtos|ID_PRODUTO|Sim| 
+|SERVICOS|NOME_SERVICO|Não| 
+>>>>>>> Stashed changes
 
 ---
 
@@ -298,9 +322,16 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
+<<<<<<< Updated upstream
 |  |  |  |
 |  |  |  |
 |  |  |  |
+=======
+|CLIENTES|CPF|Por que é chave primária|
+|COLABORADORES|NOME_COLABORADOR|Por ser nome do colaborador|
+|PRODUTOS|PREÇO_COMPRA|Por ser valor de produto|
+|SERVICOS|PRECO_SERVICOS|Por ser valor de produto|
+>>>>>>> Stashed changes
 
 ---
 
@@ -407,8 +438,13 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
+<<<<<<< Updated upstream
 |  |  |  |  |
 |  |  |  |  |
+=======
+|AGENDAMENTO|CPF|CLIENTES|1:1|
+|AGENDAMENTO|NOME_SERVICO|CLIENTES|1:1|
+>>>>>>> Stashed changes
 |  |  |  |  |
 
 ---
@@ -717,10 +753,19 @@ Faça isso para cada tabela criada.
 
 | Tabela | `DESCRIBE` executado? | Estrutura correta? |
 |---|---|---|
+<<<<<<< Updated upstream
 |  |  |  |
 |  |  |  |
 |  |  |  |
 |  |  |  |
+=======
+|clientes|sim|sim  |
+|COLABORADORES|sim|sim|
+|AGENDAMENTO|sim|sim|
+PRODUTOS|sim|sim|
+SERVICOS|sim|sim|
+
+>>>>>>> Stashed changes
 
 ---
 
@@ -903,26 +948,26 @@ SPRINT5-5.sql
 
 Antes de finalizar:
 
-- [ ] utilizei como base a `SPRINT1-5.md`;
-- [ ] criei um banco de dados;
-- [ ] utilizei `USE`;
-- [ ] criei pelo menos 4 tabelas relacionadas;
-- [ ] todas as tabelas possuem chave primária;
-- [ ] utilizei tipos de dados coerentes;
-- [ ] apliquei `NOT NULL` quando necessário;
-- [ ] apliquei `UNIQUE` quando necessário;
-- [ ] apliquei `DEFAULT` quando necessário;
-- [ ] implementei as chaves estrangeiras necessárias;
-- [ ] respeitei a ordem de criação das tabelas;
-- [ ] tratei corretamente relacionamentos N:N, caso existam;
-- [ ] executei pelo menos um `ALTER TABLE`;
-- [ ] pratiquei `DROP TABLE` em tabela temporária;
-- [ ] executei `DESCRIBE` nas tabelas;
-- [ ] verifiquei as tabelas no painel Schemas;
-- [ ] corrigi erros de execução;
-- [ ] organizei o script final;
-- [ ] salvei o script como `SPRINT2-5.sql`;
-- [ ] preenchi completamente este `SPRINT2-5.md`.
+- [X] utilizei como base a `SPRINT1-5.md`;
+- [X] criei um banco de dados;
+- [X] utilizei `USE`;
+- [X] criei pelo menos 4 tabelas relacionadas;
+- [X] todas as tabelas possuem chave primária;
+- [X] utilizei tipos de dados coerentes;
+- [X] apliquei `NOT NULL` quando necessário;
+- [X] apliquei `UNIQUE` quando necessário;
+- [X] apliquei `DEFAULT` quando necessário;
+- [X] implementei as chaves estrangeiras necessárias;
+- [X] respeitei a ordem de criação das tabelas;
+- [X] tratei corretamente relacionamentos N:N, caso existam;
+- [X] executei pelo menos um `ALTER TABLE`;
+- [X] pratiquei `DROP TABLE` em tabela temporária;
+- [X] executei `DESCRIBE` nas tabelas;
+- [X] verifiquei as tabelas no painel Schemas;
+- [X] corrigi erros de execução;
+- [X] organizei o script final;
+- [X] salvei o script como `SPRINT2-5.sql`;
+- [X] preenchi completamente este `SPRINT2-5.md`.
 
 ---
 
