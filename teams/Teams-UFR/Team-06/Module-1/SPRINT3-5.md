@@ -4,6 +4,10 @@
 **Modalidade:** Atividade individual  
 **Entrega desta Sprint:** `SPRINT3-5.md` + `SPRINT3-5.sql`
 
+**Aluna:** Anna Beatriz Oliveira Moura
+**Tema:** Locadora
+**Banco de dados:** locacao_de_filmes
+
 ---
 
 # Objetivo da Sprint 3/5
@@ -42,7 +46,7 @@ O arquivo `SPRINT3-5.md` documentará o trabalho realizado. O arquivo `SPRINT3-5
 5. Selecione o banco:
 
 ```sql
-USE nome_do_banco;
+USE locacao_de_filmes;
 ```
 
 6. Confira as tabelas:
@@ -82,10 +86,11 @@ Esse arquivo deverá conter os comandos DML desta Sprint.
 Estrutura básica:
 
 ```sql
-INSERT INTO nome_tabela (
-    campo_1,
-    campo_2,
-    campo_3
+INSERT INTO cliente (
+    nome,
+    cpf,
+    telefone,
+    email
 )
 VALUES (
     valor_1,
@@ -175,11 +180,12 @@ Ordem recomendada:
 
 | Tabela | Quantidade prevista | Depende de outra tabela? |
 |---|---:|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| cliente | 6 | Não |
+| funcionario | 5 | Não |
+| genero | 6 | Não |
+| filme | 6 | Sim, de genero |
+| locacao | 5 | Sim, de cliente e funcionario |
+| item_locacao | 6 | Sim, de locacao e filme |
 
 ---
 
@@ -187,54 +193,143 @@ Ordem recomendada:
 
 ## Tabela 1
 
-**Nome:**
+**Nome: cliente**
 
 ```text
-
+Registros inseridos: 6
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
-
+INSERT INTO cliente (
+    nome,
+    cpf,
+    telefone,
+    email
+)
+VALUES 
+    ('Tatum Riley', '022.015.504-12', '(66) 99999-1111', 'tatum@email.com'),
+    ('Stiles Stilinski', '078.780.868-77', '(66) 99999-2222', 'stiles@email.com'),
+    ('Kirby Reed', '759.033.418-96', '(66) 99999-3333', 'kirby@email.com'),
+    ('John Snow', '441.696.558-34', '(66) 99999-4444', 'john@email.com'),
+    ('Beatrice Prior', '578.768.538-54', '(66) 99999-5555', 'beatrice@email.com'),
+    ('Hannah Klinkers', '321.654.987-00', '(66) 99999-6262', 'hannah@email.com');
 ```
 
 ## Tabela 2
 
-**Nome:**
+**Nome: funcionario**
 
 ```text
-
+Registros inseridos: 5
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
-
+INSERT INTO funcionario (
+    nome,
+    cpf,
+    cargo,
+    telefone
+)
+VALUES
+    ('Randy Meeks', '560.816.798-88', 'Gerente', '(66) 98888-1111'),
+    ('Steve Harrington', '662.069.598-13', 'Atendete', '(66) 98888-2222'),
+    ('Robin Buckley', '287.234.808-58', 'Atendente', '(66) 98888-3333'),
+    ('Noah Foster', '402.531.878-42', 'Atendente', '(66) 98888-4444'),
+    ('Karen Kolchak', '091.750.158-62', 'Gerente', '(66) 98888-5555');
 ```
 
 ## Tabela 3
 
-**Nome:**
+**Nome: genero**
 
 ```text
-
+Registros inseridos: 6
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
-
+INSERT INTO genero (
+    nome,
+    descricao,
+    classificado
+)
+VALUES
+    ('Ação', 'Filmes com ritmo acelerado, lutas, perseguições e conflitos físicos', '12 anos'),
+    ('Comédia', 'Filmes feitos para divertir e provocar o riso no público', 'Livre'),
+    ('Drama', 'Filmes com narrativas sérias que exploram conflitos emocionais e dilemas humanos profundos', '12 anos'),
+    ('Terror', 'Filmes criados para gerar medo, tensão e sustos nos espectadores', '16 anos'),
+    ('Ficção Científica', 'Filmes com tramas baseadas em avanços tecnológicos, espaço ou futuros alternativos', '12 anos'),
+    ('Romance', 'Filmes com histórias centradas em paixões, relacionamentos e laços afetivos', '14 anos');
 ```
 
 ## Tabela 4
 
-**Nome:**
+**Nome: filme**
 
 ```text
-
+Registros inseridos: 6
 ```
 
 ```sql
--- Cole aqui os INSERTs realizados.
+INSERT INTO filme (
+    titulo,
+    ano_lancamento,
+    avaliacao,
+    diretor,
+    id_genero
+)
+VALUES
+    ('A Chance', 1983, 6.0, 'Michael Chapman', 3),
+	('Orgulho e Preconceito', 2005, 7.8, 'Joe Wright', 6),
+	('Star Wars: Episódio V - O Império Contra-Ataca', 1980, 8.7, 'Irvin Kershner', 5),
+    ('Psicose', 1960, 8.5, 'Alfred Hitchcock', 4),
+    ('Transformers', 2007, 7.1, 'Michael Bay', 1),
+    ('Perdido pra Cachorro', 2008, 4.0, 'Raja Gosnell', 2);
+```
 
+## Tabela 5
+
+**Nome: locacao**
+
+```text
+Registros inseridos: 5
+```
+
+```sql
+INSERT INTO locacao (
+    id_cliente,
+    id_funcionario,
+    data_locacao,
+    data_devolucao
+)
+VALUES
+    (1, 3, '2026-09-01', '2026-09-04'),
+    (2, 2, '2026-09-02', '2026-09-05'),
+    (3, 1, '2026-09-03', '2026-09-06'),
+    (4, 3, '2026-09-04', '2026-09-07'),
+    (5, 4, '2026-09-05', '2026-09-08');
+```
+
+## Tabela 6
+
+**Nome: item_locacao**
+
+```text
+Registros inseridos: 6
+```
+
+```sql
+INSERT INTO item_locacao (
+    id_locacao,
+    id_filme,
+    valor_diaria
+)
+VALUES
+    (1, 1, 8.00),
+    (1, 2, 8.00),
+    (2, 3, 10.00),
+    (3, 4, 9.00),
+    (4, 5, 8.00),
+    (5, 6, 7.00);
 ```
 
 ---
@@ -327,9 +422,9 @@ Registre os resultados:
 
 | Restrição testada | O que foi testado? | Resultado |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| UNIQUE | Inserção de CPF duplicado na tabela cliente. | Registro rejeitado pelo banco. |
+| NOT NULL | Inserção de gênero com o campo nome nulo. | Registro rejeitado pelo banco. |
+| FOREIGN KEY | Inserção de locação utilizando um cliente inexistente. | Operação impedida pela integridade referencial. |
 
 > Não mantenha comandos propositalmente inválidos no `SPRINT3-5.sql` final.
 
@@ -391,35 +486,62 @@ Execute pelo menos:
 ## UPDATE 1
 
 ```sql
--- Cole aqui.
+SELECT *
+FROM funcionario
+WHERE id_funcionario = 2;
 
+UPDATE funcionario
+SET cargo = 'Atendente'
+WHERE id_funcionario = 2;
+
+SELECT *
+FROM funcionario
+WHERE id_funcionario = 2;
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Foi realizada a correção do cargo do funcionário Steve Harrington, alterando o valor anteriormente cadastrado de Atendete para Atendente. A condição WHERE permitiu identificar o funcionário específico, evitando alterações nos demais registros.
 
 ## UPDATE 2
 
 ```sql
--- Cole aqui.
+SELECT *
+FROM filme
+WHERE id_filme = 5;
 
+UPDATE filme
+SET avaliacao = 7.5
+WHERE id_filme = 5;
+
+SELECT *
+FROM filme
+WHERE id_filme = 5;
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Foi atualizada a avaliação do filme Transformers, modificando seu valor de 7.1 para 7.5. A alteração foi realizada exclusivamente no registro identificado pelo id_filme = 5.
 
 ## UPDATE 3
 
 ```sql
--- Cole aqui.
+SELECT *
+FROM cliente
+WHERE id_cliente = 2;
 
+UPDATE cliente
+SET telefone = '(66) 99999-7777'
+WHERE id_cliente = 2;
+
+SELECT *
+FROM cliente
+WHERE id_cliente = 2;
 ```
 
 **O que foi alterado?**
 
-> Escreva aqui.
+> Foi atualizado o telefone do cliente Stiles Stilinski, identificado pelo id_cliente = 2. A operação demonstrou a possibilidade de modificar informações cadastrais sem excluir ou inserir novamente o registro.
 
 ---
 
@@ -498,24 +620,42 @@ Execute pelo menos:
 ## DELETE 1
 
 ```sql
--- Cole aqui.
+SELECT *
+FROM locacao
+WHERE id_cliente = 6;
 
+DELETE FROM cliente
+WHERE id_cliente = 6;
+
+SELECT *
+FROM cliente
+WHERE id_cliente = 6;
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> Foi excluído o cadastro do sexto cliente, que havia sido inserido sem possuir nenhuma locação vinculada. Antes da exclusão, foi realizada uma consulta para verificar a inexistência de registros relacionados na tabela locacao. Dessa forma, a operação foi executada sem comprometer a integridade referencial do banco.
 
 ## DELETE 2
 
 ```sql
--- Cole aqui.
+SELECT *
+FROM item_locacao
+WHERE id_locacao = 1
+AND id_filme = 2;
 
+DELETE FROM item_locacao
+WHERE id_locacao = 1
+AND id_filme = 2;
+
+SELECT *
+FROM item_locacao
+WHERE id_locacao = 1;
 ```
 
 **Registro removido:**
 
-> Escreva aqui.
+> Foi excluído o registro da tabela item_locacao que associava o filme Orgulho e Preconceito à locação nº 1. A operação removeu somente o vínculo entre a locação e o filme, preservando o cadastro original do filme na tabela filme e mantendo o outro item da mesma locação.
 
 ---
 
@@ -544,63 +684,127 @@ Depois execute a alteração e consulte novamente.
 **Não entregue o código abaixo sem adaptação.**
 
 ```sql
-USE nome_do_banco;
+USE locacao_de_filmes;
 
 -- INSERTS
 
-INSERT INTO tabela_a (
-    campo_a1,
-    campo_a2
+INSERT INTO cliente (
+    nome,
+    cpf,
+    telefone,
+    email
 )
-VALUES (
-    'Valor 1',
-    'Valor 2'
-);
+VALUES 
+    ('Tatum Riley', '022.015.504-12', '(66) 99999-1111', 'tatum@email.com'),
+    ('Stiles Stilinski', '078.780.868-77', '(66) 99999-2222', 'stiles@email.com'),
+    ('Kirby Reed', '759.033.418-96', '(66) 99999-3333', 'kirby@email.com'),
+    ('John Snow', '441.696.558-34', '(66) 99999-4444', 'john@email.com'),
+    ('Beatrice Prior', '578.768.538-54', '(66) 99999-5555', 'beatrice@email.com'),
+    ('Hannah Klinkers', '321.654.987-00', '(66) 99999-6262', 'hannah@email.com');
 
-INSERT INTO tabela_a (
-    campo_a1,
-    campo_a2
+
+INSERT INTO funcionario (
+    nome,
+    cpf,
+    cargo,
+    telefone
 )
 VALUES
-    ('Valor 3', 'Valor 4'),
-    ('Valor 5', 'Valor 6'),
-    ('Valor 7', 'Valor 8');
+    ('Randy Meeks', '560.816.798-88', 'Gerente', '(66) 98888-1111'),
+    ('Steve Harrington', '662.069.598-13', 'Atendete', '(66) 98888-2222'),
+    ('Robin Buckley', '287.234.808-58', 'Atendente', '(66) 98888-3333'),
+    ('Noah Foster', '402.531.878-42', 'Atendente', '(66) 98888-4444'),
+    ('Karen Kolchak', '091.750.158-62', 'Gerente', '(66) 98888-5555');
 
-INSERT INTO tabela_b (
-    id_a,
-    campo_b1
+
+INSERT INTO genero (
+    nome,
+    descricao,
+    classificado
 )
-VALUES (
-    1,
-    'Outro valor'
-);
+VALUES
+    ('Ação', 'Filmes com ritmo acelerado, lutas, perseguições e conflitos físicos', '12 anos'),
+    ('Comédia', 'Filmes feitos para divertir e provocar o riso no público', 'Livre'),
+    ('Drama', 'Filmes com narrativas sérias que exploram conflitos emocionais e dilemas humanos profundos', '12 anos'),
+    ('Terror', 'Filmes criados para gerar medo, tensão e sustos nos espectadores', '16 anos'),
+    ('Ficção Científica', 'Filmes com tramas baseadas em avanços tecnológicos, espaço ou futuros alternativos', '12 anos'),
+    ('Romance', 'Filmes com histórias centradas em paixões, relacionamentos e laços afetivos', '14 anos');
+
+    
+INSERT INTO filme (
+    titulo,
+    ano_lancamento,
+    avaliacao,
+    diretor,
+    id_genero
+)
+VALUES
+    ('A Chance', 1983, 6.0, 'Michael Chapman', 3),
+	('Orgulho e Preconceito', 2005, 7.8, 'Joe Wright', 6),
+	('Star Wars: Episódio V - O Império Contra-Ataca', 1980, 8.7, 'Irvin Kershner', 5),
+    ('Psicose', 1960, 8.5, 'Alfred Hitchcock', 4),
+    ('Transformers', 2007, 7.1, 'Michael Bay', 1),
+    ('Perdido pra Cachorro', 2008, 4.0, 'Raja Gosnell', 2);
+
+
+INSERT INTO locacao (
+    id_cliente,
+    id_funcionario,
+    data_locacao,
+    data_devolucao
+)
+VALUES
+    (1, 3, '2026-09-01', '2026-09-04'),
+    (2, 2, '2026-09-02', '2026-09-05'),
+    (3, 1, '2026-09-03', '2026-09-06'),
+    (4, 3, '2026-09-04', '2026-09-07'),
+    (5, 4, '2026-09-05', '2026-09-08');
+
+
+INSERT INTO item_locacao (
+    id_locacao,
+    id_filme,
+    valor_diaria
+)
+VALUES
+    (1, 1, 8.00),
+    (1, 2, 8.00),
+    (2, 3, 10.00),
+    (3, 4, 9.00),
+    (4, 5, 8.00),
+    (5, 6, 7.00);
 
 -- VERIFICAÇÕES
 
-SELECT * FROM tabela_a;
-SELECT * FROM tabela_b;
+SELECT * FROM cliente;
+SELECT * FROM funcionario;
+SELECT * FROM genero;
+SELECT * FROM filme;
+SELECT * FROM locacao;
+SELECT * FROM item_locacao;
 
 -- UPDATES
 
-UPDATE tabela_a
-SET campo_a1 = 'Valor atualizado'
-WHERE id_a = 1;
+UPDATE funcionario
+SET cargo = 'Atendente'
+WHERE id_funcionario = 2;
 
-UPDATE tabela_a
-SET campo_a2 = 'Outro valor'
-WHERE id_a = 2;
+UPDATE filme
+SET avaliacao = 7.5
+WHERE id_filme = 5;
 
-UPDATE tabela_b
-SET campo_b1 = 'Atualizado'
-WHERE id_b = 1;
+UPDATE cliente
+SET telefone = '(66) 99999-7777'
+WHERE id_cliente = 2;
 
 -- DELETES
 
-DELETE FROM tabela_b
-WHERE id_b = 3;
+DELETE FROM cliente
+WHERE id_cliente = 6;
 
-DELETE FROM tabela_a
-WHERE id_a = 5;
+DELETE FROM item_locacao
+WHERE id_locacao = 1
+AND id_filme = 2;
 ```
 
 ---
@@ -722,11 +926,13 @@ SPRINT3-5.sql
 
 | Tabela | Quantidade aproximada de registros ao final |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| cliente | 5 |
+| funcionario | 5 |
+| genero | 6 |
+| filme | 6 |
+| locacao | 5 |
+| item_locacao | 5 |
+| TOTAL | 32 |
 
 ---
 
@@ -737,7 +943,7 @@ SPRINT3-5.sql
 Quantidade aproximada de registros inseridos:
 
 ```text
-
+Quantidade aproximada de registros inseridos: 34 registros, distribuídos entre as seis tabelas do banco de dados.
 ```
 
 ## UPDATE
@@ -745,7 +951,7 @@ Quantidade aproximada de registros inseridos:
 Quantidade de operações:
 
 ```text
-
+Quantidade de operações: 3 operações de atualização.
 ```
 
 ## DELETE
@@ -753,8 +959,9 @@ Quantidade de operações:
 Quantidade de operações:
 
 ```text
-
+Quantidade de operações: 2 operações de exclusão.
 ```
+> Após as operações, o banco permaneceu com 32 registros, considerando os dados inseridos nesta Sprint.
 
 ---
 
@@ -762,9 +969,9 @@ Quantidade de operações:
 
 | Problema | Possível causa | Solução aplicada |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Dificuldade em selecionar um cliente para a operação DELETE. | Os cinco clientes inicialmente cadastrados possuíam locações vinculadas por chave estrangeira. | Foi acrescentado um sexto cliente sem locações para possibilitar uma exclusão segura. |
+| Necessidade de excluir um registro sem comprometer o catálogo de filmes. | A exclusão direta de um filme poderia interferir em registros relacionados. | Foi removido apenas um registro da tabela associativa item_locacao. |
+| Erros durante a execução final. | -- | Não foram identificados erros na execução dos comandos finais no MySQL Workbench. |
 
 Mensagens que podem aparecer:
 
