@@ -41,12 +41,12 @@ O objetivo não é apenas criar rotinas que executem, mas entender:
 
 **Nome completo:**
 
-> Escreva aqui.
+> Marcos Aurélio Bastos Stanguerlin
 
 **Banco utilizado:**
 
 ```text
-
+Rh Sorveteria
 ```
 
 ---
