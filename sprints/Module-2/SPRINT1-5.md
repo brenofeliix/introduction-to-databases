@@ -460,8 +460,7 @@ LLMs podem ser utilizadas como apoio, mas todo código deverá ser compreendido,
 # 18. Estrutura recomendada do SPRINT1-5.sql
 
 ```sql
-USE Rh_sorveteria;
-
+-- Inner Join 1
 SELECT
     f.nome_func AS funcionario,
     c.nome_cargo AS cargo,
@@ -470,6 +469,7 @@ FROM FUNCIONARIO f
 INNER JOIN CARGO c
     ON f.id_cargo = c.id_cargo;
 
+-- Inner Join 2
 SELECT
     f.nome_func AS funcionario,
     f.data_admissao AS data_admissao,
@@ -480,20 +480,23 @@ INNER JOIN CARGO c
 WHERE MONTH(f.data_admissao) = 9
 ORDER BY f.data_admissao ASC;
 
+-- Left Join
 SELECT
     c.nome_cargo AS cargo,
     f.nome_func AS funcionario
 FROM CARGO c
 LEFT JOIN FUNCIONARIO f
     ON c.id_cargo = f.id_cargo;
-
+    
+-- Right Join
 SELECT
     c.nome_cargo AS cargo,
     f.nome_func AS funcionario
 FROM FUNCIONARIO f
 RIGHT JOIN CARGO c
     ON f.id_cargo = c.id_cargo;
-
+    
+-- Join com 3 tabelas
 SELECT
     f.nome_func AS funcionario,
     c.nome_cargo AS cargo,
@@ -509,6 +512,7 @@ INNER JOIN FILIAL fi
     ON f.id_filial = fi.id_filial
 ORDER BY fi.Localizacao ASC, f.nome_func ASC;
 
+-- Join com 3 tabelas 2
 SELECT
     fi.Localizacao AS filial,
     COUNT(DISTINCT f.id_func) AS quantidade_funcionarios,
@@ -525,6 +529,7 @@ GROUP BY fi.id_filial, fi.Localizacao
 HAVING COUNT(DISTINCT f.id_func) >= 1
 ORDER BY total_horas_extras DESC;
 
+-- Join Where
 SELECT
     p.nome_produto AS produto,
     e.quantidade AS quantidade_estoque
@@ -533,6 +538,17 @@ INNER JOIN PRODUTO p
     ON e.id_produto = p.id_produto
 WHERE e.quantidade < 40;
 
+-- Join order by
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo,
+    f.data_admissao AS data_admissao
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+ORDER BY c.nome_cargo ASC, f.nome_func ASC;
+
+-- Join Group by Agregação
 SELECT
     c.nome_cargo AS cargo,
     COUNT(f.id_func) AS quantidade_funcionarios
