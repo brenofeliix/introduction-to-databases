@@ -100,30 +100,32 @@ Verifique se o banco final ainda corresponde ao projeto proposto.
 ## Tema do banco
 
 ```text
-Secretaria de Saúde
+Secretaria de Saúde - gestão de pacientes, atendimentos e unidades de saúde.
 ```
 
 ## Objetivo principal
 
-> Escreva aqui.
+> Organizar e centralizar as informações de pacientes e atendimentos da rede municipal de saúde, garantindo rastreabilidade do histórico clínico-administrativo e apoiando a gestão da secretaria..
 
 ## Quantidade final de tabelas
 
 ```text
-
+7 tabelas
 ```
 
 ## Principais entidades do banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Paciente
+2. Profissional
+3. Unidade_saude
+4. Atendimento
+5. Prontuario
+6. Estoque_item
+7. Obito
 
 ## O projeto final permaneceu igual ao planejamento inicial?
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 Caso tenha mudado, explique:
@@ -138,7 +140,7 @@ Registre alterações relevantes feitas desde a Sprint 1/5.
 
 | Alteração | Sprint em que ocorreu | Justificativa |
 |---|---|---|
-|  |  |  |
+| Adição da coluna `telefone` em `profissional` | Sprint 2/5 | Necessidade de meio de contacto com a equipa médica/administrativa, não prevista na Sprint 1. | |
 |  |  |  |
 |  |  |  |
 |  |  |  |
@@ -164,12 +166,13 @@ Preencha:
 
 | Tabela | PK correta? | FKs corretas? | Tipos corretos? | Restrições corretas? |
 |---|---|---|---|---|
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-
+| paciente | Sim | Sim (N/A) | Sim | Sim |
+| profissional | Sim | Sim (N/A) | Sim | Sim |
+| unidade_saude | Sim | Sim (N/A) | Sim | Sim |
+| atendimento | Sim | Sim | Sim | Sim |
+| prontuario | Sim | Sim | Sim | Sim |
+| estoque_item | Sim | Sim | Sim | Sim|
+| obito | Sim | Sim | Sim | Sim | 
 ---
 
 # 6. Revisão das PRIMARY KEY
@@ -178,10 +181,13 @@ Liste as chaves primárias finais.
 
 | Tabela | PRIMARY KEY | AUTO_INCREMENT? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| paciente | id_paciente | Sim |
+| profissional | id_profissional | Sim |
+| unidade_saude | id_unidade | Sim |
+| atendimento | id_atendimento | Sim |
+| prontuario | id_prontuario | Sim | 
+| estoque_item | id_item | Sim |
+| obito | id_obito | Sim | 
 
 Verifique se cada registro pode ser identificado de forma única.
 
@@ -193,10 +199,14 @@ Liste as chaves estrangeiras finais.
 
 | Tabela | FOREIGN KEY | Tabela referenciada | Campo referenciado |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| atendimento | id_paciente | paciente | id_paciente |
+| atendimento | id_profissional | profissional | id_profissional |
+| atendimento | id_unidade | unidade_saude | id_unidade |
+| prontuario | id_paciente | paciente | id_paciente |
+| prontuario | id_atendimento | atendimento | id_atendimento |
+| estoque_item | id_unidade | unidade_saude | id_unidade | 
+| obito | id_paciente | paciente | id_paciente |
+| obito | unidade_responsavel | unidade_saude | id_unidade |
 
 Confira se:
 
@@ -225,10 +235,11 @@ Registre exemplos:
 
 | Tabela | Campo | Restrição | Regra de negócio protegida |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| paciente | cpf | UNIQUE, NOT NULL | Evitar duplo cadastro da mesma pessoa física |
+| profissional | registro_conselho | UNIQUE | Garantir que o mesmo número de conselho (ex: CRM) não pertence a duas pessoas |
+| atendimento | status | DEFAULT 'AGENDADO' | Todo o novo atendimento nasce obrigatoriamente como agendado |
+| prontuario | id_atendimento | UNIQUE | Um atendimento específico apenas pode gerar um único prontuário. |
+| estoque_item | quantidade | DEFAULT 0 | O estoque não pode ficar nulo, assumindo 0 caso não se informe a quantidade inicial | 
 
 ---
 
@@ -240,11 +251,13 @@ Preencha:
 
 | Tabela | Quantidade aproximada de registros |
 |---|---:|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| paciente | 10 |
+| profissional | 8 |
+| unidade_saude | 6 |
+| atendimento | 15 |
+| prontuário | 11 |
+| estoque_item | 10 |
+| obito | 2 |
 
 Pergunte:
 
@@ -260,12 +273,12 @@ Pergunte:
 
 Confirme:
 
-- [ ] os INSERTs executam sem erro;
-- [ ] respeitam as chaves estrangeiras;
-- [ ] não existem duplicações indevidas;
-- [ ] respeitam `NOT NULL`;
-- [ ] respeitam `UNIQUE`;
-- [ ] os dados fazem sentido no domínio.
+- [x] os INSERTs executam sem erro;
+- [x] respeitam as chaves estrangeiras;
+- [x] não existem duplicações indevidas;
+- [x] respeitam `NOT NULL`;
+- [x] respeitam `UNIQUE`;
+- [x] os dados fazem sentido no domínio.
 
 Caso encontre problemas, registre:
 
@@ -280,15 +293,18 @@ Caso encontre problemas, registre:
 
 Confirme:
 
-- [ ] os UPDATEs possuem `WHERE`;
-- [ ] alteram os registros esperados;
-- [ ] não modificam toda a tabela acidentalmente;
-- [ ] mantêm a integridade do banco.
+- [x] os UPDATEs possuem `WHERE`;
+- [x] alteram os registros esperados;
+- [x] não modificam toda a tabela acidentalmente;
+- [x] mantêm a integridade do banco.
 
 Liste os principais UPDATEs finais:
 
 ```sql
--- Cole aqui os UPDATEs mais importantes.
+UPDATE atendimento SET data_hora = '2026-11-05 08:30:00' WHERE id_atendimento = 14;
+UPDATE paciente SET telefone = '(66) 99905-0555', endereco = 'Rua das Acácias, 88' WHERE id_paciente = 5;
+UPDATE profissional SET telefone = '(66) 98801-0007' WHERE id_profissional = 7;
+UPDATE estoque_item SET quantidade = quantidade - 2 WHERE id_item = 3;
 
 ```
 
@@ -298,15 +314,16 @@ Liste os principais UPDATEs finais:
 
 Confirme:
 
-- [ ] os DELETEs possuem `WHERE`;
-- [ ] não removem registros necessários ao funcionamento do projeto;
-- [ ] respeitam as dependências de `FOREIGN KEY`;
-- [ ] não comprometem consultas posteriores.
+- [x] os DELETEs possuem `WHERE`;
+- [x] não removem registros necessários ao funcionamento do projeto;
+- [x] respeitam as dependências de `FOREIGN KEY`;
+- [x] não comprometem consultas posteriores.
 
 Liste os DELETEs finais:
 
 ```sql
--- Cole aqui.
+DELETE FROM estoque_item WHERE id_item = 9;
+DELETE FROM atendimento WHERE id_atendimento = 12;
 
 ```
 
@@ -333,15 +350,15 @@ Preencha:
 
 | Recurso SQL | Possui consulta válida? | Pergunta respondida |
 |---|---|---|
-| SELECT |  |  |
-| WHERE |  |  |
-| ORDER BY |  |  |
-| COUNT |  |  |
-| SUM |  |  |
-| AVG |  |  |
-| MIN/MAX |  |  |
-| GROUP BY |  |  |
-| HAVING |  |  |
+| SELECT | sim | Identificação de pacientes vinculados a uma unidade. |
+| WHERE | sim | Identificação de vacinas com stock baixo (crítico). |
+| ORDER BY | sim | Ordenação cronológica de agendamentos futuros. |
+| COUNT | sim | Total de óbitos na rede municipal. |
+| SUM | sim | Somatório de todas as vacinas disponíveis. |
+| AVG | sim | Média de unidades em stock por medicamento. |
+| MIN/MAX | sim  | Data do agendamento mais próximo e do mais distante. |
+| GROUP BY | sim | Total de óbitos e tipo de atendimento mais frequente por unidade. |
+| HAVING | sim | Filtro de profissionais que realizaram 2 ou mais atendimentos. |
 
 ---
 
@@ -351,17 +368,19 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 1
 
-> Escreva aqui.
+> Quais pacientes estão cadastrados em determinada unidade?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 **Consulta utilizada:**
 
 ```sql
--- Cole aqui.
+SELECT DISTINCT id_paciente 
+FROM atendimento 
+WHERE id_unidade = 2;
 
 ```
 
@@ -369,15 +388,19 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 2
 
-> Escreva aqui.
+> Quantos atendimentos cada profissional realizou no mês?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
+SELECT id_profissional, COUNT(*) AS total_atendimentos 
+FROM atendimento 
+WHERE status = 'REALIZADO' 
+GROUP BY id_profissional 
+HAVING COUNT(*) >= 2;
 
 ```
 
@@ -385,15 +408,17 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 3
 
-> Escreva aqui.
+> Quais unidades têm estoque baixo de determinada vacina?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
+SELECT id_unidade, nome, quantidade 
+FROM estoque_item 
+WHERE tipo = 'VACINA' AND quantidade < 50;
 
 ```
 
@@ -401,15 +426,17 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 4
 
-> Escreva aqui.
+> Qual o número de óbitos registrados por unidade/período?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
+SELECT unidade_responsavel, COUNT(*) AS total_obitos 
+FROM obito 
+GROUP BY unidade_responsavel;
 
 ```
 
@@ -417,15 +444,18 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 5
 
-> Escreva aqui.
+> Quais pacientes têm atendimentos agendados para os próximos dias?
 
 **Foi respondida?**
 
-- [ ] Sim
+- [x] Sim
 - [ ] Não
 
 ```sql
--- Cole aqui.
+SELECT id_paciente, data_hora, tipo_atendimento 
+FROM atendimento 
+WHERE status = 'AGENDADO' AND data_hora >= '2026-10-26'
+ORDER BY data_hora ASC;
 
 ```
 
@@ -755,22 +785,24 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 ### Pergunta
 
-> Escreva aqui.
+> Quais unidades têm estoque baixo de determinada vacina? 
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_unidade, nome, quantidade 
+FROM estoque_item 
+WHERE tipo = 'VACINA' AND quantidade < 50;
 
 ```
 
 ### Resultado esperado
 
-> Escreva aqui.
+> Lista contendo o ID das unidades, nome da vacina e a respetiva quantidade restante (menor que 50).
 
 ### Por que essa consulta é importante?
 
-> Escreva aqui.
+> Tem impacto administrativo e na saúde pública de forma imediata, garantindo a reposição de insumos críticos para que não falte imunização à população.
 
 ---
 
@@ -778,28 +810,31 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 ### Pergunta
 
-> Escreva aqui.
+> Qual o tipo de atendimento mais frequente por unidade?
 
 ### SQL
 
 ```sql
--- Cole aqui.
+SELECT id_unidade, tipo_atendimento, COUNT(*) AS frequencia 
+FROM atendimento 
+GROUP BY id_unidade, tipo_atendimento 
+ORDER BY id_unidade, frequencia DESC;
 
 ```
 
 ### Conceitos utilizados
 
 - [ ] WHERE
-- [ ] ORDER BY
-- [ ] agregação
-- [ ] GROUP BY
+- [x] ORDER BY
+- [x] agregação
+- [x] GROUP BY
 - [ ] HAVING
 - [ ] expressão
 - [ ] outro
 
 ### Explique
 
-> Escreva aqui.
+> Esta consulta utiliza o agrupamento simultâneo por duas colunas para criar subgrupos na rede hospitalar, ordenando o resultado pela frequência calculada (agregação COUNT) de forma descendente, exigindo boa visualização lógica dos relacionamentos.
 
 ---
 
@@ -807,21 +842,21 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 | Teste | Resultado | Correção necessária? |
 |---|---|---|
-| CREATE DATABASE |  |  |
-| CREATE TABLE |  |  |
-| PRIMARY KEY |  |  |
-| FOREIGN KEY |  |  |
-| NOT NULL |  |  |
-| UNIQUE |  |  |
-| INSERT |  |  |
-| UPDATE |  |  |
-| DELETE |  |  |
-| SELECT |  |  |
-| WHERE |  |  |
-| ORDER BY |  |  |
-| GROUP BY |  |  |
-| HAVING |  |  |
-| funções de agregação |  |  |
+| CREATE DATABASE | Sucesso | Nenhuma |
+| CREATE TABLE | Sucesso | Nenhuma |
+| PRIMARY KEY | Sucesso | Nenhuma |
+| FOREIGN KEY | Sucesso | Nenhuma |
+| NOT NULL | Sucesso | Nenhuma |
+| UNIQUE | Sucesso | Nenhuma |
+| INSERT | Sucesso | Nenhuma |
+| UPDATE | Sucesso | Nenhuma |
+| DELETE | Sucesso  | Nenhuma  |
+| SELECT | Sucesso | Nenhuma |
+| WHERE | Sucesso | Nenhuma |
+| ORDER BY | Sucesso | Nenhuma |
+| GROUP BY | Sucesso | Nenhuma  |
+| HAVING | Sucesso | Nenhuma |
+| funções de agregação | Sucesso | Nenhuma |
 
 ---
 
@@ -829,7 +864,7 @@ Escolha a consulta que melhor demonstra a utilidade do seu banco.
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
+| Nenhum | Planeamento DDL sólido e executado na ordem correta. | Manutenção da estrutura |
 |  |  |  |
 |  |  |  |
 |  |  |  |
@@ -981,18 +1016,18 @@ Conclui Sprint 5 de 5 - validação final
 
 Confirme:
 
-- [ ] estou na minha branch individual;
-- [ ] todos os commits foram enviados ao GitHub;
-- [ ] não alterei arquivos de outro aluno;
-- [ ] não alterei arquivos de outra instituição;
-- [ ] não alterei arquivos administrativos do repositório;
-- [ ] os 9 arquivos da atividade estão presentes;
-- [ ] os arquivos `.md` estão preenchidos;
-- [ ] os arquivos `.sql` foram testados;
-- [ ] o `SPRINT5-5.sql` executa do início ao fim;
-- [ ] removi nomes genéricos dos modelos;
-- [ ] não deixei senhas ou credenciais;
-- [ ] compreendo o código entregue.
+- [x] estou na minha branch individual;
+- [x] todos os commits foram enviados ao GitHub;
+- [x] não alterei arquivos de outro aluno;
+- [x] não alterei arquivos de outra instituição;
+- [x] não alterei arquivos administrativos do repositório;
+- [x] os 9 arquivos da atividade estão presentes;
+- [x] os arquivos `.md` estão preenchidos;
+- [x] os arquivos `.sql` foram testados;
+- [x] o `SPRINT5-5.sql` executa do início ao fim;
+- [x] removi nomes genéricos dos modelos;
+- [x] não deixei senhas ou credenciais;
+- [x] compreendo o código entregue.
 
 ---
 
@@ -1153,44 +1188,44 @@ A validação automática é parte do processo de entrega.
 
 ## Banco
 
-- [ ] `CREATE DATABASE` funciona;
-- [ ] `USE` funciona;
-- [ ] todas as tabelas são criadas;
-- [ ] nenhuma tabela necessária está ausente.
+- [x] `CREATE DATABASE` funciona;
+- [x] `USE` funciona;
+- [x] todas as tabelas são criadas;
+- [x] nenhuma tabela necessária está ausente.
 
 ## Estrutura
 
-- [ ] todas as tabelas possuem PK;
-- [ ] FKs estão corretas;
-- [ ] tipos de dados estão coerentes;
-- [ ] `NOT NULL` está coerente;
-- [ ] `UNIQUE` está coerente;
-- [ ] `DEFAULT` está coerente.
+- [x] todas as tabelas possuem PK;
+- [x] FKs estão corretas;
+- [x] tipos de dados estão coerentes;
+- [x] `NOT NULL` está coerente;
+- [x] `UNIQUE` está coerente;
+- [x] `DEFAULT` está coerente.
 
 ## Dados
 
-- [ ] INSERTs funcionam;
-- [ ] dados são coerentes;
-- [ ] FKs são respeitadas.
+- [x] INSERTs funcionam;
+- [x] dados são coerentes;
+- [x] FKs são respeitadas.
 
 ## Manipulação
 
-- [ ] UPDATEs funcionam;
-- [ ] UPDATEs possuem `WHERE`;
-- [ ] DELETEs funcionam;
-- [ ] DELETEs possuem `WHERE`.
+- [x] UPDATEs funcionam;
+- [x] UPDATEs possuem `WHERE`;
+- [x] DELETEs funcionam;
+- [x] DELETEs possuem `WHERE`.
 
 ## Consultas
 
-- [ ] SELECT funciona;
-- [ ] WHERE funciona;
-- [ ] ORDER BY funciona;
-- [ ] COUNT funciona;
-- [ ] SUM funciona quando aplicável;
-- [ ] AVG funciona quando aplicável;
-- [ ] MIN/MAX funcionam;
-- [ ] GROUP BY funciona;
-- [ ] HAVING funciona.
+- [x] SELECT funciona;
+- [x] WHERE funciona;
+- [x] ORDER BY funciona;
+- [x] COUNT funciona;
+- [x] SUM funciona quando aplicável;
+- [x] AVG funciona quando aplicável;
+- [x] MIN/MAX funcionam;
+- [x] GROUP BY funciona;
+- [x] HAVING funciona.
 
 ## Arquivos
 
@@ -1212,23 +1247,23 @@ Responda brevemente.
 
 ## O que você considera que aprendeu melhor?
 
-> Escreva aqui.
+> O planeamento estrutural do esquema em papel e a sua conversão exata para DDL, compreendendo como os relacionamentos suportam o banco de dados.
 
 ## Qual conteúdo apresentou maior dificuldade?
 
-> Escreva aqui.
+> O entendimento prático entre o filtro inicial WHERE e o filtro pós-agrupamento HAVING na estruturação de relatórios complexos.
 
 ## Qual erro mais contribuiu para seu aprendizado?
 
-> Escreva aqui.
+> As tentativas de exclusão de dados vinculados a uma chave estrangeira em tabelas filhas (que geraram erro), demonstrando perfeitamente a eficácia da integridade referencial.
 
 ## Qual parte do banco você considera mais bem implementada?
 
-> Escreva aqui.
+> O eixo central clínico: paciente -> atendimento -> prontuario, porque reflete de forma concisa e muito real a rotina de uma unidade de saúde primária.
 
 ## Se tivesse mais tempo, o que melhoraria?
 
-> Escreva aqui.
+> Adicionaria regras de validação por Triggers para automatizar baixas de stock após a prescrição de certos itens no prontuário.
 
 ---
 
