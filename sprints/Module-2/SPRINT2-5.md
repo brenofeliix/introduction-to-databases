@@ -72,11 +72,11 @@ Neste exemplo:
 
 Defina pelo menos cinco perguntas do seu domínio que possam ser resolvidas com subconsultas.
 
-1. Quantidade de caixas contratados de janeiro a Junho
-2. Calculo de quantos devemos pagar sob as horas extras de cada colaborador
-3. Quantos colaboradores foram contados durante os 3 primeiros meses da inalguralção da filial 4
-4. Quais colaboradores que possem mais de 10h extras e cujo salario base seja menor que 3.000  
-5. Qual filial possui maior número de funcionarios
+1. Quantos funcionários com cargo de Caixa foram admitidos entre janeiro e junho?
+2. Quantas horas extras foram registradas para cada funcionário?
+3. Quantos funcionários foram admitidos nos três primeiros meses após a abertura da filial 4?
+4. Quais funcionários acumularam mais de 10 horas extras e ocupam um cargo com salário-base menor que R$ 3.000?
+5. Qual filial possui o maior número de funcionários?
 
 ---
 
@@ -86,19 +86,29 @@ Crie uma consulta utilizando uma comparação com resultado agregado.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais funcionários recebem salário-base acima da média dos salários cadastrados?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE c.salario_base > (
+    SELECT AVG(salario_base)
+    FROM CARGO
+)
+ORDER BY c.salario_base DESC;
 ```
 
 **Explique primeiro a consulta interna:**
 
-> Escreva aqui.
+A consulta interna calcula a média dos salários-base cadastrados na tabela `CARGO`.
 
 **Depois explique a consulta externa:**
 
-> Escreva aqui.
+A consulta externa mostra os funcionários cujo salário-base é maior que essa média. O `INNER JOIN` relaciona cada funcionário ao seu cargo, e o `ORDER BY` organiza os maiores salários primeiro.
 
 ---
 
@@ -119,15 +129,26 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais funcionários ocupam cargos de Caixa ou Atendente?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE f.id_cargo IN (
+    SELECT id_cargo
+    FROM CARGO
+    WHERE nome_cargo IN ('Caixa', 'Atendente')
+)
+ORDER BY c.nome_cargo, f.nome_func;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+A subconsulta retorna os IDs dos cargos chamados Caixa ou Atendente. O `IN` seleciona os funcionários cujo `id_cargo` está nessa lista. O `INNER JOIN` permite exibir também o nome do cargo.
 
 ---
 
@@ -135,15 +156,23 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais funcionários ainda não possuem nenhum expediente cadastrado?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE f.id_func NOT IN (
+    SELECT e.id_func
+    FROM EXPEDIENTE e
+)
+ORDER BY f.nome_func;
 ```
 
 **Que registros você está procurando?**
 
-> Escreva aqui.
+A consulta procura funcionários cujo ID não aparece na tabela `EXPEDIENTE`, ou seja, funcionários sem expediente registrado.
 
 ---
 
@@ -155,10 +184,19 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais funcionários possuem pelo menos um expediente cadastrado?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE EXISTS (
+    SELECT 1
+    FROM EXPEDIENTE e
+    WHERE e.id_func = f.id_func
+)
+ORDER BY f.nome_func;
 ```
 
 ---
@@ -167,15 +205,24 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais funcionários não possuem expediente cadastrado?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM EXPEDIENTE e
+    WHERE e.id_func = f.id_func
+)
+ORDER BY f.nome_func;
 ```
 
 **Explique a diferença em relação a `EXISTS`:**
 
-> Escreva aqui.
+`EXISTS` retorna o funcionário quando a subconsulta encontra pelo menos um expediente relacionado. `NOT EXISTS` faz o contrário: retorna o funcionário quando não encontra nenhum expediente.
 
 ---
 
@@ -183,15 +230,22 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o maior salário-base cadastrado e quais cargos recebem esse valor?
 
 ```sql
--- Cole aqui.
+SELECT
+    nome_cargo,
+    salario_base
+FROM CARGO
+WHERE salario_base = (
+    SELECT MAX(salario_base)
+    FROM CARGO
+);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+A subconsulta encontra o maior valor de `salario_base`. A consulta externa mostra o cargo ou os cargos que possuem exatamente esse salário.
 
 ---
 
@@ -203,15 +257,24 @@ Uma subconsulta correlacionada depende de valores da consulta externa.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos expedientes estão cadastrados para cada funcionário?
 
 ```sql
--- Cole aqui.
+SELECT
+    f.id_func,
+    f.nome_func,
+    (
+        SELECT COUNT(*)
+        FROM EXPEDIENTE e
+        WHERE e.id_func = f.id_func
+    ) AS quantidade_expedientes
+FROM FUNCIONARIO f
+ORDER BY quantidade_expedientes DESC, f.nome_func;
 ```
 
 **Qual coluna da consulta externa é utilizada pela subconsulta?**
 
-> Escreva aqui.
+A subconsulta utiliza `f.id_func`, da consulta externa, e compara com `e.id_func` na tabela `EXPEDIENTE`.
 
 ---
 
@@ -226,45 +289,89 @@ b) SUBQUERY
 
 ## Pergunta 1
 
-> Escreva aqui.
+> Qual é o nome de cada funcionário e o nome do cargo que ocupa?
 
 ### JOIN
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+ORDER BY f.nome_func;
 ```
 
 ### SUBQUERY
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    (
+        SELECT c.nome_cargo
+        FROM CARGO c
+        WHERE c.id_cargo = f.id_cargo
+    ) AS cargo
+FROM FUNCIONARIO f
+ORDER BY f.nome_func;
 ```
 
 ### Qual abordagem ficou mais compreensível?
 
-> Escreva aqui e justifique.
+O `JOIN` ficou mais compreensível porque mostra diretamente como as tabelas são relacionadas. A subconsulta também funciona, mas precisa buscar o cargo para cada funcionário.
 
 ---
 
 ## Pergunta 2
 
-> Escreva aqui.
+> Qual filial possui a maior quantidade de funcionários?
 
 ### JOIN
 
 ```sql
--- Cole aqui.
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+GROUP BY fi.id_filial, fi.Localizacao
+HAVING COUNT(f.id_func) = (
+    SELECT MAX(contagem)
+    FROM (
+        SELECT COUNT(*) AS contagem
+        FROM FUNCIONARIO
+        GROUP BY id_filial
+    ) AS totais
+);
 ```
 
 ### SUBQUERY
 
 ```sql
--- Cole aqui.
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial
+FROM FILIAL fi
+WHERE (
+    SELECT COUNT(*)
+    FROM FUNCIONARIO f
+    WHERE f.id_filial = fi.id_filial
+) = (
+    SELECT MAX(contagem)
+    FROM (
+        SELECT COUNT(*) AS contagem
+        FROM FUNCIONARIO
+        GROUP BY id_filial
+    ) AS totais
+);
 ```
 
 ### Comparação
 
-> Escreva aqui.
+As duas consultas procuram a filial ou as filiais com mais funcionários. A versão com `JOIN` agrupa os dados relacionados; a versão com subconsulta conta os funcionários de cada filial individualmente e compara a quantidade com o maior total.
 
 ---
 
@@ -290,7 +397,16 @@ O `SPRINT2-5.sql` deverá conter no mínimo:
 Escolha uma subconsulta.
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func,
+    c.salario_base
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE c.salario_base > (
+    SELECT AVG(salario_base)
+    FROM CARGO
+);
 ```
 
 Responda:
@@ -299,7 +415,7 @@ Responda:
 2. Qual valor ou conjunto de valores ela retorna?
 3. Como esse resultado é utilizado pela consulta externa?
 
-> Escreva aqui.
+A subconsulta calcula primeiro a média dos salários-base em `CARGO` e retorna um único valor numérico. A consulta externa usa esse valor como limite e mostra os funcionários cujo salário-base é maior que a média.
 
 ---
 
@@ -310,16 +426,23 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 **Consulta original:**
 
 ```sql
--- Cole aqui.
+SELECT
+    f.nome_func AS funcionario,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE c.salario_base > 3000
+ORDER BY c.salario_base DESC;
 ```
 
 **Alteração realizada:**
 
-> Escreva aqui.
+O filtro foi alterado de `c.salario_base > 3000` para `c.salario_base > 2000`.
 
 **Mudança observada:**
 
-> Escreva aqui.
+Com o limite menor, a consulta pode mostrar mais funcionários, pois cargos com salário acima de R$ 2.000 passam a atender ao filtro. A quantidade exata depende dos dados cadastrados no banco.
 
 ---
 
@@ -327,64 +450,195 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Erro de chave estrangeira ao inserir expediente | O `id_func` informado não existia em `FUNCIONARIO` | Conferir os IDs reais e relacionar o expediente ao funcionário correto |
+| Resultado vazio em uma consulta com filtro | Nenhum registro atendia à condição usada | Conferir os dados e ajustar o valor do filtro, se necessário |
+| Consulta com `JOIN` sem resultado para algum registro | Não havia correspondência entre os IDs relacionados | Conferir as chaves estrangeiras e os valores cadastrados |
 
 ---
 
 # 16. Estrutura recomendada do SPRINT2-5.sql
 
 ```sql
--- MODULE 2 — SPRINT 2/5
--- SUBCONSULTAS
 
--- Aluno:
--- Banco:
+-- Subconsulta comparação
 
-USE nome_do_banco;
+SELECT
+    f.nome_func AS funcionario,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE c.salario_base > (
+    SELECT AVG(salario_base)
+    FROM CARGO
+)
+ORDER BY c.salario_base DESC;
 
--- SUBQUERY COM COMPARAÇÃO
+-- Subconsulta IN
 
--- IN
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE f.id_cargo IN (
+    SELECT id_cargo
+    FROM CARGO
+    WHERE nome_cargo IN ('Caixa', 'Atendente')
+)
+ORDER BY c.nome_cargo, f.nome_func;
 
--- NOT IN
+-- Subconsulta NOT IN
 
--- EXISTS
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE f.id_func NOT IN (
+    SELECT e.id_func
+    FROM EXPEDIENTE e
+)
+ORDER BY f.nome_func;
+
+-- Exists
+
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE EXISTS (
+    SELECT 1
+    FROM EXPEDIENTE e
+    WHERE e.id_func = f.id_func
+)
+ORDER BY f.nome_func;
 
 -- NOT EXISTS
 
--- MAX / MIN
+SELECT
+    f.id_func,
+    f.nome_func
+FROM FUNCIONARIO f
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM EXPEDIENTE e
+    WHERE e.id_func = f.id_func
+)
+ORDER BY f.nome_func;
 
--- SUBQUERY CORRELACIONADA
+-- MAX e MIN
 
--- PROBLEMA 1 - JOIN
+SELECT
+    nome_cargo,
+    salario_base
+FROM CARGO
+WHERE salario_base = (
+    SELECT MAX(salario_base)
+    FROM CARGO
+);
 
--- PROBLEMA 1 - SUBQUERY
+-- Subconsulta coreacionada
 
--- PROBLEMA 2 - JOIN
+SELECT
+    f.id_func,
+    f.nome_func,
+    (
+        SELECT COUNT(*)
+        FROM EXPEDIENTE e
+        WHERE e.id_func = f.id_func
+    ) AS quantidade_expedientes
+FROM FUNCIONARIO f
+ORDER BY quantidade_expedientes DESC, f.nome_func;
 
--- PROBLEMA 2 - SUBQUERY
+-- Mesma pergunta de duas formas
+
+SELECT
+    f.nome_func AS funcionario,
+    c.nome_cargo AS cargo
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+ORDER BY f.nome_func;
+
+-- e 
+
+SELECT
+    f.nome_func AS funcionario,
+    (
+        SELECT c.nome_cargo
+        FROM CARGO c
+        WHERE c.id_cargo = f.id_cargo
+    ) AS cargo
+FROM FUNCIONARIO f
+ORDER BY f.nome_func;
+
+-- Mesma pergunta de duas formas
+
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+GROUP BY fi.id_filial, fi.Localizacao
+HAVING COUNT(f.id_func) = (
+    SELECT MAX(contagem)
+    FROM (
+        SELECT COUNT(*) AS contagem
+        FROM FUNCIONARIO
+        GROUP BY id_filial
+    ) AS totais
+);
+
+-- e
+
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial
+FROM FILIAL fi
+WHERE (
+    SELECT COUNT(*)
+    FROM FUNCIONARIO f
+    WHERE f.id_filial = fi.id_filial
+) = (
+    SELECT MAX(contagem)
+    FROM (
+        SELECT COUNT(*) AS contagem
+        FROM FUNCIONARIO
+        GROUP BY id_filial
+    ) AS totais
+);
+
+SELECT
+    f.nome_func AS funcionario,
+    c.salario_base AS salario
+FROM FUNCIONARIO f
+INNER JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+WHERE c.salario_base > 2000
+ORDER BY c.salario_base DESC;
 ```
 
 ---
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei subconsulta com comparação;
-- [ ] utilizei `IN`;
-- [ ] utilizei `NOT IN`;
-- [ ] utilizei `EXISTS`;
-- [ ] utilizei `NOT EXISTS`;
-- [ ] utilizei `MAX` ou `MIN`;
-- [ ] criei subconsulta correlacionada;
-- [ ] resolvi duas perguntas usando JOIN e SUBQUERY;
-- [ ] expliquei o raciocínio;
-- [ ] testei no MySQL Workbench;
-- [ ] consigo explicar as consultas presencialmente;
-- [ ] salvei `SPRINT2-5.md`;
-- [ ] salvei `SPRINT2-5.sql`.
+- [x] utilizei o banco do projeto;
+- [x] criei subconsulta com comparação;
+- [x] utilizei `IN`;
+- [x] utilizei `NOT IN`;
+- [x] utilizei `EXISTS`;
+- [x] utilizei `NOT EXISTS`;
+- [x] utilizei `MAX`;
+- [x] criei subconsulta correlacionada;
+- [x] resolvi duas perguntas usando JOIN e SUBQUERY;
+- [x] expliquei o raciocínio;
+- [X] testei no MySQL Workbench;
+- [x] consigo revisar e explicar as consultas;
+- [x] preenchi o conteúdo de `SPRINT2-5.md`;
+- [X] salvei também o arquivo executável `SPRINT2-5.sql`.
 
 ---
 
@@ -393,7 +647,7 @@ USE nome_do_banco;
 Continue na mesma branch:
 
 ```text
-team-XX
+team-04
 ```
 
 Arquivos:
