@@ -36,12 +36,12 @@ O aluno deverá continuar utilizando o mesmo banco do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Marcos Aurélio Bastos Stanguerlin
 
 **Banco utilizado:**
 
 ```text
-
+Rh Sorveteria
 ```
 
 ---
@@ -72,11 +72,11 @@ Neste exemplo:
 
 Defina pelo menos cinco perguntas do seu domínio que possam ser resolvidas com subconsultas.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quantidade de caixas contratados de janeiro a Junho
+2. Calculo de quantos devemos pagar sob as horas extras de cada colaborador
+3. Quantos colaboradores foram contados durante os 3 primeiros meses da inalguralção da filial 4
+4. Quais colaboradores que possem mais de 10h extras e cujo salario base seja menor que 3.000  
+5. Qual filial possui maior número de funcionarios
 
 ---
 
