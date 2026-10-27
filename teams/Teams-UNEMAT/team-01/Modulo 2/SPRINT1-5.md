@@ -437,7 +437,20 @@ Explique:
 4. o que a cláusula `ON` faz;
 5. o que ocorreria se a condição de relacionamento estivesse errada.
 
-> Escreva aqui.
+> **1. Quais tabelas participam?**
+> Participam as tabelas `serie` (s) e `plataforma` (p).
+
+**2. Qual PK está sendo utilizada?**
+> A chave primária `p.id_plataforma`, da tabela `plataforma`.
+
+**3. Qual FK está sendo utilizada?**
+> A chave estrangeira `s.id_plataforma`, da tabela `serie`.
+
+**4. O que a cláusula ON faz?**
+> Estabelece a condição lógica de correspondência (`ON s.id_plataforma = p.id_plataforma`), unindo a série apenas à sua plataforma correta.
+
+**5. O que ocorreria se a condição de relacionamento estivesse errada?**
+> Ocorreria um produto cartesiano ou vinculação incorreta, duplicando dados e mostrando séries associadas a streamings dos quais não fazem parte.
 
 ---
 
