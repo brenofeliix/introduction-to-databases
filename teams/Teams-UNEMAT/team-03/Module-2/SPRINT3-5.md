@@ -29,12 +29,12 @@ O aluno deverá compreender que uma `VIEW` representa uma consulta armazenada qu
 
 **Nome completo:**
 
-> Escreva aqui.
+> Célia Hiromi Watanabe
 
 **Banco utilizado:**
 
 ```text
-
+db_salao_beleza
 ```
 
 ---
@@ -45,10 +45,10 @@ Identifique pelo menos três consultas das Sprints anteriores que são important
 
 | Consulta | Por que é útil? | Será transformada em VIEW? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Agenda completa com cliente, profissional, serviço e valor (Sprint 1, consulta 5) | É a tela principal da recepção; junta 4 tabelas e seria repetida o tempo todo | Sim — `vw_agenda_completa` |
+| Atendimentos e faturamento por profissional (Sprint 1, consulta 9) | Mostra a produtividade e o faturamento previsto de cada profissional | Sim — `vw_resumo_profissional` |
+| Agendamentos com status 'Agendado' (Sprint 1, consulta 7) | Lista o que ainda falta atender, para a recepção confirmar horários | Sim — `vw_agendamentos_pendentes` |
+| Clientes sem nenhum agendamento (Sprint 2, consulta 5) | Ajuda a fazer contato com clientes cadastrados que nunca agendaram | Não — é uma consulta pontual, usada só de vez em quando |
 
 ---
 
@@ -84,28 +84,44 @@ INNER JOIN pedido AS p
 **Nome da VIEW:**
 
 ```text
-
+vw_agenda_completa
 ```
 
 **Pergunta que ela representa:**
 
-> Escreva aqui.
+> Qual é a agenda completa do salão, com os nomes de cliente, profissional e serviço, o preço, o status e a forma de pagamento de cada agendamento?
 
 **SQL:**
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_agenda_completa AS
+SELECT
+    a.id_agendamento,
+    a.data_hora,
+    c.nome          AS cliente,
+    p.nome          AS profissional,
+    p.especialidade,
+    s.nome_servico  AS servico,
+    s.preco,
+    a.status,
+    a.forma_pagamento
+FROM agendamento AS a
+INNER JOIN cliente      AS c ON a.id_cliente      = c.id_cliente
+INNER JOIN profissional AS p ON a.id_profissional = p.id_profissional
+INNER JOIN servico      AS s ON a.id_servico      = s.id_servico;
 ```
 
 **Tabelas utilizadas:**
 
-> Escreva aqui.
+> `agendamento`, `cliente`, `profissional` e `servico`, ligadas pelas FKs `agendamento.id_cliente`, `agendamento.id_profissional` e `agendamento.id_servico` às PKs das tabelas de origem.
 
 **Como consultar essa VIEW?**
 
 ```sql
--- Cole aqui.
+SELECT * FROM vw_agenda_completa ORDER BY data_hora;
 ```
+
+> Resultado esperado: 9 linhas, uma por agendamento, já com os nomes no lugar dos códigos.
 
 ---
 
@@ -119,15 +135,31 @@ Esta VIEW deverá possuir, quando aplicável:
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos atendimentos (não cancelados) cada profissional tem, qual é o faturamento previsto e o ticket médio — incluindo quem ainda não tem nenhum atendimento?
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_resumo_profissional AS
+SELECT
+    p.id_profissional,
+    p.nome                              AS profissional,
+    p.especialidade,
+    COUNT(a.id_agendamento)             AS total_atendimentos,
+    COALESCE(SUM(s.preco), 0)           AS faturamento_previsto,
+    COALESCE(ROUND(AVG(s.preco), 2), 0) AS ticket_medio
+FROM profissional AS p
+LEFT JOIN agendamento AS a
+    ON p.id_profissional = a.id_profissional
+   AND a.status <> 'Cancelado'
+LEFT JOIN servico AS s
+    ON a.id_servico = s.id_servico
+GROUP BY p.id_profissional, p.nome, p.especialidade;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> O `LEFT JOIN` mantém **todos** os profissionais, mesmo quem não tem agendamento. O filtro `a.status <> 'Cancelado'` está no `ON`, e não no `WHERE`, de propósito: a Gabriela não tem agendamento, então as colunas de `agendamento` vêm `NULL` para ela; um `WHERE` compararia esse `NULL` e eliminaria a Gabriela do resultado. No `ON`, o filtro só escolhe quais agendamentos entram na junção. O `GROUP BY` reúne as linhas de cada profissional; `COUNT` conta os atendimentos, `SUM` soma os preços e `AVG` calcula o ticket médio. O `COALESCE` troca `NULL` por 0, para a Gabriela aparecer com R$ 0,00 e não com `NULL`.
+>
+> Resultado esperado: Fabiana Silveira (2 atendimentos, R$ 240,00), Ana Paula Nogueira (2, R$ 160,00), Daniela Rocha (1, R$ 150,00), Carla Mendes (2, R$ 130,00), Eduardo Martins (1, R$ 50,00) e Gabriela Torres (0, R$ 0,00).
 
 ---
 
@@ -150,16 +182,28 @@ pagamentos pendentes
 **Nome da VIEW:**
 
 ```text
-
+vw_agendamentos_pendentes
 ```
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_agendamentos_pendentes AS
+SELECT
+    a.id_agendamento,
+    a.data_hora,
+    c.nome         AS cliente,
+    p.nome         AS profissional,
+    s.nome_servico AS servico,
+    s.preco
+FROM agendamento AS a
+INNER JOIN cliente      AS c ON a.id_cliente      = c.id_cliente
+INNER JOIN profissional AS p ON a.id_profissional = p.id_profissional
+INNER JOIN servico      AS s ON a.id_servico      = s.id_servico
+WHERE a.status = 'Agendado';
 ```
 
 **Por que essa VIEW é útil?**
 
-> Escreva aqui.
+> É a lista de trabalho da recepção: mostra apenas os atendimentos que ainda vão acontecer (status 'Agendado'), com cliente, profissional, serviço e valor. Em vez de reescrever o `JOIN` e o filtro toda vez, basta `SELECT * FROM vw_agendamentos_pendentes`. Resultado esperado: 5 linhas (agendamentos 2, 3, 4, 5 e 9).
 
 ---
 
@@ -183,12 +227,18 @@ WHERE ...;
 **SQL executado:**
 
 ```sql
--- Cole aqui.
+SELECT * FROM vw_agenda_completa ORDER BY data_hora;
+
+SELECT * FROM vw_agenda_completa WHERE cliente = 'Mariana Souza';
+
+SELECT profissional, total_atendimentos, faturamento_previsto
+FROM vw_resumo_profissional
+WHERE total_atendimentos >= 2;
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+> Executado no MySQL Workbench em 27/10/2026, sem erros. A agenda completa (`vw_agenda_completa`) retornou **9 linhas**, uma por agendamento. O filtro por cliente (`WHERE cliente = 'Mariana Souza'`) retornou **3 linhas** (agendamentos 1, 7 e 10). O filtro `WHERE total_atendimentos >= 2` na `vw_resumo_profissional` retornou **3 linhas** (Fabiana Silveira, Ana Paula Nogueira e Carla Mendes). Isso mostra que a view pode ser usada como uma tabela, inclusive com `WHERE` e `ORDER BY`.
 
 ---
 
@@ -207,18 +257,44 @@ Pode ser:
 **VIEW original:**
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_agendamentos_pendentes AS
+SELECT
+    a.id_agendamento,
+    a.data_hora,
+    c.nome         AS cliente,
+    p.nome         AS profissional,
+    s.nome_servico AS servico,
+    s.preco
+FROM agendamento AS a
+INNER JOIN cliente      AS c ON a.id_cliente      = c.id_cliente
+INNER JOIN profissional AS p ON a.id_profissional = p.id_profissional
+INNER JOIN servico      AS s ON a.id_servico      = s.id_servico
+WHERE a.status = 'Agendado';
 ```
 
 **Nova versão:**
 
 ```sql
-CREATE OR REPLACE VIEW ...
+CREATE OR REPLACE VIEW vw_agendamentos_pendentes AS
+SELECT
+    a.id_agendamento,
+    a.data_hora,
+    c.nome            AS cliente,
+    c.telefone        AS telefone_cliente,
+    p.nome            AS profissional,
+    s.nome_servico    AS servico,
+    s.duracao_minutos,
+    s.preco
+FROM agendamento AS a
+INNER JOIN cliente      AS c ON a.id_cliente      = c.id_cliente
+INNER JOIN profissional AS p ON a.id_profissional = p.id_profissional
+INNER JOIN servico      AS s ON a.id_servico      = s.id_servico
+WHERE a.status = 'Agendado';
 ```
 
 **O que mudou?**
 
-> Escreva aqui.
+> Foram adicionadas duas colunas: `telefone_cliente`, para a recepção ligar e confirmar o horário, e `duracao_minutos`, para saber quanto tempo reservar na agenda da profissional. O `CREATE OR REPLACE VIEW` substitui a definição antiga sem precisar apagar a view antes; se ela não existisse, seria criada.
 
 ---
 
@@ -240,12 +316,19 @@ DROP VIEW vw_teste;
 **Código utilizado:**
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_teste AS
+SELECT nome_servico, preco
+FROM servico
+WHERE preco < 70.00;
+
+SELECT * FROM vw_teste;
+
+DROP VIEW vw_teste;
 ```
 
 **Qual a diferença entre `DROP VIEW` e `DROP TABLE`?**
 
-> Escreva aqui.
+> O `DROP VIEW` apaga apenas a consulta armazenada; os dados continuam intactos na tabela `servico`. O `DROP TABLE` apaga a tabela inteira **junto com todos os seus dados**, e não há como recuperá-los sem backup. Por isso o `DROP VIEW` é uma operação segura para os dados, e o `DROP TABLE` não.
 
 ---
 
@@ -260,9 +343,11 @@ WHERE Table_type = 'VIEW';
 
 **Views encontradas:**
 
-1. 
-2. 
-3. 
+1. `vw_agenda_completa`
+2. `vw_agendamentos_pendentes`
+3. `vw_resumo_profissional`
+
+> O comando retornou **3 linhas** no MySQL Workbench, correspondentes às views acima. A `vw_teste` não aparece, porque foi removida com `DROP VIEW`.
 
 ---
 
@@ -277,18 +362,28 @@ Faça um teste:
 **VIEW testada:**
 
 ```text
-
+vw_agendamentos_pendentes
 ```
 
 **Alteração realizada:**
 
 ```sql
--- Cole aqui.
+-- Conclui o agendamento 9 na tabela base
+UPDATE agendamento
+SET status = 'Concluído',
+    forma_pagamento = 'Pix'
+WHERE id_agendamento = 9;
+
+-- Depois do teste, desfaz a alteração
+UPDATE agendamento
+SET status = 'Agendado',
+    forma_pagamento = NULL
+WHERE id_agendamento = 9;
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+> Antes do `UPDATE`, a `vw_agendamentos_pendentes` retornou **5 linhas**. Depois de concluir o agendamento 9 na tabela `agendamento`, a mesma view passou a retornar **4 linhas**: o agendamento 9 (Camila com a Fabiana, Limpeza de Pele) saiu da lista, sem que a view fosse alterada. Depois de desfazer a alteração, voltou a retornar **5 linhas**. Isso comprova que a view não guarda dados: ela executa a consulta nas tabelas base a cada uso, e por isso sempre reflete o estado atual delas.
 
 ---
 
@@ -297,7 +392,21 @@ Faça um teste:
 Escolha uma VIEW.
 
 ```sql
--- Cole aqui a definição.
+CREATE VIEW vw_resumo_profissional AS
+SELECT
+    p.id_profissional,
+    p.nome                              AS profissional,
+    p.especialidade,
+    COUNT(a.id_agendamento)             AS total_atendimentos,
+    COALESCE(SUM(s.preco), 0)           AS faturamento_previsto,
+    COALESCE(ROUND(AVG(s.preco), 2), 0) AS ticket_medio
+FROM profissional AS p
+LEFT JOIN agendamento AS a
+    ON p.id_profissional = a.id_profissional
+   AND a.status <> 'Cancelado'
+LEFT JOIN servico AS s
+    ON a.id_servico = s.id_servico
+GROUP BY p.id_profissional, p.nome, p.especialidade;
 ```
 
 Explique:
@@ -308,7 +417,11 @@ Explique:
 4. qual problema resolve;
 5. o que muda se os dados das tabelas originais forem alterados.
 
-> Escreva aqui.
+> 1. Depende de `profissional`, `agendamento` e `servico`.
+> 2. Usa `profissional.id_profissional` (PK) = `agendamento.id_profissional` (FK) e `agendamento.id_servico` (FK) = `servico.id_servico` (PK), com `LEFT JOIN` para manter todos os profissionais.
+> 3. Apresenta o código, o nome e a especialidade do profissional, o total de atendimentos não cancelados, o faturamento previsto e o ticket médio.
+> 4. Resolve a necessidade de acompanhar a produtividade e o faturamento de cada profissional sem reescrever um `SELECT` com dois `JOIN`s, `GROUP BY` e três agregações toda vez.
+> 5. Como a view não guarda dados, qualquer alteração nas tabelas aparece na próxima consulta. Por exemplo, se um novo agendamento for criado para a Gabriela, ela deixa de aparecer com 0 e passa a mostrar 1 atendimento e o valor do serviço; se um agendamento for cancelado, ele sai da contagem e do faturamento.
 
 ---
 
@@ -360,9 +473,11 @@ USE nome_do_banco;
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| A Gabriela (sem agendamento) sumiria da `vw_resumo_profissional` | Um filtro `WHERE a.status <> 'Cancelado'` compara `NULL` e elimina quem não tem agendamento | O filtro foi colocado no `ON` do `LEFT JOIN`, e não no `WHERE` |
+| Faturamento e ticket médio da Gabriela apareceriam como `NULL` | `SUM` e `AVG` sobre nenhuma linha retornam `NULL` | `COALESCE(..., 0)` troca o `NULL` por 0 |
+| Erro "view already exists" ao executar o script uma segunda vez | `CREATE VIEW` não substitui uma view existente | `DROP VIEW IF EXISTS` no início do script, para ele poder ser executado várias vezes |
+
+Nenhuma consulta apresentou erro de execução no MySQL Workbench; os problemas acima são pontos observados durante a construção das views.
 
 ---
 
@@ -384,18 +499,18 @@ COMPREENDER
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei pelo menos 3 Views;
-- [ ] pelo menos uma View usa JOIN;
-- [ ] pelo menos uma View usa agregação ou resumo;
-- [ ] consultei as Views;
-- [ ] utilizei `CREATE OR REPLACE VIEW`;
-- [ ] pratiquei `DROP VIEW`;
-- [ ] validei as Views;
-- [ ] testei mudança em tabela base;
+- [x] utilizei o banco do projeto;
+- [x] criei pelo menos 3 Views;
+- [x] pelo menos uma View usa JOIN;
+- [x] pelo menos uma View usa agregação ou resumo;
+- [x] consultei as Views;
+- [x] utilizei `CREATE OR REPLACE VIEW`;
+- [x] pratiquei `DROP VIEW`;
+- [x] validei as Views;
+- [x] testei mudança em tabela base;
 - [ ] compreendo de onde vêm os dados de cada View;
-- [ ] salvei `SPRINT3-5.md`;
-- [ ] salvei `SPRINT3-5.sql`.
+- [x] salvei `SPRINT3-5.md`;
+- [x] salvei `SPRINT3-5.sql`.
 
 ---
 
@@ -404,7 +519,7 @@ COMPREENDER
 Continue utilizando:
 
 ```text
-team-XX
+team-03
 ```
 
 Arquivos:
