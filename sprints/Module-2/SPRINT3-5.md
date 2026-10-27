@@ -1,440 +1,138 @@
-# SPRINT 3/5 — Views e Abstração de Consultas
 
-**Disciplina:** Laboratório de Banco de Dados  
-**Módulo:** 2  
-**Modalidade:** Atividade individual  
-**Entrega desta Sprint:** `SPRINT3-5.md` + `SPRINT3-5.sql`
+-- View 1
 
----
-
-# Objetivo da Sprint 3/5
-
-Nesta etapa, cada aluno deverá criar **Views** para representar consultas relevantes e reutilizáveis do seu banco.
-
-Serão trabalhados:
-
-```sql
-CREATE VIEW
-CREATE OR REPLACE VIEW
+CREATE VIEW vw_funcionarios_sem_expediente AS
 SELECT
-DROP VIEW
-SHOW FULL TABLES
-```
+    f.id_func,
+    f.nome_func,
+    f.id_filial
+FROM FUNCIONARIO f
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM EXPEDIENTE e
+    WHERE e.id_func = f.id_func
+);
+-- Validação
+SELECT *
+FROM vw_funcionarios_sem_expediente;
 
-O aluno deverá compreender que uma `VIEW` representa uma consulta armazenada que pode ser utilizada como uma tabela virtual.
+-- View 2
 
----
-
-# 1. Identificação
-
-**Nome completo:**
-
-> Marcos Aurélio Bastos Stanguerlin
-
-**Banco utilizado:**
-
-```text
-Rh Sorveteria
-```
-
----
-
-# 2. Consultas do projeto que merecem reutilização
-
-Identifique pelo menos três consultas das Sprints anteriores que são importantes para o sistema.
-
-| Consulta | Por que é útil? | Será transformada em VIEW? |
-|---|---|---|
-| Qual filial possui a maior quantidade de funcionários? | Acesso rápido a uma pergunta basica porém que precisa ser puxada de vez em quando | SIM |
-| Quais funcionários não possuem expediente cadastrado? | Extremamente útil para ver se alguém esqueceu de bater ponto. No nossos exemplos não aparenta ser tão útil já que todos tem apenas 1 ponto, porém em uso real ela pode ser usada caso o colaborador tenha esquecido de bater ponto ou tenha faltado no dia | SIM |
-| Quantos funcionários existem em cada filial, qual é o total de horas extras registrado e qual é o salário médio dos funcionários? | Puxa várias informações criticas ao mesmo tempo | SIM |
-| Quais produtos possuem menos de 40 unidades em estoque? | Um pouco especifica, porém pode ajudar a ter uma idea sobre o estoque interno da filial de forma rápida | NÃO |
-
----
-
-# 3. Criando uma VIEW
-
-Estrutura geral:
-
-```sql
-CREATE VIEW nome_view AS
-SELECT ...
-FROM ...
-WHERE ...;
-```
-
-Exemplo:
-
-```sql
-CREATE VIEW vw_clientes_pedidos AS
+CREATE VIEW vw_resumo_filiais AS
 SELECT
-    c.id_cliente,
-    c.nome,
-    p.id_pedido,
-    p.data_pedido
-FROM cliente AS c
-INNER JOIN pedido AS p
-    ON c.id_cliente = p.id_cliente;
-```
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(DISTINCT f.id_func) AS quantidade_funcionarios,
+    COALESCE(SUM(e.total_horas_extras), 0) AS total_horas_extras,
+    AVG(c.salario_base) AS salario_medio
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+LEFT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+LEFT JOIN (
+    SELECT
+        id_func,
+        SUM(CAST(hora_extra AS DECIMAL(10,2))) AS total_horas_extras
+    FROM EXPEDIENTE
+    GROUP BY id_func
+) e
+    ON f.id_func = e.id_func
+GROUP BY fi.id_filial, fi.Localizacao;
 
----
-
-# 4. VIEW 1 — relacionamento entre tabelas
-
-**Nome da VIEW:**
-
-```text
-
-```
-
-**Pergunta que ela representa:**
-
-> Escreva aqui.
-
-**SQL:**
-
-```sql
--- Cole aqui.
-```
-
-**Tabelas utilizadas:**
-
-> Escreva aqui.
-
-**Como consultar essa VIEW?**
-
-```sql
--- Cole aqui.
-```
-
----
-
-# 5. VIEW 2 — agregação ou resumo
-
-Esta VIEW deverá possuir, quando aplicável:
-
-- relacionamento entre tabelas;
-- `COUNT`, `SUM`, `AVG`, `MIN` ou `MAX`;
-- `GROUP BY`.
-
-**Pergunta:**
-
-> Escreva aqui.
-
-```sql
--- Cole aqui.
-```
-
-**Explique:**
-
-> Escreva aqui.
-
----
-
-# 6. VIEW 3 — consulta operacional do sistema
-
-Crie uma VIEW que represente uma informação útil para um usuário real.
-
-Exemplos:
-
-```text
-estoque baixo
-empréstimos em aberto
-pedidos pendentes
-alunos matriculados
-consultas futuras
-reservas ativas
-pagamentos pendentes
-```
-
-**Nome da VIEW:**
-
-```text
-
-```
-
-```sql
--- Cole aqui.
-```
-
-**Por que essa VIEW é útil?**
-
-> Escreva aqui.
-
----
-
-# 7. Consultando uma VIEW
-
-Execute:
-
-```sql
+-- Validação
 SELECT *
-FROM nome_view;
-```
+FROM vw_resumo_filiais;
 
-Depois faça um filtro:
+-- View 3
 
-```sql
+CREATE VIEW vw_funcionarios_por_filial AS
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+GROUP BY fi.id_filial, fi.Localizacao;
+
+-- Validação
 SELECT *
-FROM nome_view
-WHERE ...;
-```
-
-**SQL executado:**
-
-```sql
--- Cole aqui.
-```
-
-**Resultado observado:**
-
-> Escreva aqui.
-
----
-
-# 8. CREATE OR REPLACE VIEW
-
-Escolha uma VIEW e faça uma alteração coerente.
-
-Pode ser:
-
-- adicionar coluna;
-- alterar filtro;
-- incluir um `JOIN`;
-- adicionar cálculo;
-- alterar uma agregação.
-
-**VIEW original:**
-
-```sql
--- Cole aqui.
-```
-
-**Nova versão:**
-
-```sql
-CREATE OR REPLACE VIEW ...
-```
-
-**O que mudou?**
-
-> Escreva aqui.
-
----
-
-# 9. DROP VIEW — exercício controlado
-
-Crie uma VIEW temporária:
-
-```sql
-CREATE VIEW vw_teste AS
-SELECT ...;
-```
-
-Depois remova:
-
-```sql
-DROP VIEW vw_teste;
-```
-
-**Código utilizado:**
-
-```sql
--- Cole aqui.
-```
-
-**Qual a diferença entre `DROP VIEW` e `DROP TABLE`?**
-
-> Escreva aqui.
-
----
-
-# 10. Validando as Views
-
-Use:
-
-```sql
-SHOW FULL TABLES
-WHERE Table_type = 'VIEW';
-```
-
-**Views encontradas:**
-
-1. 
-2. 
-3. 
-
----
-
-# 11. Teste de atualização dos dados-base
-
-Faça um teste:
-
-1. consulte a VIEW;
-2. altere ou insira um dado em uma tabela base;
-3. consulte a VIEW novamente.
-
-**VIEW testada:**
-
-```text
-
-```
-
-**Alteração realizada:**
-
-```sql
--- Cole aqui.
-```
-
-**Resultado observado:**
-
-> Escreva aqui.
-
----
-
-# 12. Validação prática obrigatória
-
-Escolha uma VIEW.
-
-```sql
--- Cole aqui a definição.
-```
-
-Explique:
-
-1. de quais tabelas ela depende;
-2. qual relacionamento utiliza;
-3. quais campos apresenta;
-4. qual problema resolve;
-5. o que muda se os dados das tabelas originais forem alterados.
-
-> Escreva aqui.
-
----
-
-# 13. Quantidade mínima exigida
-
-O projeto deverá possuir no mínimo:
-
-```text
-3 VIEWs úteis
-1 VIEW com relacionamento
-1 VIEW com agregação ou resumo
-1 CREATE OR REPLACE VIEW
-1 teste com DROP VIEW
-```
-
----
-
-# 14. Estrutura recomendada do SPRINT3-5.sql
-
-```sql
--- MODULE 2 — SPRINT 3/5
--- VIEWS
-
--- Aluno:
--- Banco:
-
-USE nome_do_banco;
-
--- VIEW 1
-
--- VIEW 2
-
--- VIEW 3
-
--- CONSULTAS SOBRE AS VIEWS
-
--- CREATE OR REPLACE VIEW
-
--- VIEW TEMPORÁRIA
+FROM vw_funcionarios_por_filial;
+
+-- https://www.youtube.com/watch?v=LuM0KFukml0
+
+
+-- Replace View
+
+CREATE OR REPLACE VIEW vw_funcionarios_por_filial AS
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(f.id_func) AS quantidade_funcionarios
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+GROUP BY fi.id_filial, fi.Localizacao
+HAVING COUNT(f.id_func) > 3;
+-- Validação
+SELECT *
+FROM vw_funcionarios_por_filial;
 
 -- DROP VIEW
 
--- VALIDAÇÃO
-```
+CREATE VIEW vw_teste AS
+SELECT id_produto, nome_produto
+FROM PRODUTO;
 
----
+SELECT *
+FROM vw_teste;
 
-# 15. Problemas encontrados
+DROP VIEW vw_teste;
 
-| Problema | Causa | Solução |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+SELECT *
+FROM vw_teste;
 
----
+-- Validando as View
+SHOW FULL TABLES
+WHERE Table_type = 'VIEW';
 
-# 16. Uso de LLMs
+-- Teste de atualização
 
-O uso de LLMs pode ocorrer como apoio, mas o aluno deverá compreender e validar todo o código.
+START TRANSACTION;
 
-Fluxo obrigatório:
+UPDATE FUNCIONARIO
+SET id_filial = 2
+WHERE id_func = 1;
 
-```text
-COMPREENDER
-→ ADAPTAR
-→ EXECUTAR
-→ TESTAR
-→ VALIDAR
-```
+SELECT *
+FROM vw_funcionarios_por_filial;
 
----
+ROLLBACK;
 
-# 17. Checklist
+-- Pratica obrigatoria
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei pelo menos 3 Views;
-- [ ] pelo menos uma View usa JOIN;
-- [ ] pelo menos uma View usa agregação ou resumo;
-- [ ] consultei as Views;
-- [ ] utilizei `CREATE OR REPLACE VIEW`;
-- [ ] pratiquei `DROP VIEW`;
-- [ ] validei as Views;
-- [ ] testei mudança em tabela base;
-- [ ] compreendo de onde vêm os dados de cada View;
-- [ ] salvei `SPRINT3-5.md`;
-- [ ] salvei `SPRINT3-5.sql`.
+CREATE OR REPLACE VIEW  vw_resumo_filiais AS
+SELECT
+    fi.id_filial,
+    fi.Localizacao AS filial,
+    COUNT(DISTINCT f.id_func) AS quantidade_funcionarios,
+    COALESCE(SUM(e.total_horas_extras), 0) AS total_horas_extras,
+    AVG(c.salario_base) AS salario_medio
+FROM FILIAL fi
+LEFT JOIN FUNCIONARIO f
+    ON fi.id_filial = f.id_filial
+LEFT JOIN CARGO c
+    ON f.id_cargo = c.id_cargo
+LEFT JOIN (
+    SELECT
+        id_func,
+        SUM(CAST(hora_extra AS DECIMAL(10,2))) AS total_horas_extras
+    FROM EXPEDIENTE
+    GROUP BY id_func
+) e
+    ON f.id_func = e.id_func
+GROUP BY fi.id_filial, fi.Localizacao;
 
----
-
-# 18. Git/GitHub
-
-Continue utilizando:
-
-```text
-team-XX
-```
-
-Arquivos:
-
-```text
-Module-2/SPRINT3-5.md
-Module-2/SPRINT3-5.sql
-```
-
-Commit sugerido:
-
-```text
-Conclui Module 2 Sprint 3 de 5 - views
-```
-
-**Ainda não abra o Pull Request final.**
-
----
-
-# Próxima etapa
-
-Na Sprint 4/5 serão trabalhados:
-
-```sql
-CREATE PROCEDURE
-CALL
-IN
-OUT
-CREATE FUNCTION
-RETURN
-IF
-ELSE
-```
+SELECT *
+FROM vw_resumo_filiais;
