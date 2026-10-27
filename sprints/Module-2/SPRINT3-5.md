@@ -29,12 +29,12 @@ O aluno deverá compreender que uma `VIEW` representa uma consulta armazenada qu
 
 **Nome completo:**
 
-> Escreva aqui.
+> Marcos Aurélio Bastos Stanguerlin
 
 **Banco utilizado:**
 
 ```text
-
+Rh Sorveteria
 ```
 
 ---
@@ -45,10 +45,10 @@ Identifique pelo menos três consultas das Sprints anteriores que são important
 
 | Consulta | Por que é útil? | Será transformada em VIEW? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Qual filial possui a maior quantidade de funcionários? | Acesso rápido a uma pergunta basica porém que precisa ser puxada de vez em quando | SIM |
+| Quais funcionários não possuem expediente cadastrado? | Extremamente útil para ver se alguém esqueceu de bater ponto. No nossos exemplos não aparenta ser tão útil já que todos tem apenas 1 ponto, porém em uso real ela pode ser usada caso o colaborador tenha esquecido de bater ponto ou tenha faltado no dia | SIM |
+| Quantos funcionários existem em cada filial, qual é o total de horas extras registrado e qual é o salário médio dos funcionários? | Puxa várias informações criticas ao mesmo tempo | SIM |
+| Quais produtos possuem menos de 40 unidades em estoque? | Um pouco especifica, porém pode ajudar a ter uma idea sobre o estoque interno da filial de forma rápida | NÃO |
 
 ---
 
