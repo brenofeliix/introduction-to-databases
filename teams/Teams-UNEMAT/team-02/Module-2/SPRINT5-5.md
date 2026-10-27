@@ -38,12 +38,12 @@ ROLLBACK
 
 **Nome completo:**
 
-> Escreva aqui.
+> Geovanna Gaspar Ribeiro
 
 **Banco utilizado:**
 
 ```text
-
+gerenciamento_incidentes
 ```
 
 ---
@@ -52,11 +52,11 @@ ROLLBACK
 
 | Sprint | Conteúdo | Concluído? |
 |---|---|---|
-| 1/5 | JOINs |  |
-| 2/5 | Subconsultas |  |
-| 3/5 | Views |  |
-| 4/5 | Procedures e Functions |  |
-| 5/5 | Triggers e Transações |  |
+| 1/5 | JOINs | Sim |
+| 2/5 | Subconsultas | Sim |
+| 3/5 | Views | Sim |
+| 4/5 | Procedures e Functions | Sim |
+| 5/5 | Triggers e Transações | Sim |
 
 ---
 
@@ -77,20 +77,21 @@ registrar data de modificação
 
 **Regra escolhida:**
 
-> Escreva aqui.
+> Sempre que o status de um incidente for alterado, registrar automaticamente um histórico dessa mudança (status anterior, status novo e o momento da alteração), sem depender de o analista lembrar de registrar isso manualmente.
 
 **Evento:**
 
 - [ ] BEFORE INSERT
 - [ ] AFTER INSERT
 - [ ] BEFORE UPDATE
-- [ ] AFTER UPDATE
+- [x] AFTER UPDATE
 - [ ] Outro
 
 **Tabela envolvida:**
 
 ```text
-
+incidentes (tabela monitorada)
+historico_status_incidentes (tabela de auditoria, criada nesta Sprint)
 ```
 
 ---
@@ -115,12 +116,37 @@ DELIMITER ;
 **SQL do seu Trigger:**
 
 ```sql
--- Cole aqui.
+CREATE TABLE IF NOT EXISTS historico_status_incidentes (
+    id_historico     INT AUTO_INCREMENT PRIMARY KEY,
+    id_incidente     INT NOT NULL,
+    status_anterior  VARCHAR(20),
+    status_novo      VARCHAR(20),
+    data_alteracao   DATETIME,
+    FOREIGN KEY (id_incidente) REFERENCES incidentes(id_incidente)
+);
+
+DELIMITER //
+
+CREATE TRIGGER trg_historico_status_incidentes
+AFTER UPDATE ON incidentes
+FOR EACH ROW
+BEGIN
+    IF OLD.status <> NEW.status THEN
+        INSERT INTO historico_status_incidentes (
+            id_incidente, status_anterior, status_novo, data_alteracao
+        )
+        VALUES (
+            OLD.id_incidente, OLD.status, NEW.status, NOW()
+        );
+    END IF;
+END //
+
+DELIMITER ;
 ```
 
 **Explique linha por linha:**
 
-> Escreva aqui.
+> CREATE TABLE IF NOT EXISTS historico_status_incidentes cria a tabela que vai guardar o histórico, com uma FK para incidentes, caso ela ainda não exista. CREATE TRIGGER trg_historico_status_incidentes AFTER UPDATE ON incidentes define que o trigger dispara depois que um UPDATE na tabela incidentes é concluído. FOR EACH ROW indica que o trigger roda uma vez para cada linha afetada pelo UPDATE (e não uma única vez para o comando inteiro). Dentro do BEGIN...END, OLD representa os valores da linha antes da atualização, e NEW representa os valores depois. O IF OLD.status <> NEW.status THEN garante que só é registrado histórico quando o status realmente mudou se o UPDATE alterou outra coluna (por exemplo, só a severidade) sem mexer no status, nada é inserido. O INSERT INTO historico_status_incidentes grava o id do incidente, o status antigo, o novo, e o momento exato da alteração (NOW()).
 
 ---
 
@@ -129,24 +155,26 @@ DELIMITER ;
 **Estado antes do teste:**
 
 ```sql
--- SELECT utilizado.
+SELECT * FROM historico_status_incidentes;
 ```
 
 **Operação executada:**
 
 ```sql
--- INSERT ou UPDATE utilizado.
+UPDATE incidentes
+SET status = 'RESOLVIDO'
+WHERE id_incidente = 3;
 ```
 
 **Estado depois do teste:**
 
 ```sql
--- SELECT utilizado.
+SELECT * FROM historico_status_incidentes;
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+> Antes do UPDATE, a tabela historico_status_incidentes está vazia (ou só com registros de testes anteriores). Depois do UPDATE, aparece uma nova linha automaticamente, com id_incidente = 3, o status_anterior (o valor que o incidente tinha antes) e status_novo = 'RESOLVIDO', sem que nenhum INSERT manual tenha sido feito — confirmando que o trigger disparou sozinho, em resposta ao UPDATE.
 
 ---
 
@@ -173,19 +201,31 @@ Crie uma transação coerente com o domínio.
 
 **Objetivo:**
 
-> Escreva aqui.
+> Registrar um novo incidente e, na mesma transação, registrar a ação de resposta correspondente, garantindo que as duas inserções aconteçam juntas, já que uma ação de resposta sem o incidente correspondente não faz sentido no domínio.
 
 ```sql
+
 START TRANSACTION;
 
--- operações
+INSERT INTO incidentes (
+    titulo, descricao, severidade, status,
+    id_analista, id_dispositivo, id_ameaca, id_alerta
+)
+VALUES (
+    'Escaneamento de portas não autorizado',
+    'Ferramenta de scan identificada tentando mapear portas abertas no firewall.',
+    'MEDIA', 'ABERTO', 4, 3, 4, NULL
+);
+
+INSERT INTO acoes_resposta (descricao, id_incidente)
+VALUES ('Bloqueio do IP de origem do escaneamento no firewall.', LAST_INSERT_ID());
 
 COMMIT;
 ```
 
 **O que aconteceu após o COMMIT?**
 
-> Escreva aqui.
+> As duas inserções foram confirmadas de forma permanente no banco. LAST_INSERT_ID() foi usado para capturar o id_incidente gerado automaticamente pelo primeiro INSERT, garantindo que a ação de resposta fosse vinculada ao incidente correto, mesmo sem saber de antemão qual seria esse id. Depois do COMMIT, tanto o novo incidente quanto a nova ação de resposta ficam visíveis para qualquer consulta feita a partir desse momento, inclusive em outras sessões/conexões. 
 
 ---
 
@@ -196,7 +236,8 @@ Execute uma transação que será desfeita.
 ```sql
 START TRANSACTION;
 
--- operações
+DELETE FROM alertas
+WHERE id_alerta = 3;
 
 ROLLBACK;
 ```
@@ -204,18 +245,18 @@ ROLLBACK;
 **Verificação antes:**
 
 ```sql
--- SELECT
+SELECT * FROM alertas WHERE id_alerta = 3;
 ```
 
 **Verificação depois:**
 
 ```sql
--- SELECT
+SELECT * FROM alertas WHERE id_alerta = 3;
 ```
 
 **O que o ROLLBACK fez?**
 
-> Escreva aqui.
+> Simulei a exclusão acidental de um alerta (id_alerta = 3) dentro de uma transação. Antes do ROLLBACK, se eu consultasse a tabela na mesma sessão, o alerta já apareceria como removido. Mas como a transação nunca foi confirmada com COMMIT, o ROLLBACK desfez a exclusão por completo, a consulta feita depois do ROLLBACK mostra o alerta 3 exatamente como estava antes, como se o DELETE nunca tivesse acontecido.
 
 ---
 
@@ -223,16 +264,15 @@ ROLLBACK;
 
 ## COMMIT
 
-> Explique com suas palavras.
+> COMMIT confirma permanentemente todas as operações realizadas desde o início da transação (START TRANSACTION). Depois do COMMIT, as mudanças não podem mais ser desfeitas por essa transação, elas passam a fazer parte definitiva dos dados do banco.
 
 ## ROLLBACK
 
-> Explique com suas palavras.
+> ROLLBACK desfaz todas as operações realizadas desde o início da transação, devolvendo os dados ao estado em que estavam antes dela começar. É como um "Ctrl+Z" para tudo o que foi feito dentro daquela transação, desde que ainda não tenha sido confirmado com COMMIT.
 
 ## Por que transações são importantes?
 
-> Escreva aqui.
-
+> Porque garantem que operações que dependem umas das outras (como inserir um incidente e sua ação de resposta) aconteçam de forma atômica: ou as duas são salvas juntas, ou nenhuma delas é salva. Sem transação, se o banco falhasse ou o script fosse interrompido entre os dois INSERTs, o sistema ficaria com uma ação de resposta "órfã" apontando para um incidente inexistente, ou um incidente sem sua ação correspondente, um estado inconsistente que as transações existem justamente para evitar.
 ---
 
 # 10. Integração do Module-2
@@ -262,15 +302,20 @@ Estrutura esperada:
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais incidentes de severidade crítica estão sob responsabilidade de qual analista? 
 
 ```sql
--- Cole aqui.
+SELECT a.nome AS analista,
+       i.titulo AS incidente,
+       i.severidade
+FROM analistas a
+INNER JOIN incidentes i ON i.id_analista = a.id_analista
+WHERE i.severidade = 'CRITICA';
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> O INNER JOIN liga cada incidente ao seu analista responsável, e o WHERE restringe o resultado apenas aos incidentes de severidade 'CRITICA', permitindo identificar rapidamente quem está tratando os casos de maior risco no sistema.
 
 ---
 
@@ -278,15 +323,24 @@ Estrutura esperada:
 
 **Pergunta:**
 
-> Escreva aqui.
+> Para cada analista, qual foi o incidente mais recente atribuído a ele?
 
 ```sql
--- Cole aqui.
+SELECT a.nome AS analista,
+       i.titulo AS incidente_mais_recente,
+       i.data_identificacao
+FROM analistas a
+JOIN incidentes i ON i.id_analista = a.id_analista
+WHERE i.data_identificacao = (
+    SELECT MAX(i2.data_identificacao)
+    FROM incidentes i2
+    WHERE i2.id_analista = a.id_analista
+);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> A subconsulta é correlacionada porque depende do id_analista da linha atual da consulta externa, para cada analista, ela recalcula qual é a maior data_identificacao entre os incidentes daquele analista específico, e a consulta externa mantém apenas o incidente que corresponde a essa data mais recente.
 
 ---
 
@@ -295,12 +349,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+vw_incidentes_em_aberto
 ```
 
 **Por que é importante?**
 
-> Escreva aqui.
+> Representa exatamente o painel operacional que um analista ou coordenador do SOC consultaria no dia a dia, todos os incidentes ainda não resolvidos (ABERTO ou EM_ANALISE), já com analista e dispositivo envolvidos, sem precisar reescrever o JOIN e o filtro toda vez.
 
 ---
 
@@ -309,18 +363,18 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+encerrar_incidente
 ```
 
 **Entrada:**
 
 ```text
-
+p_id_incidente INT
 ```
 
 **Resultado:**
 
-> Escreva aqui.
+> Encerra o incidente informado (mudando status para 'ENCERRADO' e preenchendo data_encerramento), mas verifica antes se ele já estava encerrado, evitando reprocessar ou sobrescrever dados indevidamente. É a rotina mais próxima de uma ação real que um analista executaria no sistema.
 
 ---
 
@@ -329,12 +383,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+dias_em_aberto
 ```
 
 **O que retorna?**
 
-> Escreva aqui.
+> Um número inteiro representando quantos dias se passaram entre a identificação de um incidente e seu encerramento (ou até o momento atual, se ele ainda estiver em aberto), útil para medir o tempo de resposta da equipe a cada incidente.
 
 ---
 
@@ -343,12 +397,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+trg_historico_status_incidentes
 ```
 
 **Regra automatizada:**
 
-> Escreva aqui.
+> Sempre que o status de um incidente é alterado por um UPDATE, o trigger registra automaticamente, na tabela historico_status_incidentes, o status anterior, o novo status e o momento da mudança, criando uma trilha de auditoria sem depender de nenhuma ação manual do analista.
 
 ---
 
@@ -356,14 +410,14 @@ Estrutura esperada:
 
 O aluno deverá executar o projeto no MySQL Workbench e verificar:
 
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT funciona;
-- [ ] ROLLBACK funciona.
+- [x] JOINs funcionam;
+- [x] subconsultas funcionam;
+- [x] Views funcionam;
+- [x] Procedures funcionam;
+- [x] Function funciona;
+- [x] Trigger funciona;
+- [x] COMMIT funciona;
+- [x] ROLLBACK funciona.
 
 ---
 
@@ -405,7 +459,7 @@ O aluno deverá ser capaz de:
 
 **Conteúdo que compreendi melhor:**
 
-> Escreva aqui.
+> JOINs (INNER, LEFT e RIGHT) e Viewss são os conceitos que mais usei e que ficaram mais intuitivos de explicar.
 
 **Conteúdo mais difícil:**
 
@@ -413,7 +467,7 @@ O aluno deverá ser capaz de:
 
 **Código do Module-2 que considero mais importante:**
 
-> Escreva aqui.
+> A Procedure encerrar_incidente combinada com o Trigger trg_historico_status_incidentes juntos, representam uma automação real e coerente com o domínio: encerrar um incidente de forma segura e manter um histórico automático dessa mudança.
 
 **O que eu conseguiria explicar presencialmente sem consultar material?**
 
@@ -479,21 +533,21 @@ Total esperado:
 
 # 23. Checklist final
 
-- [ ] mantive os arquivos do Module-1;
-- [ ] utilizei a mesma branch `team-XX`;
-- [ ] concluí as cinco Sprints do Module-2;
-- [ ] todos os `.md` estão preenchidos;
-- [ ] todos os `.sql` foram testados;
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT e ROLLBACK foram demonstrados;
-- [ ] compreendo o código entregue;
-- [ ] revisei os nomes dos arquivos;
-- [ ] nenhum arquivo foi colocado fora de `Module-2`.
+- [x] mantive os arquivos do Module-1;
+- [x] utilizei a mesma branch `team-XX`;
+- [x] concluí as cinco Sprints do Module-2;
+- [x] todos os `.md` estão preenchidos;
+- [x] todos os `.sql` foram testados;
+- [x] JOINs funcionam;
+- [x] subconsultas funcionam;
+- [x] Views funcionam;
+- [x] Procedures funcionam;
+- [x] Function funciona;
+- [x] Trigger funciona;
+- [x] COMMIT e ROLLBACK foram demonstrados;
+- [x] compreendo o código entregue;
+- [x] revisei os nomes dos arquivos;
+- [x] nenhum arquivo foi colocado fora de `Module-2`.
 
 ---
 
