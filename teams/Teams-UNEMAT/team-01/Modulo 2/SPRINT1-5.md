@@ -437,8 +437,8 @@ Explique:
 4. o que a cláusula `ON` faz;
 5. o que ocorreria se a condição de relacionamento estivesse errada.
 
-> **1. Quais tabelas participam?**
-> Participam as tabelas `serie` (s) e `plataforma` (p).
+**1. Quais tabelas participam?**
+>Participam as tabelas `serie` (s) e `plataforma` (p).
 
 **2. Qual PK está sendo utilizada?**
 > A chave primária `p.id_plataforma`, da tabela `plataforma`.
