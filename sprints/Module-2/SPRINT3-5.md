@@ -262,7 +262,7 @@ START TRANSACTION;
 
 UPDATE FUNCIONARIO
 SET id_filial = 2
-WHERE id_func = 1;
+WHERE id_func = 2;
 
 SELECT *
 FROM vw_funcionarios_por_filial;
