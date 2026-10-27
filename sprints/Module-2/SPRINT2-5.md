@@ -447,12 +447,11 @@ Com o limite menor, a consulta pode mostrar mais funcionários, pois cargos com 
 ---
 
 # 15. Problemas encontrados
-
 | Problema | Causa | Solução |
 |---|---|---|
-| Erro de chave estrangeira ao inserir expediente | O `id_func` informado não existia em `FUNCIONARIO` | Conferir os IDs reais e relacionar o expediente ao funcionário correto |
-| Resultado vazio em uma consulta com filtro | Nenhum registro atendia à condição usada | Conferir os dados e ajustar o valor do filtro, se necessário |
-| Consulta com `JOIN` sem resultado para algum registro | Não havia correspondência entre os IDs relacionados | Conferir as chaves estrangeiras e os valores cadastrados |
+|  |  |  |
+|  |  |  |
+|  |  |  |
 
 ---
 
