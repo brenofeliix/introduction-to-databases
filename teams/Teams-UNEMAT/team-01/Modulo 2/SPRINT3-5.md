@@ -383,7 +383,7 @@ WHERE id_serie = 1;
 
 -- Inserção de uma nova avaliação para Stranger Things
 INSERT INTO item_watchlist (id_usuario, id_serie, status_assistindo, nota, comentario)
-VALUES (3, 1, 'Concluído', 10.0, 'Excelente série, revi agora!');
+VALUES (3, 1, 'Concluído', 10, 'Excelente série, revi agora!');
 
 -- Nova consulta à VIEW
 SELECT nome_serie, media_nota, total_avaliacoes 
