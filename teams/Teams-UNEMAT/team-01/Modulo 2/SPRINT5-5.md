@@ -115,7 +115,7 @@ DELIMITER ;
 **SQL do seu Trigger:**
 
 ```sql
--- DELIMITER //
+DELIMITER //
 
 CREATE TRIGGER trg_validar_status_nota_bi
 BEFORE INSERT ON item_watchlist
@@ -315,7 +315,7 @@ Estrutura esperada:
 > Qual é a listagem analítica das séries, exibindo o título, o serviço de streaming, a quantidade total de adições na watchlist e a quantidade de resenhas com nota?
 
 ```sql
--- SELECT 
+SELECT 
     s.titulo AS serie,
     p.nome_plataforma AS plataforma,
     COUNT(w.id_usuario) AS total_watchlist,
@@ -342,7 +342,7 @@ ORDER BY total_watchlist DESC;
 > Quais usuários atribuíram a alguma série uma nota estritamente maior que a média global de todas as notas do sistema?
 
 ```sql
--- SELECT 
+SELECT 
     u.id_usuario, 
     u.nome, 
     w.id_serie, 
@@ -429,14 +429,14 @@ trg_validar_status_nota_bi / trg_validar_status_nota_bu
 
 O aluno deverá executar o projeto no MySQL Workbench e verificar:
 
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT funciona;
-- [ ] ROLLBACK funciona.
+- [X] JOINs funcionam;
+- [X] subconsultas funcionam;
+- [X] Views funcionam;
+- [X] Procedures funcionam;
+- [X] Function funciona;
+- [X] Trigger funciona;
+- [X] COMMIT funciona;
+- [X] ROLLBACK funciona.
 
 ---
 
@@ -478,11 +478,11 @@ O aluno deverá ser capaz de:
 
 **Conteúdo que compreendi melhor:**
 
-> Escreva aqui.
+> Consultas select,
 
 **Conteúdo mais difícil:**
 
-> Escreva aqui.
+> O conteúdo desse modulo 2,as consultas 
 
 **Código do Module-2 que considero mais importante:**
 
@@ -552,21 +552,21 @@ Total esperado:
 
 # 23. Checklist final
 
-- [ ] mantive os arquivos do Module-1;
-- [ ] utilizei a mesma branch `team-XX`;
-- [ ] concluí as cinco Sprints do Module-2;
-- [ ] todos os `.md` estão preenchidos;
-- [ ] todos os `.sql` foram testados;
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT e ROLLBACK foram demonstrados;
-- [ ] compreendo o código entregue;
-- [ ] revisei os nomes dos arquivos;
-- [ ] nenhum arquivo foi colocado fora de `Module-2`.
+- [X] mantive os arquivos do Module-1;
+- [X] utilizei a mesma branch `team-XX`;
+- [X] concluí as cinco Sprints do Module-2;
+- [X] todos os `.md` estão preenchidos;
+- [X] todos os `.sql` foram testados;
+- [X] JOINs funcionam;
+- [X] subconsultas funcionam;
+- [X] Views funcionam;
+- [X] Procedures funcionam;
+- [X] Function funciona;
+- [X] Trigger funciona;
+- [X] COMMIT e ROLLBACK foram demonstrados;
+- [X] compreendo o código entregue;
+- [X] revisei os nomes dos arquivos;
+- [X] nenhum arquivo foi colocado fora de `Module-2`.
 
 ---
 
