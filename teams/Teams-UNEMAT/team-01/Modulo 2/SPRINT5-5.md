@@ -478,19 +478,19 @@ O aluno deverá ser capaz de:
 
 **Conteúdo que compreendi melhor:**
 
-> Consultas select,
+> Operações de manipulação de dados (`INSERT`, `UPDATE` e `DELETE`) e consultas `SELECT`, que foram a base do Módulo 1.
 
 **Conteúdo mais difícil:**
 
-> O conteúdo desse modulo 2,as consultas 
+> As consultas do Módulo 2, em especial: `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, consultas com agrupamento e agregação (`GROUP BY`, `HAVING`, `COUNT`,`), subconsultas (subqueries) e rotinas armazenadas (`Stored Procedures` e `Functions`).
 
 **Código do Module-2 que considero mais importante:**
 
-> Escreva aqui.
+> A procedure `sp_atualizar_status_watchlist'.
 
 **O que eu conseguiria explicar presencialmente sem consultar material?**
 
-> Escreva aqui.
+> A execução de rotinas com o comando `CALL`: consigo explicar que, diferentemente de uma consulta comum (`SELECT`), uma stored procedure precisa ser chamada com a palavra `CALL` passando os valores desejados entre parênteses, por exemplo `CALL sp_listar_series_por_plataforma('Netflix');`.
 
 ---
 
