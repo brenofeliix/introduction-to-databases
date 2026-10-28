@@ -47,13 +47,13 @@ WHERE w.nota > (
 CREATE OR REPLACE VIEW vw_estatisticas_series AS
 SELECT 
     s.id_serie,
-    s.titulo,
-    p.nome_plataforma,
-    COUNT(w.id_usuario) AS total_na_watchlist,
-    COUNT(w.nota) AS total_avaliados,
+    s.titulo AS nome_serie,
+    p.nome_plataforma AS plataforma,
+    COUNT(w.id_usuario) AS total_watchlist,
+    COUNT(w.nota) AS total_avaliacoes,
     MIN(w.nota) AS menor_nota,
     MAX(w.nota) AS maior_nota,
-    ROUND(AVG(w.nota), 1) AS media_nota
+    ROUND(AVG(w.nota), 2) AS media_nota
 FROM serie AS s
 INNER JOIN plataforma AS p
     ON s.id_plataforma = p.id_plataforma
@@ -72,7 +72,7 @@ CREATE PROCEDURE sp_atualizar_status_watchlist(
     IN p_id_usuario INT,
     IN p_id_serie INT,
     IN p_novo_status VARCHAR(20),
-    IN p_nota DECIMAL(3,1)
+    IN p_nota TINYINT
 )
 BEGIN
     IF p_novo_status = 'Quero Ver' THEN
