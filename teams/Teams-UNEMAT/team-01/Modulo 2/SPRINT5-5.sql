@@ -189,14 +189,14 @@ ROLLBACK;
 SELECT * FROM vw_estatisticas_series;
 
 -- 2. Validação da Procedure
-CALL sp_atualizar_status_watchlist(1, 2, 'Assistindo', 9.5);
+CALL sp_atualizar_status_watchlist(1, 2, 'Assistindo', 9);
 
 -- 3. Validação da Function
 SELECT id_serie, titulo, fn_classificar_desempenho_serie(id_serie) AS classificacao FROM serie;
 
--- 4. Validação dos Triggers (Tenta atribuir nota 10.0 em item 'Quero Ver')
+-- 4. Validação dos Triggers (Tenta atribuir nota 10 em item 'Quero Ver')
 UPDATE item_watchlist
-SET status_assistindo = 'Quero Ver', nota = 10.0
+SET status_assistindo = 'Quero Ver', nota = 10
 WHERE id_usuario = 5 AND id_serie = 5;
 
 SELECT * FROM item_watchlist WHERE id_usuario = 5 AND id_serie = 5;
