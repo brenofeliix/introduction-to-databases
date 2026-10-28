@@ -64,7 +64,7 @@ Não altere nem apague os arquivos do `Module-1`.
 **Branch:**
 
 ```text
-Team-01
+team-01
 
 ```
 
@@ -92,7 +92,6 @@ Liste as principais tabelas que serão utilizadas.
 | 2 | usuario | id_usuario | Nenhuma |
 | 3 | serie | id_serie | id_plataforma (referencia plataforma.id_plataforma) |
 | 4 | item_watchlist | (id_usuario, id_serie) | id_usuario (referencia usuario.id_usuario), id_serie (referencia serie.id_serie) |
-| 5 |  |  |  |
 
 ---
 
@@ -211,7 +210,7 @@ LEFT JOIN serie AS s
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> Mantém todos os registros da tabela da esquerda (usuario). Usuários que não cadastraram itens na watchlist (como a usuária Fernanda Costa, após a remoção do item de teste) continuam sendo listados, trazendo os campos status_assistindo e nota preenchidos com NULL, permitindo identificar usuários inativos.
+> trazendo os campos serie, status_assistindo e nota preenchidos com NULL, permitindo identificar usuários que ainda não adicionaram nenhuma série à lista.
 
 ---
 
@@ -497,9 +496,9 @@ Rafael Souza (Severance)
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| A média de notas ficava com muitas casas decimais ou vazia | Algumas séries na lista não tinham nota preenchida | Usei ROUND(AVG(...), 2) para limitar em 2 casas e filtrei notas em branco |
+| Uma plataforma sumiu da lista final | Como ela ainda não tinha nenhuma série cadastrada, o INNER JOIN ignorou a linha | Troquei para RIGHT JOIN para mostrar a plataforma mesmo sem série |
+| Usuários que não adicionaram nenhuma série não apareciam | O INNER JOIN só mostrava quem já tinha adicionado algo na lista | Troquei para LEFT JOIN a partir da tabela de usuários para listar todo mundo |
 
 ---
 
