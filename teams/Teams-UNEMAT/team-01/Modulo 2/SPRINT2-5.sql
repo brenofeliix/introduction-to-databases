@@ -1,7 +1,7 @@
 -- MODULE 2 — SPRINT 2/5
 -- SUBCONSULTAS
 
--- Aluna: Raquel Silva dos Santos
+-- Aluna: Raquel Silva dos SantoS
 -- Banco: series_watchlist_db
 
 USE series_watchlist_db;
