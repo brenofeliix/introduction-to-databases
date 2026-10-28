@@ -36,12 +36,12 @@ O aluno deverá continuar utilizando o mesmo banco do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Talita de Oliveira Leite Sete 
 
 **Banco utilizado:**
 
 ```text
-
+secretaria_saude
 ```
 
 ---
@@ -72,11 +72,11 @@ Neste exemplo:
 
 Defina pelo menos cinco perguntas do seu domínio que possam ser resolvidas com subconsultas.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais itens do estoque estão abaixo da média geral?
+2. Quais pacientes foram atendidos em unidades do tipo UBS?
+3. Quais profissionais nunca participaram de um atendimento?
+4. Quais unidades possuem vacina em estoque, e quais não têm nenhum atendimento?
+5. Qual item vence primeiro, e quais itens estão acima da média da própria unidade?
 
 ---
 
@@ -86,19 +86,26 @@ Crie uma consulta utilizando uma comparação com resultado agregado.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais itens estão com estoque abaixo da média geral?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- SUBQUERY COM COMPARAÇÃO
+-- Quais itens estão com estoque abaixo da média geral?
+-- ============================================================
+SELECT e.nome AS item, e.quantidade
+FROM estoque_item AS e
+WHERE e.quantidade < (SELECT AVG(quantidade) FROM estoque_item)
+ORDER BY e.quantidade;
 ```
 
 **Explique primeiro a consulta interna:**
 
-> Escreva aqui.
+> SELECT AVG(quantidade) FROM estoque_item roda sozinha e devolve um único valor: 222,1.
 
 **Depois explique a consulta externa:**
 
-> Escreva aqui.
+> Percorre estoque_item e mantém só as linhas com quantidade < 222,1. Retorna 7 itens, de Influenza do Posto Rural (8) até Fluoxetina (200).
 
 ---
 
@@ -119,15 +126,28 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais pacientes foram atendidos em unidades do tipo UBS?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- IN
+-- Quais pacientes foram atendidos em unidades do tipo UBS?
+-- ============================================================
+SELECT p.id_paciente, p.nome
+FROM paciente AS p
+WHERE p.id_paciente IN (
+    SELECT a.id_paciente
+    FROM atendimento AS a
+    WHERE a.id_unidade IN (
+        SELECT u.id_unidade FROM unidade_saude AS u WHERE u.tipo = 'UBS'
+    )
+)
+ORDER BY p.nome;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> A subconsulta mais interna pega os ids das unidades do tipo UBS (1 e 2). A do meio pega os pacientes atendidos nessas unidades. A externa mostra o nome desses pacientes.
 
 ---
 
@@ -135,16 +155,24 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais profissionais nunca participaram de um atendimento?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- NOT IN
+-- Quais profissionais nunca participaram de um atendimento?
+-- (atendimento.id_profissional é NOT NULL, então o NOT IN é seguro)
+-- ============================================================
+SELECT pf.id_profissional, pf.nome, pf.cargo
+FROM profissional AS pf
+WHERE pf.id_profissional NOT IN (
+    SELECT a.id_profissional FROM atendimento AS a
+);
 ```
 
 **Que registros você está procurando?**
 
-> Escreva aqui.
-
+> Profissionais cujo id não aparece em atendimento.id_profissional. Retorna Marcos Vinícius (assistente administrativo) e Sandra Regina (coordenadora), o que faz sentido porque são cargos administrativos. O NOT IN só é seguro aqui porque id_profissional é NOT NULL em atendimento: se a subconsulta devolvesse um NULL, o NOT IN não retornaria nenhuma linha.
 ---
 
 # 7. EXISTS
@@ -155,10 +183,21 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais unidades possuem pelo menos uma vacina em estoque?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- EXISTS
+-- Quais unidades possuem pelo menos uma vacina em estoque?
+-- ============================================================
+SELECT u.id_unidade, u.nome, u.tipo
+FROM unidade_saude AS u
+WHERE EXISTS (
+    SELECT 1
+    FROM estoque_item AS e
+    WHERE e.id_unidade = u.id_unidade AND e.tipo = 'VACINA'
+);
+
 ```
 
 ---
@@ -167,15 +206,23 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais unidades não possuem nenhum atendimento registrado?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- NOT EXISTS
+-- Quais unidades não possuem nenhum atendimento registrado?
+-- ============================================================
+SELECT u.id_unidade, u.nome, u.tipo
+FROM unidade_saude AS u
+WHERE NOT EXISTS (
+    SELECT 1 FROM atendimento AS a WHERE a.id_unidade = u.id_unidade
+);
 ```
 
 **Explique a diferença em relação a `EXISTS`:**
 
-> Escreva aqui.
+> O EXISTS mantém a unidade quando a subconsulta encontra ao menos uma linha. O NOT EXISTS faz o contrário: mantém quando não encontra nenhuma. Aqui retorna só o Posto de Saúde Rural Boa Vista.
 
 ---
 
@@ -183,15 +230,22 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual item tem a validade mais próxima e em qual unidade está?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- MAX / MIN
+-- Qual item tem a validade mais próxima e em qual unidade está?
+-- ============================================================
+SELECT u.nome AS unidade, e.nome AS item, e.validade
+FROM estoque_item AS e
+INNER JOIN unidade_saude AS u ON u.id_unidade = e.id_unidade
+WHERE e.validade = (SELECT MIN(validade) FROM estoque_item);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> A subconsulta MIN(validade) devolve 2027-01-20. A externa busca o item com essa validade e junta com unidade_saude para mostrar o nome. Resultado: Vacina Tríplice Viral, na UBS Vila Nova.
 
 ---
 
@@ -203,10 +257,22 @@ Uma subconsulta correlacionada depende de valores da consulta externa.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais itens têm quantidade acima da média da própria unidade?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- SUBQUERY CORRELACIONADA
+-- Quais itens têm quantidade acima da média da própria unidade?
+-- ============================================================
+SELECT u.nome AS unidade, e1.nome AS item, e1.quantidade
+FROM estoque_item AS e1
+INNER JOIN unidade_saude AS u ON u.id_unidade = e1.id_unidade
+WHERE e1.quantidade > (
+    SELECT AVG(e2.quantidade)
+    FROM estoque_item AS e2
+    WHERE e2.id_unidade = e1.id_unidade
+)
+ORDER BY u.nome;
 ```
 
 **Qual coluna da consulta externa é utilizada pela subconsulta?**
