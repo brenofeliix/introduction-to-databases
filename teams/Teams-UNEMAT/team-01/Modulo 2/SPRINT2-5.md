@@ -1,3 +1,4 @@
+
 # SPRINT 2/5 — Subconsultas e Consultas Avançadas
 
 **Disciplina:** Laboratório de Banco de Dados  
@@ -186,9 +187,10 @@ WHERE id_plataforma NOT IN (
 
 **Pergunta:**
 
-> Quais utilizadores atribuíram nota máxima (10.0) a pelo menos uma série?
+>  Quais usuários atribuíram nota máxima (10) a pelo menos uma série?
 
 ```sql
+-- EXISTS
 SELECT 
     u.id_usuario, 
     u.nome
@@ -197,7 +199,8 @@ WHERE EXISTS (
     SELECT 1
     FROM item_watchlist AS w
     WHERE w.id_usuario = u.id_usuario
-      AND w.nota = 10.0
+      AND w.nota = 10
+);
 );
 ```
 
@@ -207,7 +210,7 @@ WHERE EXISTS (
 
 **Pergunta:**
 
-> Quais utilizadores cadastrados no sistema ainda não têm nenhuma série adicionada à sua watchlist?
+> Quais usuários cadastrados no sistema ainda não têm nenhuma série adicionada à sua watchlist?
 
 ```sql
 SELECT 
