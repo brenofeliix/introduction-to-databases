@@ -59,25 +59,23 @@ Não altere nem apague os arquivos do `Module-1`.
 
 **Nome completo:**
 
-> Raquel Silva dos Santos
+> Escreva aqui.
 
 **Branch:**
 
 ```text
-team-01
+team-XX
 ```
 
 **Nome do banco:**
 
 ```text
 
-series_watchlist_db
-
 ```
 
 **Tema do projeto:**
 
-> Sistema de Catálogo de Séries e Gerenciamento de Watchlist com Avaliações de Usuários.
+> Escreva aqui.
 
 ---
 
@@ -87,10 +85,10 @@ Liste as principais tabelas que serão utilizadas.
 
 | Nº | Tabela | PK | Principais FKs |
 |---:|---|---|---|
-| 1 | plataforma | id_plataforma | Nenhuma |
-| 2 | usuario | id_usuario | Nenhuma |
-| 3 | serie | id_serie | id_plataforma (referencia plataforma.id_plataforma) |
-| 4 | item_watchlist | (id_usuario, id_serie) | id_usuario (referencia usuario.id_usuario), id_serie (referencia serie.id_serie) |
+| 1 |  |  |  |
+| 2 |  |  |  |
+| 3 |  |  |  |
+| 4 |  |  |  |
 | 5 |  |  |  |
 
 ---
@@ -99,10 +97,10 @@ Liste as principais tabelas que serão utilizadas.
 
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
 |---|---|---|---|
-| plataforma | 1:N | serie | serie.id_plataforma |
-| usuario | 1:N | item_watchlist | item_watchlist.id_usuario |
-| serie | 1:N | item_watchlist | item_watchlist.id_serie |
-| usuario | N:N | serie | Implementada por meio da associativa item_watchlist |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
 
 ---
 
