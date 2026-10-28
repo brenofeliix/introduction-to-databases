@@ -125,12 +125,12 @@ Secretaria de Saúde - gestão de pacientes, atendimentos e unidades de saúde.
 
 ## O projeto final permaneceu igual ao planejamento inicial?
 
-- [x] Sim
-- [ ] Não
+- [ ] Sim
+- [x] Não
 
 Caso tenha mudado, explique:
 
-> Escreva aqui.
+> Houve ajustes pontuais de obrigatoriedade e a coluna telefone, registrados no item 4.
 
 ---
 
@@ -140,10 +140,10 @@ Registre alterações relevantes feitas desde a Sprint 1/5.
 
 | Alteração | Sprint em que ocorreu | Justificativa |
 |---|---|---|
-| Adição da coluna `telefone` em `profissional` | Sprint 2/5 | Necessidade de meio de contacto com a equipa médica/administrativa, não prevista na Sprint 1. | |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| telefone em profissional | Sprint 2 | Atributo já previsto na Sprint 1, mas a coluna foi adicionada por ALTER TABLE para praticar o comando. |
+| paciente.data_nascimento | Sprint 2 | Planejado como obrigatório, implementado como opcional. |
+| paciente.endereco | Sprint 2 | Planejado como opcional, implementado como NOT NULL, para garantir a localização do paciente |
+| unidade_saude.tipo | Sprint 2 | Planejado como obrigatório, implementado como opcional.|
 
 Caso não tenha ocorrido alteração:
 
@@ -302,7 +302,7 @@ Liste os principais UPDATEs finais:
 
 ```sql
 UPDATE atendimento SET data_hora = '2026-11-05 08:30:00' WHERE id_atendimento = 14;
-UPDATE paciente SET telefone = '(66) 99905-0555', endereco = 'Rua das Acácias, 88' WHERE id_paciente = 5;
+UPDATE paciente SET telefone = '(66) 99905-0555', endereco = 'Rua das Acácias, 88 - Jardim Primavera' WHERE id_paciente = 5;
 UPDATE profissional SET telefone = '(66) 98801-0007' WHERE id_profissional = 7;
 UPDATE estoque_item SET quantidade = quantidade - 2 WHERE id_item = 3;
 
@@ -368,7 +368,7 @@ Retome as perguntas definidas inicialmente.
 
 ## Pergunta 1
 
-> Quais pacientes estão cadastrados em determinada unidade?
+> Quais pacientes foram atendidos em determinada unidade?
 
 **Foi respondida?**
 
@@ -654,16 +654,16 @@ Confira se todas as tabelas aparecem.
 Quantidade de tabelas:
 
 ```text
-
+esperado 7
 ```
 
 Quantidade encontrada:
 
 ```text
-
+encontrado 7
 ```
 
-- [ ] corresponde ao esperado.
+- [x] corresponde ao esperado.
 
 ---
 
@@ -717,18 +717,18 @@ Registre:
 ### Tabela testada
 
 ```text
-
+atendimento
 ```
 
 ### Restrição testada
 
 ```text
-
+FOREIGN KEY (id_paciente)
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Erro 1452 – Cannot add or update a child row: a foreign key constraint fails
 
 > Comandos propositalmente inválidos não devem permanecer ativos no SQL final. Caso queira documentá-los, mantenha-os comentados.
 
@@ -741,12 +741,12 @@ Caso exista uma restrição `UNIQUE`, teste seu funcionamento.
 ### Campo testado
 
 ```text
-
+paciente.cpf
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Erro 1062 – Duplicate entry ‘10000000001’ for key ‘cpf’
 
 ---
 
@@ -757,12 +757,12 @@ Caso exista `NOT NULL`, verifique se a restrição funciona.
 ### Campo testado
 
 ```text
-
+paciente.endereco
 ```
 
 ### Resultado
 
-> Escreva aqui.
+> Erro 1364 – Field ‘endereco’ doesn’t have a default value
 
 ---
 
