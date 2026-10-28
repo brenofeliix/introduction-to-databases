@@ -30,14 +30,20 @@ END //
 
 -- PROCEDURE 2
 -- Atualiza o status e a nota de um item na watchlist com validação condicional de regras de negócio.
+
 DROP PROCEDURE IF EXISTS sp_atualizar_status_watchlist //
 CREATE PROCEDURE sp_atualizar_status_watchlist(
     IN p_id_usuario INT,
     IN p_id_serie INT,
     IN p_novo_status VARCHAR(20),
-    IN p_nota DECIMAL(3,1)
+    IN p_nota TINYINT UNSIGNED
 )
 BEGIN
+    IF p_nota IS NOT NULL AND (p_nota < 0 OR p_nota > 10) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'A nota deve ser um número inteiro entre 0 e 10.';
+    END IF;
+
     IF p_novo_status = 'Quero Ver' THEN
         UPDATE item_watchlist
         SET status_assistindo = p_novo_status,
