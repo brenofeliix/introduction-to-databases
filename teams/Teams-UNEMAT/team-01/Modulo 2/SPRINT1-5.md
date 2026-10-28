@@ -287,7 +287,7 @@ INNER JOIN serie AS s
     ON w.id_serie = s.id_serie
 INNER JOIN plataforma AS p
     ON s.id_plataforma = p.id_plataforma
-WHERE w.status_assistindo IN ('Assistindo', 'Concluído');
+WHERE w.status_assistindo IN ('Assistindo', 'Finalizado');
 ```
 
 ---
@@ -313,7 +313,7 @@ INNER JOIN serie AS s
 INNER JOIN plataforma AS p
     ON s.id_plataforma = p.id_plataforma
 WHERE p.nome_plataforma = 'HBO Max' 
-  AND w.status_assistindo = 'Concluído';
+  AND w.status_assistindo = 'Finalizado';
 ```
 
 **Explique o filtro:**
