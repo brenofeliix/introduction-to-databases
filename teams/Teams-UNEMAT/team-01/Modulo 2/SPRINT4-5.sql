@@ -64,10 +64,11 @@ END //
 -- PROCEDURE COM OUT
 -- Retorna em parâmetros de saída a contagem de séries e a média aritmética das notas de um determinado usuário.
 DROP PROCEDURE IF EXISTS sp_resumo_usuario //
-CREATE PROCEDURE sp_resumo_usuario(
-    IN  p_id_usuario INT,
-    OUT p_total_series INT,
-    OUT p_media_pessoal DECIMAL(3,1)
+CREATE PROCEDURE sp_atualizar_status_watchlist(
+    IN p_id_usuario INT,
+    IN p_id_serie INT,
+    IN p_novo_status VARCHAR(20),
+    IN p_nota TINYINT
 )
 BEGIN
     SELECT 
@@ -121,8 +122,8 @@ CALL sp_listar_series_por_plataforma('Netflix');
 CALL sp_listar_series_por_plataforma('HBO Max');
 
 -- Testes da Procedure 2
-CALL sp_atualizar_status_watchlist(1, 5, 'Assistindo', 8.5);
-CALL sp_atualizar_status_watchlist(1, 5, 'Quero Ver', 9.0);
+CALL sp_atualizar_status_watchlist(1, 5, 'Assistindo', 8);
+CALL sp_atualizar_status_watchlist(1, 5, 'Quero Ver', 9);
 
 -- Testes da Procedure com OUT
 CALL sp_resumo_usuario(1, @total, @media);
