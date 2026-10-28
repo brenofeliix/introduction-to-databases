@@ -1,7 +1,7 @@
 -- MODULE 2 — SPRINT 2/5
 -- SUBCONSULTAS
 
--- Aluna: Raquel Silva dos SantoS
+-- Aluna: Raquel Silva dos Santos
 -- Banco: series_watchlist_db
 
 USE series_watchlist_db;
@@ -54,7 +54,7 @@ WHERE EXISTS (
     SELECT 1
     FROM item_watchlist AS w
     WHERE w.id_usuario = u.id_usuario
-      AND w.nota = 10.0
+      AND w.nota = 10
 );
 
 -- NOT EXISTS
