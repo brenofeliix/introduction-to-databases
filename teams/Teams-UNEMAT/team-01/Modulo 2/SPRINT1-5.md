@@ -145,7 +145,7 @@ FK: serie.id_plataforma
 **SQL:**
 
 ```sql
--- SELECT 
+SELECT 
     s.titulo AS nome_serie,
     s.genero,
     s.ano_lancamento,
@@ -166,7 +166,7 @@ INNER JOIN plataforma AS p
 > Quais usuários já adicionaram séries em sua lista e qual é o título e status de cada item?
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     w.status_assistindo,
