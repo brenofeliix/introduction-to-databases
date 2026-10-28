@@ -59,24 +59,23 @@ Não altere nem apague os arquivos do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Talita de Oliveira Leite Sete 
 
 **Branch:**
 
 ```text
-team-XX
+team-07
 ```
 
 **Nome do banco:**
 
 ```text
-
+secretaria_saude
 ```
 
 **Tema do projeto:**
 
-> Escreva aqui.
-
+> Secretaria Municipal de Saúde (pacientes, atendimentos, prontuários, estoque e óbitos)
 ---
 
 # 3. Retomada do banco
@@ -85,11 +84,13 @@ Liste as principais tabelas que serão utilizadas.
 
 | Nº | Tabela | PK | Principais FKs |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | paciente | id_paciente | -- |
+| 2 | profissional | id_profissional | -- |
+| 3 | unidade_saude | id_unidade | -- |
+| 4 | atendimento | id_atendimento | id_paciente, id_profissional, id_unidade |
+| 5 | prontuario | id_prontuario | id_paciente, id_atendimento |
+| 6 | estoque_item | id_item | id_unidade |
+| 7 | obito | id_obito | id_paciente, unidade_responsavel |
 
 ---
 
@@ -97,10 +98,14 @@ Liste as principais tabelas que serão utilizadas.
 
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| paciente | 1:N | atendimento	 | atendimento.id_paciente |
+| profissional | 1:N | atendimento | atendimento.id_profissional |
+| unidade_saude | 1:N | atendimento | atendimento.id_unidade |
+| atendimento | 1:1 | prontuario | prontuario.id_atendimento (UNIQUE) |
+| paciente | 1:N | prontuario | prontuario.id_paciente | 
+| unidade_saude | 1:N | estoque_item | estoque_item.id_unidade | 
+| paciente | 1:1 | obito | obito.id_paciente (UNIQUE) | 
+| unidade_saude | 1:N | obito | obito.unidade_responsavel | 
 
 ---
 
@@ -123,43 +128,55 @@ INNER JOIN tabela_b AS b
 
 **Pergunta em linguagem natural:**
 
-> Escreva aqui.
+> Quais pacientes possuem prontuário e qual o diagnóstico registrado?
 
 **Tabelas utilizadas:**
 
 ```text
-
+paciente, prontuario
 ```
 
 **PK/FK utilizadas:**
 
 ```text
-
+paciente.id_paciente (PK) = prontuario.id_paciente (FK)
 ```
 
 **SQL:**
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- INNER JOIN 1
+-- Quais pacientes possuem prontuário e qual o diagnóstico registrado?
+-- ============================================================
+SELECT p.id_paciente, p.nome AS paciente, pr.diagnostico, pr.data_registro
+FROM paciente AS p
+INNER JOIN prontuario AS pr ON pr.id_paciente = p.id_paciente;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+> Retorna 11 linhas, uma por prontuário, com nome do paciente e diagnóstico. Maria Aparecida aparece duas vezes porque tem dois prontuários (hipertensão em setembro e avaliação cardiológica em outubro). Só entram pacientes que têm prontuário.
 
 ## Consulta INNER JOIN 2
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais itens existem em estoque em cada unidade de saúde?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- INNER JOIN 2
+-- Quais itens existem em estoque em cada unidade de saúde?
+-- ============================================================
+SELECT u.nome AS unidade, e.nome AS item, e.tipo, e.quantidade, e.validade
+FROM unidade_saude AS u
+INNER JOIN estoque_item AS e ON e.id_unidade = u.id_unidade;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> Une unidade_saude e estoque_item por id_unidade. Retorna 10 itens com o nome da unidade, e não só o id. Se uma unidade não tivesse item, ela não apareceria.
 
 ---
 
@@ -171,15 +188,24 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos atendimentos cada unidade teve, incluindo unidades sem nenhum?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- LEFT JOIN
+-- Quantos atendimentos cada unidade teve, incluindo unidades sem nenhum?
+-- ============================================================
+SELECT u.id_unidade, u.nome AS unidade, u.tipo,
+       COUNT(a.id_atendimento) AS total_atendimentos
+FROM unidade_saude AS u
+LEFT JOIN atendimento AS a ON a.id_unidade = u.id_unidade
+GROUP BY u.id_unidade, u.nome, u.tipo
+ORDER BY total_atendimentos DESC;
 ```
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> Escreva aqui.
+> Mantém todas as 6 unidades, mesmo sem atendimento. O Posto de Saúde Rural Boa Vista aparece com 0, o que um INNER JOIN esconderia. Usei COUNT(a.id_atendimento) e não COUNT(*), porque COUNT(*) contaria 1 para a unidade sem atendimento.
 
 ---
 
@@ -191,15 +217,22 @@ O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando nã
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais atendimentos ainda não possuem prontuário?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- RIGHT JOIN
+-- Quais atendimentos ainda não possuem prontuário?
+-- ============================================================
+SELECT a.id_atendimento, a.data_hora, a.tipo_atendimento, a.status, pr.id_prontuario
+FROM prontuario AS pr
+RIGHT JOIN atendimento AS a ON a.id_atendimento = pr.id_atendimento
+WHERE pr.id_prontuario IS NULL;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+> O RIGHT JOIN mantém todos os atendimentos (tabela da direita). Onde não há prontuário, id_prontuario fica NULL, e o WHERE ... IS NULL filtra esses casos. Retorna 4 atendimentos (ids 13 a 16), todos AGENDADOS: o prontuário só é criado depois do atendimento, então o resultado é coerente.
 
 ---
 
@@ -211,20 +244,40 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quem atendeu quem, onde e quando? (atendimento, paciente, profissional, unidade_saude)
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- JOIN COM 3+ TABELAS 1 (4 tabelas)
+-- Quem atendeu quem, onde e quando?
+-- ============================================================
+SELECT a.id_atendimento, p.nome AS paciente, pf.nome AS profissional,
+       u.nome AS unidade, a.data_hora, a.tipo_atendimento, a.status
+FROM atendimento AS a
+INNER JOIN paciente      AS p  ON p.id_paciente      = a.id_paciente
+INNER JOIN profissional  AS pf ON pf.id_profissional = a.id_profissional
+INNER JOIN unidade_saude AS u  ON u.id_unidade       = a.id_unidade
+ORDER BY a.data_hora;
 ```
 
 ## Consulta 2
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual diagnóstico foi registrado, por qual profissional e em qual unidade? (5 tabelas: prontuario, atendimento, paciente, profissional, unidade_saude)
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- JOIN COM 3+ TABELAS 2 (5 tabelas)
+-- Qual diagnóstico foi registrado, por qual profissional e em qual unidade?
+-- ============================================================
+SELECT p.nome AS paciente, pr.diagnostico, pf.nome AS profissional,
+       pf.setor, u.nome AS unidade
+FROM prontuario AS pr
+INNER JOIN atendimento   AS a  ON a.id_atendimento   = pr.id_atendimento
+INNER JOIN paciente      AS p  ON p.id_paciente      = pr.id_paciente
+INNER JOIN profissional  AS pf ON pf.id_profissional = a.id_profissional
+INNER JOIN unidade_saude AS u  ON u.id_unidade       = a.id_unidade;
 ```
 
 ---
@@ -233,15 +286,22 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais vacinas estão com estoque baixo (< 50) e em qual unidade?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- JOIN + WHERE
+-- Quais vacinas estão com estoque baixo (< 50) e em qual unidade?
+-- ============================================================
+SELECT u.nome AS unidade, e.nome AS vacina, e.quantidade
+FROM estoque_item AS e
+INNER JOIN unidade_saude AS u ON u.id_unidade = e.id_unidade
+WHERE e.tipo = 'VACINA' AND e.quantidade < 50;
 ```
 
 **Explique o filtro:**
 
-> Escreva aqui.
+> O JOIN traz o nome da unidade e o WHERE mantém só itens do tipo VACINA com menos de 50 unidades. Retorna Hepatite B na UBS Vila Nova (45) e Influenza no Posto Rural (8). O filtro roda depois da junção, sobre as linhas já combinadas.
 
 ---
 
@@ -249,10 +309,17 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais foram os registros clínicos mais recentes?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- JOIN + ORDER BY
+-- Quais foram os registros clínicos mais recentes?
+-- ============================================================
+SELECT pr.data_registro, p.nome AS paciente, pr.diagnostico
+FROM prontuario AS pr
+INNER JOIN paciente AS p ON p.id_paciente = pr.id_paciente
+ORDER BY pr.data_registro DESC;
 ```
 
 ---
@@ -263,15 +330,26 @@ Crie uma consulta que combine tabelas e utilize ao menos uma função de agrega�
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quantos itens e quantas unidades em estoque cada unidade possui?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- JOIN + GROUP BY + AGREGAÇÃO
+-- Quantos itens e quantas unidades em estoque cada unidade possui?
+-- ============================================================
+SELECT u.nome AS unidade,
+       COUNT(*)          AS itens_cadastrados,
+       SUM(e.quantidade) AS total_unidades_em_estoque,
+       MIN(e.validade)   AS validade_mais_proxima
+FROM unidade_saude AS u
+INNER JOIN estoque_item AS e ON e.id_unidade = u.id_unidade
+GROUP BY u.id_unidade, u.nome
+ORDER BY total_unidades_em_estoque DESC;
 ```
 
 **Explique o agrupamento:**
 
-> Escreva aqui.
+> Agrupa por unidade. COUNT(*) conta os itens cadastrados, SUM(quantidade) soma as unidades em estoque e MIN(validade) mostra a validade mais próxima. A UBS Centro lidera com 920 unidades; o Posto Rural tem 8.
 
 ---
 
@@ -297,15 +375,30 @@ As consultas devem responder perguntas reais sobre o banco.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais atendimentos estão agendados nos próximos 15 dias, com paciente, telefone, profissional e unidade?
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- CONSULTA MAIS ÚTIL
+-- Agenda dos próximos 15 dias para a recepção
+-- (data fixa para o resultado ser reproduzível; em uso real, troque por CURDATE())
+-- ============================================================
+SET @data_ref = '2026-10-27';
+SELECT a.data_hora, p.nome AS paciente, p.telefone,
+       pf.nome AS profissional, pf.setor, u.nome AS unidade, a.tipo_atendimento
+FROM atendimento AS a
+INNER JOIN paciente      AS p  ON p.id_paciente      = a.id_paciente
+INNER JOIN profissional  AS pf ON pf.id_profissional = a.id_profissional
+INNER JOIN unidade_saude AS u  ON u.id_unidade       = a.id_unidade
+WHERE a.status = 'AGENDADO'
+  AND a.data_hora >= @data_ref
+  AND a.data_hora <  @data_ref + INTERVAL 15 DAY
+ORDER BY a.data_hora;
 ```
 
 **Por que ela é útil?**
 
-> Escreva aqui.
+> A recepção tem a agenda cronológica com o nome e o telefone do paciente, o profissional e o local, sem consultar várias tabelas. Retorna 4 agendamentos (28/10 a 10/11), e o telefone permite confirmar a presença.
 
 ---
 
@@ -314,7 +407,13 @@ As consultas devem responder perguntas reais sobre o banco.
 Escolha uma consulta produzida nesta Sprint.
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- INNER JOIN 1
+-- Quais pacientes possuem prontuário e qual o diagnóstico registrado?
+-- ============================================================
+SELECT p.id_paciente, p.nome AS paciente, pr.diagnostico, pr.data_registro
+FROM paciente AS p
+INNER JOIN prontuario AS pr ON pr.id_paciente = p.id_paciente;
 ```
 
 Explique:
@@ -325,7 +424,11 @@ Explique:
 4. o que a cláusula `ON` faz;
 5. o que ocorreria se a condição de relacionamento estivesse errada.
 
-> Escreva aqui.
+> Tabelas: paciente e prontuario.
+PK: paciente.id_paciente.
+FK: prontuario.id_paciente, que referencia paciente.id_paciente.
+O ON define como as linhas se casam: cada prontuário é ligado ao paciente de mesmo id_paciente.
+Se o ON estivesse errado ou ausente, o banco combinaria todos com todos. Testei: sem condição o resultado é de 110 linhas (10 pacientes × 11 prontuários), contra 11 com o ON correto. Um ON trocado (ex.: p.id_paciente = pr.id_prontuario) devolveria diagnósticos ligados ao paciente errado, sem dar erro.
 
 ---
 
@@ -334,16 +437,26 @@ Explique:
 **Consulta executada:**
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- LEFT JOIN
+-- Quantos atendimentos cada unidade teve, incluindo unidades sem nenhum?
+-- ============================================================
+SELECT u.id_unidade, u.nome AS unidade, u.tipo,
+       COUNT(a.id_atendimento) AS total_atendimentos
+FROM unidade_saude AS u
+LEFT JOIN atendimento AS a ON a.id_unidade = u.id_unidade
+GROUP BY u.id_unidade, u.nome, u.tipo
+ORDER BY total_atendimentos DESC;
 ```
 
 **Resultado esperado:**
 
-> Escreva aqui.
+>  6 linhas (uma por unidade); UBS Vila Nova 6, Hospital Municipal 4, UBS Centro 2, UPA 2, CAPS 1, Posto Rural 0. A soma é 15, igual ao total de atendimentos.
 
 **Resultado obtido:**
 
-> Escreva aqui.
+> SELECT u.id_unidade, u.nome AS unidade, u.tipo,        COUNT(a.id_atendimento) AS total_atendimentos FROM unidade_saude AS u LEFT JOIN atendimento AS a ON a.id_unidade = u.id_unidade GROUP BY u.id_unidade, u.nome, u.tipo ORDER BY total_atendimentos DESC LIMIT 0, 1000	16 row(s) returned	0.016 sec / 0.000 sec
+
 
 ---
 
