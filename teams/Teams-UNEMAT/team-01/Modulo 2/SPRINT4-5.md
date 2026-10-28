@@ -188,7 +188,9 @@ DELIMITER ;
 **Execução:**
 
 ```sql
-CALL sp_atualizar_status_watchlist(1, 5, 'Assistindo', 8.5);
+-- Testes da Procedure 2
+CALL sp_atualizar_status_watchlist(1, 5, 'Assistindo', 8);
+CALL sp_atualizar_status_watchlist(1, 5, 'Quero Ver', 9);
 ```
 
 ---
