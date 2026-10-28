@@ -125,16 +125,16 @@ COMMIT;
 -- TRANSAÇÃO COM ROLLBACK
 -- Simula uma exclusão acidental de um alerta e desfaz a operação
 -- ============================================================
-SELECT * FROM alertas WHERE id_alerta = 3;
+SELECT * FROM acoes_resposta WHERE id_alerta = 6;
 
 START TRANSACTION;
 
-DELETE FROM alertas
-WHERE id_alerta = 3;
+DELETE FROM acoes_resposta
+WHERE id_incidente = 6;
 
 ROLLBACK;
 
-SELECT * FROM alertas WHERE id_alerta = 3;
+SELECT * FROM acoes_resposta WHERE id_alerta = 6;
 
 
 -- ============================================================
