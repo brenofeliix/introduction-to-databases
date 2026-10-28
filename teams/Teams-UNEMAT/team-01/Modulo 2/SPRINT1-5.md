@@ -479,16 +479,8 @@ INNER JOIN serie AS s
 **Resultado obtido:**
 
 > 9 linhas retornadas com sucesso, listando:
-Lucas Silveira	Stranger Things	Finalizado	9
-Mariana Santos	Stranger Things	Assistindo	8
-Lucas Silveira	The Last of Us	Finalizado	9
-Beatriz Lima	The Last of Us	Finalizado	10
-Carlos Eduardo	The Boys	Assistindo	8
-Carlos Eduardo	The Mandalorian	Quero Ver	
-Lucas Silveira	Severance	Quero Ver	
-Rafael Souza	Severance	Quero Ver	
-Beatriz Lima	Dark	Finalizado	9
-Mariana Santos	Succession	Finalizado	9
+<img width="352" height="193" alt="image" src="https://github.com/user-attachments/assets/b16c4da4-279d-4335-83ad-b25a6503aaaa" />
+
 ---
 
 # 16. Problemas encontrados
