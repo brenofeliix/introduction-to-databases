@@ -201,7 +201,6 @@ WHERE EXISTS (
     WHERE w.id_usuario = u.id_usuario
       AND w.nota = 10
 );
-);
 ```
 
 ---
