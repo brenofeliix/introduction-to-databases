@@ -210,7 +210,7 @@ LEFT JOIN serie AS s
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> trazendo os campos serie, status_assistindo e nota preenchidos com NULL, permitindo identificar usuários que ainda não adicionaram nenhuma série à lista.
+> Permite visualizar todos os usuários cadastrados na base, inclusive aqueles que ainda não adicionaram nenhuma série à lista, trazendo para estes os campos `serie`, `status_assistindo` e `nota` preenchidos com `NULL`.
 
 ---
 
