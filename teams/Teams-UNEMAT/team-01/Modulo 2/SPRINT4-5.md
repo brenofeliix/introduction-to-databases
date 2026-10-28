@@ -57,12 +57,11 @@ Defina rotinas úteis ao seu sistema.
 
 | Rotina | Tipo | Entrada | Saída | Objetivo |
 |---|---|---|---|---|
-| sp_listar_series_por_plataforma | Procedure | p_nome_plataforma VARCHAR(50) | Tabela com séries | listar produções do catalogo que pertencem a um determinado streaming informado |
-| sp_atualizar_status_watchlist | Procedure | p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20) | Mensagem de estado / Atualização | Atualizar o estado e a nota de um item na watchlist com validação condicional de regras de negócio|
-| sp_resumo_usuario | Procedure | p_id_usuario INT (IN), p_total_series INT (OUT), p_media_pessoal DECIMAL(3,1) (OUT) | Variáveis com totais agregados| Contar o volume de séries na lista e calcular a média pessoal de notas de um utilizador|
-| fn_classificar_desempenho_serie | Function | p_id_serie INT | VARCHAR(30) | Retornar uma classificação textual ('Excelente', 'Boa', 'Regular', 'Sem Avaliação') com base na média aritmética da série    |
-
----
+| sp_listar_series_por_plataforma | Procedure | p_nome_plataforma VARCHAR(50) | Tabela com séries | Listar produções do catálogo que pertencem a um determinado streaming informado. |
+| sp_atualizar_status_watchlist | Procedure | p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20), p_nota TINYINT | Mensagem de estado / Atualização | Atualizar o estado e a nota de um item na watchlist com validação condicional de regras de negócio. |
+| sp_resumo_usuario | Procedure | p_id_usuario INT (IN), p_total_series INT (OUT), p_media_pessoal DECIMAL(3,1) (OUT) | Variáveis com totais agregados | Contar o volume de séries na lista e calcular a média pessoal de notas de um usuário. |
+| fn_classificar_desempenho_serie | Function | p_id_serie INT | VARCHAR(30) | Retornar uma classificação textual ('Excelente', 'Bom', 'Regular / Baixo', 'Sem Avaliações') com base na média aritmética da série. |
+Ajustes complementares para sincronizar o restante dos arquivos
 
 # 3. DELIMITER
 
@@ -104,7 +103,7 @@ p_nome_plataforma VARCHAR(50)
 **SQL:**
 
 ```sql
--- DELIMITER //
+DELIMITER //
 
 CREATE PROCEDURE sp_listar_series_por_plataforma(
     IN p_nome_plataforma VARCHAR(50)
@@ -220,7 +219,7 @@ SELECT @total;
 **SQL do seu projeto:**
 
 ```sql
--- DELIMITER //
+DELIMITER //
 
 CREATE PROCEDURE sp_resumo_usuario(
     IN  p_id_usuario INT,
@@ -243,7 +242,7 @@ DELIMITER ;
 
 Caso não seja aplicável, justifique:
 
-> Escreva aqui.
+> Não se aplica, pois o requisito foi atendido integralmente com a implementação da procedure `sp_resumo_usuario` utilizando parâmetros `OUT` para exportar o total de séries e a média aritmética das notas.
 
 ---
 
@@ -283,7 +282,7 @@ VARCHAR(30)
 **SQL:**
 
 ```sql
--- DELIMITER //
+DELIMITER //
 
 CREATE FUNCTION fn_classificar_desempenho_serie(
     p_id_serie INT
@@ -346,7 +345,7 @@ END IF;
 
 > Se uma série não possui notas registadas na watchlist, a função classifica-a como 'Sem Avaliações'. Para séries avaliadas, se a nota média for maior ou igual a 9.0, ela é categorizada como 'Excelente'; caso esteja entre 7.0 e 8.9, como 'Bom'; abaixo disso, é classificada como 'Regular / Baixo'.
 ```sql
--- IF v_media IS NULL THEN
+IF v_media IS NULL THEN
     SET v_resultado = 'Sem Avaliações';
 ELSEIF v_media >= 9.0 THEN
     SET v_resultado = 'Excelente';
@@ -355,8 +354,6 @@ ELSEIF v_media >= 7.0 THEN
 ELSE
     SET v_resultado = 'Regular / Baixo';
 END IF;
-```
-
 ---
 
 # 9. Procedure x Function
@@ -437,7 +434,7 @@ sp_resumo_usuario
 ```
 
 ```sql
--- DELIMITER //
+DELIMITER //
 
 CREATE PROCEDURE sp_resumo_usuario(
     IN  p_id_usuario INT,
@@ -509,10 +506,9 @@ DELIMITER ;
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+| Média retornando `NULL` para usuários sem notas na procedure com OUT | `AVG(nota)` avalia para nulo quando não há registros ou quando todas as notas são nulas | Aplicação de `COALESCE(AVG(nota), 0.0)` em conjunto com `ROUND()` para garantir retorno numérico consistente. |
+| Inconsistência de nota presente em obras com status 'Quero Ver' | Usuário enviar valor de nota ao marcar um título que ainda não começou a assistir | Inclusão de desvio condicional (`IF/ELSE`) na procedure forçando `nota = NULL` ao receber o status `'Quero Ver'`. |
+| Erro de compilação da Function por controle de binlog do MySQL | Funções que realizam leitura de dados exigem propriedades de determinismo declaradas | Adicionadas as cláusulas `DETERMINISTIC` e `READS SQL DATA` no cabeçalho da Function. |
 ---
 
 # 15. Uso de LLMs
@@ -533,18 +529,18 @@ COMPREENDER
 
 # 16. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] compreendi o uso do `DELIMITER`;
-- [ ] criei pelo menos 2 Procedures;
-- [ ] criei uma Function;
-- [ ] utilizei parâmetro `IN`;
-- [ ] utilizei `OUT` quando aplicável;
-- [ ] utilizei `IF/ELSE`;
-- [ ] testei cada rotina;
-- [ ] executei parâmetros diferentes;
-- [ ] consigo explicar todas as rotinas;
-- [ ] salvei `SPRINT4-5.md`;
-- [ ] salvei `SPRINT4-5.sql`.
+- [x] utilizei o banco do projeto;
+- [x] compreendi o uso do `DELIMITER`;
+- [x] criei pelo menos 2 Procedures;
+- [x] criei uma Function;
+- [x] utilizei parâmetro `IN`;
+- [x] utilizei `OUT` quando aplicável;
+- [x] utilizei `IF/ELSE`;
+- [x] testei cada rotina;
+- [x] executei parâmetros diferentes;
+- [x] consigo explicar todas as rotinas;
+- [x] salvei `SPRINT4-5.md`;
+- [x] salvei `SPRINT4-5.sql`.
 
 ---
 
