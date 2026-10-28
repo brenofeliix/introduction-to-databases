@@ -94,7 +94,7 @@ vw_catalogo_series_plataforma
 **SQL:**
 
 ```sql
--- CREATE VIEW vw_catalogo_series_plataforma AS
+CREATE VIEW vw_catalogo_series_plataforma AS
 SELECT 
     s.id_serie,
     s.titulo AS nome_serie,
@@ -115,7 +115,7 @@ INNER JOIN plataforma AS p
 **Como consultar essa VIEW?**
 
 ```sql
--- SELECT 
+SELECT 
     nome_serie, 
     genero, 
     plataforma
@@ -138,7 +138,7 @@ Esta VIEW deverá possuir, quando aplicável:
 > Qual é o resumo estatístico de cada série, informando a quantidade total de usuários que a adicionaram, a quantidade de notas atribuídas, a nota mínima, a nota máxima e a média de avaliação arredondada?
 
 ```sql
--- CREATE VIEW vw_estatisticas_series AS
+CREATE VIEW vw_estatisticas_series AS
 SELECT 
     s.id_serie,
     s.titulo AS nome_serie,
@@ -185,7 +185,7 @@ vw_series_em_andamento
 ```
 
 ```sql
--- CREATE VIEW vw_series_em_andamento AS
+CREATE VIEW vw_series_em_andamento AS
 SELECT 
     u.id_usuario,
     u.nome AS usuario,
@@ -267,7 +267,7 @@ Pode ser:
 **VIEW original:**
 
 ```sql
--- CREATE VIEW vw_catalogo_series_plataforma AS
+CREATE VIEW vw_catalogo_series_plataforma AS
 SELECT 
     s.id_serie,
     s.titulo AS nome_serie,
@@ -402,7 +402,7 @@ WHERE id_serie = 1;
 Escolha uma VIEW.
 
 ```sql
--- CREATE VIEW vw_series_em_andamento AS
+CREATE VIEW vw_series_em_andamento AS
 SELECT 
     u.id_usuario,
     u.nome AS usuario,
@@ -506,18 +506,18 @@ COMPREENDER
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei pelo menos 3 Views;
-- [ ] pelo menos uma View usa JOIN;
-- [ ] pelo menos uma View usa agregação ou resumo;
-- [ ] consultei as Views;
-- [ ] utilizei `CREATE OR REPLACE VIEW`;
-- [ ] pratiquei `DROP VIEW`;
-- [ ] validei as Views;
-- [ ] testei mudança em tabela base;
-- [ ] compreendo de onde vêm os dados de cada View;
-- [ ] salvei `SPRINT3-5.md`;
-- [ ] salvei `SPRINT3-5.sql`.
+- [X] utilizei o banco do projeto;
+- [X] criei pelo menos 3 Views;
+- [X] pelo menos uma View usa JOIN;
+- [X] pelo menos uma View usa agregação ou resumo;
+- [X] consultei as Views;
+- [X] utilizei `CREATE OR REPLACE VIEW`;
+- [X] pratiquei `DROP VIEW`;
+- [X] validei as Views;
+- [X] testei mudança em tabela base;
+- [X] compreendo de onde vêm os dados de cada View;
+- [X] salvei `SPRINT3-5.md`;
+- [X] salvei `SPRINT3-5.sql`.
 
 ---
 
