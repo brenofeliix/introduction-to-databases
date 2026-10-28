@@ -38,7 +38,7 @@ ROLLBACK
 
 **Nome completo:**
 
-> Escreva aqui.
+> Talita de Oliveira Leite Sete
 
 **Banco utilizado:**
 
@@ -52,11 +52,11 @@ ROLLBACK
 
 | Sprint | Conteúdo | Concluído? |
 |---|---|---|
-| 1/5 | JOINs |  |
-| 2/5 | Subconsultas |  |
-| 3/5 | Views |  |
-| 4/5 | Procedures e Functions |  |
-| 5/5 | Triggers e Transações |  |
+| 1/5 | JOINs | sim |
+| 2/5 | Subconsultas | sim |
+| 3/5 | Views | sim |
+| 4/5 | Procedures e Functions | sim |
+| 5/5 | Triggers e Transações | sim |
 
 ---
 
@@ -77,20 +77,20 @@ registrar data de modificação
 
 **Regra escolhida:**
 
-> Escreva aqui.
+> Impedir que um paciente com óbito registrado tenha atendimentos em data posterior ao óbito (regra de negócio 5 do Module-1). Também criei um segundo trigger que impede estoque negativo (regra 4).
 
 **Evento:**
 
-- [ ] BEFORE INSERT
+- [x] BEFORE INSERT
 - [ ] AFTER INSERT
-- [ ] BEFORE UPDATE
+- [x] BEFORE UPDATE
 - [ ] AFTER UPDATE
 - [ ] Outro
 
 **Tabela envolvida:**
 
 ```text
-
+atendimento (e estoque_item, no segundo trigger)
 ```
 
 ---
