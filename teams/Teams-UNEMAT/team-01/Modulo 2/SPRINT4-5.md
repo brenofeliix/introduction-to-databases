@@ -58,10 +58,10 @@ Defina rotinas úteis ao seu sistema.
 | Rotina | Tipo | Entrada | Saída | Objetivo |
 |---|---|---|---|---|
 | sp_listar_series_por_plataforma | Procedure | p_nome_plataforma VARCHAR(50) | Tabela com séries | Listar produções do catálogo que pertencem a um determinado streaming informado. |
-| sp_atualizar_status_watchlist | Procedure | p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20), p_nota TINYINT | Mensagem de estado / Atualização | Atualizar o estado e a nota de um item na watchlist com validação condicional de regras de negócio. |
+| sp_atualizar_status_watchlist | Procedure | p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20), p_nota DECIMAL(3,1) | Mensagem de estado / Atualização | Atualizar o estado e a nota de um item na watchlist com validação condicional de regras de negócio. |
 | sp_resumo_usuario | Procedure | p_id_usuario INT (IN), p_total_series INT (OUT), p_media_pessoal DECIMAL(3,1) (OUT) | Variáveis com totais agregados | Contar o volume de séries na lista e calcular a média pessoal de notas de um usuário. |
 | fn_classificar_desempenho_serie | Function | p_id_serie INT | VARCHAR(30) | Retornar uma classificação textual ('Excelente', 'Bom', 'Regular / Baixo', 'Sem Avaliações') com base na média aritmética da série. |
-Ajustes complementares para sincronizar o restante dos arquivos
+
 
 # 3. DELIMITER
 
