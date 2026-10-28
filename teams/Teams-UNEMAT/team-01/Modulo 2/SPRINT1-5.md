@@ -101,8 +101,6 @@ Liste as principais tabelas que serão utilizadas.
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
 |---|---|---|---|
 | plataforma | 1:N | serie | serie.id_plataforma |
-| usuario | 1:N | item_watchlist | item_watchlist.id_usuario |
-| serie | 1:N | item_watchlist | item_watchlist.id_serie |
 | usuario | N:N | serie | Implementada por meio da associativa item_watchlist |
 
 ---
