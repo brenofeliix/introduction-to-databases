@@ -6,92 +6,124 @@
 
 USE series_watchlist_db;
 
--- VIEW 1
--- Visão simples: Séries recentes (lançadas a partir de 2020)
-CREATE VIEW vw_series_recentes AS
-SELECT 
-    id_serie,
-    titulo,
-    genero,
-    ano_lancamento
-FROM serie
-WHERE ano_lancamento >= 2020;
 
--- VIEW 2
--- Visão com JOIN: Séries com o nome de suas respectivas plataformas
-CREATE VIEW vw_detalhes_series_plataforma AS
+-- VIEW 1: Relacionamento entre tabelas (Catálogo unificado com Plataforma)
+CREATE OR REPLACE VIEW vw_catalogo_series_plataforma AS
 SELECT 
     s.id_serie,
-    s.titulo,
+    s.titulo AS nome_serie,
     s.genero,
     s.ano_lancamento,
-    p.nome_plataforma
+    s.pais_origem,
+    p.id_plataforma,
+    p.nome_plataforma AS plataforma
 FROM serie AS s
 INNER JOIN plataforma AS p
     ON s.id_plataforma = p.id_plataforma;
 
--- VIEW 3
--- Visão com Agregação (GROUP BY): Média de notas e quantidade de avaliações por série
-CREATE VIEW vw_resumo_avaliacoes_series AS
+
+-- VIEW 2: Agregação e Resumo Estatístico de Avaliações
+CREATE OR REPLACE VIEW vw_estatisticas_series AS
 SELECT 
     s.id_serie,
-    s.titulo,
-    COUNT(w.id_usuario) AS total_avaliacoes,
+    s.titulo AS nome_serie,
+    p.nome_plataforma AS plataforma,
+    COUNT(w.id_usuario) AS total_watchlist,
+    COUNT(w.nota) AS total_avaliacoes,
+    MIN(w.nota) AS menor_nota,
+    MAX(w.nota) AS maior_nota,
     ROUND(AVG(w.nota), 2) AS media_nota
 FROM serie AS s
+INNER JOIN plataforma AS p
+    ON s.id_plataforma = p.id_plataforma
 LEFT JOIN item_watchlist AS w
     ON s.id_serie = w.id_serie
 GROUP BY 
     s.id_serie, 
-    s.titulo;
+    s.titulo, 
+    p.nome_plataforma;
+
+
+-- VIEW 3: Consulta Operacional (Séries em Andamento / Consumo Ativo)
+CREATE OR REPLACE VIEW vw_series_em_andamento AS
+SELECT 
+    u.id_usuario,
+    u.nome AS usuario,
+    u.email,
+    s.id_serie,
+    s.titulo AS serie,
+    p.nome_plataforma AS plataforma,
+    w.status_assistindo,
+    w.nota
+FROM item_watchlist AS w
+INNER JOIN usuario AS u
+    ON w.id_usuario = u.id_usuario
+INNER JOIN serie AS s
+    ON w.id_serie = s.id_serie
+INNER JOIN plataforma AS p
+    ON s.id_plataforma = p.id_plataforma
+WHERE w.status_assistindo = 'Assistindo';
+
 
 -- CONSULTAS SOBRE AS VIEWS
--- Consulta 1: Selecionando séries recentes
-SELECT * FROM vw_series_recentes;
-
--- Consulta 2: Selecionando séries com detalhes de plataforma
-SELECT * FROM vw_detalhes_series_plataforma;
-
--- Consulta 3: Filtrando apenas séries com nota média superior ou igual a 8.5
+-- Consulta 1: Listagem da VIEW 1 ordenada
 SELECT 
-    titulo,
-    media_nota,
+    nome_serie, 
+    genero, 
+    plataforma
+FROM vw_catalogo_series_plataforma
+ORDER BY nome_serie ASC;
+
+-- Consulta 2: Listagem completa da VIEW 2
+SELECT * FROM vw_estatisticas_series;
+
+-- Consulta 3: Filtro e ordenação analítica sobre a VIEW 2
+SELECT 
+    nome_serie, 
+    plataforma, 
+    media_nota, 
     total_avaliacoes
-FROM vw_resumo_avaliacoes_series
-WHERE media_nota >= 8.5
+FROM vw_estatisticas_series
+WHERE media_nota >= 9.0
 ORDER BY media_nota DESC;
 
--- CREATE OR REPLACE VIEW
--- Atualização da VIEW 1 para incluir também o id_plataforma
-CREATE OR REPLACE VIEW vw_series_recentes AS
-SELECT 
-    id_serie,
-    titulo,
-    genero,
-    ano_lancamento,
-    id_plataforma
-FROM serie
-WHERE ano_lancamento >= 2020;
+-- Consulta 4: Consulta sobre a VIEW operacional
+SELECT * FROM vw_series_em_andamento;
 
--- VIEW TEMPORÁRIA
--- Visão simples para checagem rápida de usuários com email da plataforma
-CREATE OR REPLACE VIEW vw_temp_usuarios_ativos AS
+
+-- CREATE OR REPLACE VIEW: Evolução da VIEW 1 com coluna calculada
+CREATE OR REPLACE VIEW vw_catalogo_series_plataforma AS
 SELECT 
-    id_usuario,
-    nome,
+    s.id_serie,
+    s.titulo AS nome_serie,
+    s.genero,
+    s.ano_lancamento,
+    (2026 - s.ano_lancamento) AS anos_de_lancamento,
+    s.pais_origem,
+    p.id_plataforma,
+    p.nome_plataforma AS plataforma
+FROM serie AS s
+INNER JOIN plataforma AS p
+    ON s.id_plataforma = p.id_plataforma;
+
+
+-- VIEW TEMPORÁRIA E DROP VIEW: Exercício controlado
+CREATE OR REPLACE VIEW vw_teste_temporaria AS
+SELECT 
+    id_usuario, 
+    nome, 
     email
 FROM usuario
-WHERE email IS NOT NULL;
+WHERE data_cadastro >= '2024-03-01';
 
--- DROP VIEW
--- Remoção de visões do banco de dados
-DROP VIEW IF EXISTS vw_temp_usuarios_ativos;
-DROP VIEW IF EXISTS vw_series_recentes;
+-- Remoção da view temporária (mantendo intactas as 3 views principais)
+DROP VIEW IF EXISTS vw_teste_temporaria;
 
--- VALIDAÇÃO
--- Teste de consulta final na visão agregada mantida
-SELECT 
-    titulo, 
-    total_avaliacoes, 
-    media_nota 
-FROM vw_resumo_avaliacoes_series;
+-- Validação da existência das 3 views ativas no schema
+SHOW FULL TABLES 
+WHERE Table_type = 'VIEW';
+
+-- Teste de atualização dinâmica (exemplo documentado na seção 11)
+SELECT nome_serie, media_nota, total_avaliacoes 
+FROM vw_estatisticas_series 
+WHERE id_serie = 1;
