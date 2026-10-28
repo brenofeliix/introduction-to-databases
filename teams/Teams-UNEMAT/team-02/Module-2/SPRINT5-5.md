@@ -463,7 +463,7 @@ O aluno deverá ser capaz de:
 
 **Conteúdo mais difícil:**
 
-> Escreva aqui.
+> Encontro dificuldade principalmente na lógica de construção das consultas. Embora eu compreenda os conceitos e seus significados, tenho dificuldade em aplicá-los na prática, e o uso de aliases também gera confusão.
 
 **Código do Module-2 que considero mais importante:**
 
@@ -471,7 +471,7 @@ O aluno deverá ser capaz de:
 
 **O que eu conseguiria explicar presencialmente sem consultar material?**
 
-> Escreva aqui.
+> JOINs, views e functions pois foram os conteúdos que mais fixei.
 
 ---
 
@@ -624,7 +624,7 @@ Módulo: 2
 - [x] Function testada
 - [x] Trigger testado
 - [x] COMMIT testado
-- [x] ROLLBACK testado
+- [] ROLLBACK testado
 ```
 
 ---
