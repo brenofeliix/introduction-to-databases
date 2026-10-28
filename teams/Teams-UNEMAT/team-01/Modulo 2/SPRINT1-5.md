@@ -479,17 +479,16 @@ INNER JOIN serie AS s
 **Resultado obtido:**
 
 > 9 linhas retornadas com sucesso, listando:
-
-Lucas Silveira (Stranger Things, The Last of Us, Severance)
-
-Beatriz Lima (The Last of Us, Dark)
-
-Carlos Eduardo (The Boys, The Mandalorian)
-
-Mariana Santos (Stranger Things, Succession)
-
-Rafael Souza (Severance)
-
+Lucas Silveira	Stranger Things	Finalizado	9
+Mariana Santos	Stranger Things	Assistindo	8
+Lucas Silveira	The Last of Us	Finalizado	9
+Beatriz Lima	The Last of Us	Finalizado	10
+Carlos Eduardo	The Boys	Assistindo	8
+Carlos Eduardo	The Mandalorian	Quero Ver	
+Lucas Silveira	Severance	Quero Ver	
+Rafael Souza	Severance	Quero Ver	
+Beatriz Lima	Dark	Finalizado	9
+Mariana Santos	Succession	Finalizado	9
 ---
 
 # 16. Problemas encontrados
