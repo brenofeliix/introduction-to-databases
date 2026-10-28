@@ -195,14 +195,18 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 > Quais são todos os usuários cadastrados no banco e quais séries eles têm na watchlist (incluindo aqueles que não adicionaram nenhuma série)?
 
 ```sql
--- SELECT 
+
+SELECT 
     u.nome AS usuario,
     u.email,
+    s.titulo AS serie,
     w.status_assistindo,
     w.nota
 FROM usuario AS u
 LEFT JOIN item_watchlist AS w
-    ON u.id_usuario = w.id_usuario;
+    ON u.id_usuario = w.id_usuario
+LEFT JOIN serie AS s
+    ON w.id_serie = s.id_serie;
 ```
 
 **O que o LEFT JOIN permite visualizar neste caso?**
@@ -222,7 +226,7 @@ O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando nã
 > Quais são todas as plataformas cadastradas e quais séries pertencem a cada uma, incluindo plataformas que não têm nenhuma série associada?
 
 ```sql
--- SELECT 
+SELECT 
     s.titulo AS serie,
     p.nome_plataforma
 FROM serie AS s
@@ -249,7 +253,7 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 SQL:
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     p.nome_plataforma,
@@ -271,7 +275,7 @@ INNER JOIN plataforma AS p
 > Quais séries em andamento ou concluídas cada usuário assiste, trazendo detalhes de país de origem da produção e nome do serviço de streaming?
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     s.pais_origem,
@@ -296,7 +300,7 @@ WHERE w.status_assistindo IN ('Assistindo', 'Concluído');
 > Quais séries da plataforma "HBO Max" foram adicionadas às listas dos usuários com o status "Concluído"?
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     p.nome_plataforma,
@@ -326,7 +330,7 @@ WHERE p.nome_plataforma = 'HBO Max'
 > Como listar todas as avaliações com nota atribuída, ordenadas da maior nota para a menor e, em caso de empate, pelo nome do usuário?
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     w.nota,
@@ -351,7 +355,7 @@ Crie uma consulta que combine tabelas e utilize ao menos uma função de agrega�
 > Qual é a quantidade de séries cadastradas em cada plataforma de streaming?
 
 ```sql
--- SELECT 
+SELECT 
     p.nome_plataforma,
     COUNT(s.id_serie) AS total_series_disponiveis
 FROM plataforma AS p
@@ -392,7 +396,7 @@ As consultas devem responder perguntas reais sobre o banco.
 > Qual é o relatório consolidado de desempenho de cada série, contendo o título, plataforma de exibição, quantidade de usuários que a adicionaram e a nota média recebida?
 
 ```sql
--- SELECT 
+SELECT 
     s.titulo AS serie,
     p.nome_plataforma AS plataforma,
     COUNT(w.id_usuario) AS total_interessados,
@@ -417,7 +421,7 @@ ORDER BY media_avaliacao DESC;
 Escolha uma consulta produzida nesta Sprint.
 
 ```sql
--- SELECT 
+SELECT 
     s.titulo AS nome_serie,
     s.genero,
     s.ano_lancamento,
@@ -457,7 +461,7 @@ Explique:
 **Consulta executada:**
 
 ```sql
--- SELECT 
+SELECT 
     u.nome AS usuario,
     s.titulo AS serie,
     w.status_assistindo,
@@ -549,7 +553,7 @@ USE nome_do_banco;
 
 # 19. Checklist
 
-- [ ] utilizei o mesmo banco do Module-1;
+- [x] utilizei o mesmo banco do Module-1;
 - [x] identifiquei PKs e FKs;
 - [x] produzi 2 `INNER JOIN`;
 - [x] produzi 1 `LEFT JOIN`;
