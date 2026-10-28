@@ -92,7 +92,7 @@ Crie uma consulta utilizando uma comparação com resultado agregado.
 SQL
 
 ```sql
--- SELECT 
+SELECT 
     id_serie, 
     id_usuario, 
     nota, 
@@ -135,7 +135,7 @@ WHERE id_cliente IN (
 > Quais utilizadores possuem pelo menos uma série registada na sua lista de acompanhamento (item_watchlist)?
 
 ```sql
--- SELECT 
+SELECT 
     id_usuario, 
     nome, 
     email
@@ -161,7 +161,7 @@ WHERE id_usuario IN (
 SQL
 
 ```sql
--- SELECT 
+SELECT 
     id_plataforma, 
     nome_plataforma
 FROM plataforma
@@ -189,7 +189,7 @@ WHERE id_plataforma NOT IN (
 > Quais utilizadores atribuíram nota máxima (10.0) a pelo menos uma série?
 
 ```sql
--- SELECT 
+SELECT 
     u.id_usuario, 
     u.nome
 FROM usuario AS u
@@ -210,7 +210,7 @@ WHERE EXISTS (
 > Quais utilizadores cadastrados no sistema ainda não têm nenhuma série adicionada à sua watchlist?
 
 ```sql
--- SELECT 
+SELECT 
     u.id_usuario, 
     u.nome, 
     u.email
@@ -235,7 +235,7 @@ WHERE NOT EXISTS (
 > Quais são as séries mais antigas cadastradas no catálogo (que possuem o menor ano de lançamento)?
 
 ```sql
--- SELECT 
+SELECT 
     id_serie, 
     titulo, 
     genero, 
@@ -263,7 +263,7 @@ Uma subconsulta correlacionada depende de valores da consulta externa.
 
 > Quais séries em watchlist receberam nota individual superior à média de notas calculada especificamente para essa mesma série?
 ```sql
--- SELECT 
+SELECT 
     w1.id_usuario, 
     w1.id_serie, 
     w1.nota, 
@@ -299,7 +299,7 @@ b) SUBQUERY
 ### JOIN
 
 ```sql
--- SELECT DISTINCT 
+SELECT DISTINCT 
     p.id_plataforma, 
     p.nome_plataforma
 FROM plataforma AS p
@@ -310,7 +310,7 @@ INNER JOIN serie AS s
 ### SUBQUERY
 
 ```sql
--- SELECT 
+SELECT 
     p.id_plataforma, 
     p.nome_plataforma
 FROM plataforma AS p
@@ -333,7 +333,7 @@ WHERE p.id_plataforma IN (
 ### JOIN
 
 ```sql
--- SELECT 
+SELECT 
     u.id_usuario, 
     u.nome, 
     u.email
@@ -346,7 +346,7 @@ WHERE w.id_usuario IS NULL;
 ### SUBQUERY
 
 ```sql
--- SELECT 
+SELECT 
     u.id_usuario, 
     u.nome, 
     u.email
@@ -386,7 +386,7 @@ O `SPRINT2-5.sql` deverá conter no mínimo:
 Escolha uma subconsulta.
 
 ```sql
--- SELECT 
+SELECT 
     id_serie, 
     titulo, 
     ano_lancamento
@@ -413,7 +413,7 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 **Consulta original:**
 
 ```sql
--- SELECT 
+SELECT 
     id_serie, 
     id_usuario, 
     nota
@@ -482,20 +482,20 @@ USE nome_do_banco;
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei subconsulta com comparação;
-- [ ] utilizei `IN`;
-- [ ] utilizei `NOT IN`;
-- [ ] utilizei `EXISTS`;
-- [ ] utilizei `NOT EXISTS`;
-- [ ] utilizei `MAX` ou `MIN`;
-- [ ] criei subconsulta correlacionada;
-- [ ] resolvi duas perguntas usando JOIN e SUBQUERY;
-- [ ] expliquei o raciocínio;
-- [ ] testei no MySQL Workbench;
-- [ ] consigo explicar as consultas presencialmente;
-- [ ] salvei `SPRINT2-5.md`;
-- [ ] salvei `SPRINT2-5.sql`.
+- [X] utilizei o banco do projeto;
+- [X] criei subconsulta com comparação;
+- [X] utilizei `IN`;
+- [X] utilizei `NOT IN`;
+- [X] utilizei `EXISTS`;
+- [X] utilizei `NOT EXISTS`;
+- [X] utilizei `MAX` ou `MIN`;
+- [X] criei subconsulta correlacionada;
+- [X] resolvi duas perguntas usando JOIN e SUBQUERY;
+- [X] expliquei o raciocínio;
+- [X] testei no MySQL Workbench;
+- [X] consigo explicar as consultas presencialmente;
+- [X] salvei `SPRINT2-5.md`;
+- [X] salvei `SPRINT2-5.sql`.
 
 ---
 
