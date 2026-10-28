@@ -277,8 +277,7 @@ ORDER BY u.nome;
 
 **Qual coluna da consulta externa é utilizada pela subconsulta?**
 
-> Escreva aqui.
-
+> e1.id_unidade. A subconsulta calcula a média dos itens (e2) da mesma unidade da linha externa, então roda uma vez para cada linha. Retorna Dipirona (UBS Centro), Amoxicilina (UBS Vila Nova) e Paracetamol (UPA). Unidades com um único item não aparecem, porque o item é igual à própria média.
 ---
 
 # 11. Resolver a mesma pergunta de duas formas
@@ -292,46 +291,66 @@ b) SUBQUERY
 
 ## Pergunta 1
 
-> Escreva aqui.
+> Quais profissionais nunca participaram de um atendimento?
 
 ### JOIN
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- PROBLEMA 1 - JOIN
+-- Quais profissionais nunca participaram de um atendimento?
+-- ============================================================
+SELECT pf.id_profissional, pf.nome, pf.cargo
+FROM profissional AS pf
+LEFT JOIN atendimento AS a ON a.id_profissional = pf.id_profissional
+WHERE a.id_atendimento IS NULL;
 ```
 
 ### SUBQUERY
 
 ```sql
--- Cole aqui.
+-- PROBLEMA 1 - SUBQUERY
+SELECT pf.id_profissional, pf.nome, pf.cargo
+FROM profissional AS pf
+WHERE pf.id_profissional NOT IN (SELECT a.id_profissional FROM atendimento AS a);
 ```
 
 ### Qual abordagem ficou mais compreensível?
 
-> Escreva aqui e justifique.
+> A subconsulta com NOT IN, porque se lê quase como a pergunta (“id que não está nos atendimentos”). O LEFT JOIN ... IS NULL exige entender que o NULL representa a ausência de correspondência.
 
 ---
 
 ## Pergunta 2
 
-> Escreva aqui.
+> Quais unidades possuem vacina em estoque?
 
 ### JOIN
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- PROBLEMA 2 - JOIN
+-- Quais unidades possuem vacina em estoque?
+-- ============================================================
+SELECT DISTINCT u.id_unidade, u.nome
+FROM unidade_saude AS u
+INNER JOIN estoque_item AS e ON e.id_unidade = u.id_unidade
+WHERE e.tipo = 'VACINA';
+
 ```
 
 ### SUBQUERY
 
 ```sql
--- Cole aqui.
+-- PROBLEMA 2 - SUBQUERY
+SELECT u.id_unidade, u.nome
+FROM unidade_saude AS u
+WHERE u.id_unidade IN (SELECT e.id_unidade FROM estoque_item AS e WHERE e.tipo = 'VACINA');
 ```
 
 ### Comparação
 
-> Escreva aqui.
-
+> As duas retornam as mesmas 3 unidades. No JOIN, o DISTINCT é necessário porque a UBS Vila Nova tem 2 vacinas e apareceria duas vezes. Na subconsulta, o IN já trata isso sozinho. O JOIN é preferível quando preciso mostrar colunas das duas tabelas; a subconsulta, quando só quero filtrar.
 ---
 
 # 12. Quantidade mínima exigida
@@ -356,7 +375,19 @@ O `SPRINT2-5.sql` deverá conter no mínimo:
 Escolha uma subconsulta.
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- SUBQUERY CORRELACIONADA
+-- Quais itens têm quantidade acima da média da própria unidade?
+-- ============================================================
+SELECT u.nome AS unidade, e1.nome AS item, e1.quantidade
+FROM estoque_item AS e1
+INNER JOIN unidade_saude AS u ON u.id_unidade = e1.id_unidade
+WHERE e1.quantidade > (
+    SELECT AVG(e2.quantidade)
+    FROM estoque_item AS e2
+    WHERE e2.id_unidade = e1.id_unidade
+)
+ORDER BY u.nome;
 ```
 
 Responda:
@@ -365,7 +396,9 @@ Responda:
 2. Qual valor ou conjunto de valores ela retorna?
 3. Como esse resultado é utilizado pela consulta externa?
 
-> Escreva aqui.
+> 1. A consulta interna, SELECT AVG(quantidade) FROM estoque_item.
+> 2.Um único valor: 222,1.
+> 3.A consulta externa usa esse valor como limite: o WHERE compara a quantidade de cada item com 222,1 e mantém só os menores.
 
 ---
 
@@ -376,16 +409,26 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 **Consulta original:**
 
 ```sql
--- Cole aqui.
+-- ============================================================
+-- SUBQUERY CORRELACIONADA
+-- Quais itens têm quantidade acima da média da própria unidade?
+-- ============================================================
+SELECT u.nome AS unidade, e1.nome AS item, e1.quantidade
+FROM estoque_item AS e1
+INNER JOIN unidade_saude AS u ON u.id_unidade = e1.id_unidade
+WHERE e1.quantidade > (
+    SELECT AVG(e2.quantidade)
+    FROM estoque_item AS e2
+    WHERE e2.id_unidade = e1.id_unidade
 ```
 
 **Alteração realizada:**
 
-> Escreva aqui.
+> Troquei < por > no WHERE.
 
 **Mudança observada:**
 
-> Escreva aqui.
+> Antes retornava 7 itens (abaixo da média); depois, 3 itens (Dipirona 800, Paracetamol 500, Amoxicilina 300). Os dois conjuntos somam os 10 itens, e nenhum item vale exatamente a média.
 
 ---
 
