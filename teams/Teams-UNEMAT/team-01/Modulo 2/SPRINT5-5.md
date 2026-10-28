@@ -388,7 +388,7 @@ sp_atualizar_status_watchlist
 **Entrada:**
 
 ```text
-p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20), p_nota DECIMAL(3,1)
+p_id_usuario INT, p_id_serie INT, p_novo_status VARCHAR(20), p_nota TINYINT
 ```
 
 **Resultado:**
