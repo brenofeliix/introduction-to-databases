@@ -59,23 +59,23 @@ Não altere nem apague os arquivos do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Walter Anacleto Salido de Souza
 
 **Branch:**
 
-```text
-team-XX
+```
+team-07-UFR
 ```
 
 **Nome do banco:**
 
-```text
-
+```
+db_raaei
 ```
 
 **Tema do projeto:**
 
-> Escreva aqui.
+> Gestão e acompanhamento de atletas, categorias esportivas, escolas parceiras e equipe técnica da RAAEI (Rondonópolis Associação de Atletismo e Esporte Inclusivo).
 
 ---
 
@@ -85,11 +85,14 @@ Liste as principais tabelas que serão utilizadas.
 
 | Nº | Tabela | PK | Principais FKs |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+
+| 1	| escola | id_escola | Nenhuma
+
+| 2	| categoria	| id_categoria | Nenhuma
+
+| 3 | colaborador	| id_colaborador | Nenhuma
+
+| 4	| atleta | id_atleta | id_escola, id_categoria
 
 ---
 
@@ -97,14 +100,14 @@ Liste as principais tabelas que serão utilizadas.
 
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+
+| escola | 1 : N | atleta | id_escola (na tabela atleta)
+
+| categoria | 1 : N | atleta | id_categoria (na tabela atleta)
 
 ---
 
-# 5. INNER JOIN
+# 5. INNER JOIN - 
 
 O `INNER JOIN` retorna registros que possuem correspondência nas tabelas relacionadas.
 
@@ -123,43 +126,60 @@ INNER JOIN tabela_b AS b
 
 **Pergunta em linguagem natural:**
 
-> Escreva aqui.
+> Qual é a relação completa contendo o nome do atleta, sua data de nascimento, gênero e o respectivo nome da escola parceira de origem?
 
 **Tabelas utilizadas:**
 
-```text
-
+```
+atleta, escola
 ```
 
 **PK/FK utilizadas:**
 
-```text
-
+```
+PK: escola.id_escola
+FK: atleta.id_escola
 ```
 
 **SQL:**
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    a.data_nascimento,
+    a.genero,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+> Esta consulta cruza os dados da tabela de atletas com a tabela de escolas por meio da chave estrangeira id_escola. O resultado exibe estritamente os atletas que possuem vínculo cadastrado com uma escola, unindo as informações cadastrais e institucionais em uma única listagem gerencial.
 
 ## Consulta INNER JOIN 2
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais atletas estão vinculados a cada categoria esportiva, exibindo o nome do atleta, sua categoria, faixa etária e o tipo de rede de ensino de sua escola de origem?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    c.nome_categoria,
+    c.faixa_etaria,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> Esta consulta demonstra um cruzamento triplo de tabelas (atleta, categoria e escola). Ela utiliza duas junções INNER JOIN consecutivas para conectar o atleta à sua categoria esportiva (id_categoria) e à sua escola de origem (id_escola), permitindo à comissão técnica visualizar simultaneamente a modalidade, a faixa etária competitiva e o perfil da rede de ensino de cada praticante.
 
 ---
 
@@ -171,15 +191,21 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são todas as categorias esportivas cadastradas no sistema, exibindo também os atletas a elas vinculados, de forma a garantir que mesmo as categorias que ainda não possuem atletas cadastrados sejam listadas?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria,
+    a.nome_atleta
+FROM categoria AS c
+LEFT JOIN atleta AS a
+    ON c.id_categoria = a.id_categoria;
 ```
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
-> Escreva aqui.
+> Permite à comissão técnica e à diretoria visualizar a totalidade das categorias esportivas da associação. Diferente de um INNER JOIN (que ocultaria categorias vazias), o LEFT JOIN garante que categorias recém-criadas ou que ainda não possuem atletas inscritos apareçam na listagem com o campo de atleta indicando NULL, auxiliando no planejamento estratégico de captação e formação de equipes.
 
 ---
 
@@ -191,15 +217,21 @@ O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando nã
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são todos os atletas cadastrados no sistema, exibindo também as respectivas escolas associadas, garantindo que mesmo atletas que porventura estejam sem escola vinculada na tabela à direita sejam listados?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    e.nome_escola,
+    a.nome_atleta,
+    a.genero
+FROM escola AS e
+RIGHT JOIN atleta AS a
+    ON e.id_escola = a.id_escola;
 ```
 
 **Explique o resultado:**
 
-> Escreva aqui.
+> O RIGHT JOIN prioriza todos os registros da tabela posicionada à direita da instrução (atleta). Neste cenário, a consulta garante que a listagem traga todos os atletas cadastrados na base de dados da RAAEI, exibindo a escola correspondente quando houver vínculo ou indicando ausência de registro institucional caso o campo esteja nulo, assegurando que nenhum atleta seja omitido do relatório geral.
 
 ---
 
@@ -211,20 +243,40 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o relatório gerencial detalhado contendo o nome do atleta, sua categoria esportiva, faixa etária, nome da escola parceira e o tipo de rede de ensino de origem?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    c.nome_categoria,
+    c.faixa_etaria,
+    e.nome_escola,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 ```
 
 ## Consulta 2
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o quantitativo total de atletas distribuídos por escola parceira e categoria esportiva, exibindo o nome da escola, o nome da categoria e a contagem de praticantes?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    e.nome_escola,
+    c.nome_categoria,
+    COUNT(a.id_atleta) AS total_atletas
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+GROUP BY e.nome_escola, c.nome_categoria
+ORDER BY total_atletas DESC;
 ```
 
 ---
@@ -233,15 +285,26 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são os atletas matriculados em escolas da rede pública estadual que pertencem à categoria de base, exibindo o nome do atleta, a escola e a categoria correspondente?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    e.nome_escola,
+    c.nome_categoria,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+WHERE e.tipo_rede = 'Estadual'
+  AND c.nome_categoria LIKE '%Sub%';
 ```
 
 **Explique o filtro:**
 
-> Escreva aqui.
+> A cláusula WHERE aplica dois filtros restritivos ao resultado do cruzamento das tabelas: o primeiro (e.tipo_rede = 'Estadual') seleciona apenas os atletas cujas escolas pertencem à rede pública estadual, enquanto o segundo (c.nome_categoria LIKE '%Sub%') restringe a listagem às categorias de base. Isso permite à diretoria da associação gerar relatórios focados em públicos específicos para fins de parcerias governamentais e captação de talentos escolares.
 
 ---
 
@@ -249,10 +312,20 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é a listagem geral de atletas cadastrados, ordenada alfabeticamente pelo nome do atleta, exibindo também sua data de nascimento, a escola parceira e a categoria esportiva correspondente?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    a.data_nascimento,
+    e.nome_escola,
+    c.nome_categoria
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+ORDER BY a.nome_atleta ASC;
 ```
 
 ---
@@ -263,15 +336,22 @@ Crie uma consulta que combine tabelas e utilize ao menos uma função de agrega�
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o quantitativo total de atletas vinculados a cada escola parceira, exibindo o nome da escola e o número total de praticantes matriculados?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    e.nome_escola,
+    COUNT(a.id_atleta) AS total_atletas
+FROM escola AS e
+LEFT JOIN atleta AS a
+    ON e.id_escola = a.id_escola
+GROUP BY e.id_escola, e.nome_escola
+ORDER BY total_atletas DESC;
 ```
 
 **Explique o agrupamento:**
 
-> Escreva aqui.
+> O GROUP BY agrupa os registros resultantes do LEFT JOIN com base na identificação e no nome de cada escola (e.id_escola, e.nome_escola). Em conjunto com a função de agregação COUNT(a.id_atleta), o banco calcula o número de atletas associados a cada instituição específica, permitindo avaliar quais escolas possuem maior representatividade e engajamento nos projetos de atletismo da associação.
 
 ---
 
@@ -297,15 +377,25 @@ As consultas devem responder perguntas reais sobre o banco.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o panorama gerencial completo contendo o quantitativo de atletas por escola parceira e categoria esportiva, permitindo à diretoria mapear o fluxo de captação de talentos e o engajamento institucional?
 
-```sql
--- Cole aqui.
+```
+SELECT
+    e.nome_escola,
+    c.nome_categoria,
+    COUNT(a.id_atleta) AS total_atletas
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+GROUP BY e.nome_escola, c.nome_categoria
+ORDER BY total_atletas DESC;
 ```
 
 **Por que ela é útil?**
 
-> Escreva aqui.
+> Esta consulta é a mais útil para a operação diária e o planejamento estratégico da associação, pois cruza três entidades fundamentais (atleta, escola e categoria) e utiliza agregação para fornecer um raio-X preciso da distribuição de praticantes. Com esses dados, a diretoria técnica e administrativa da RAAEI consegue identificar rapidamente quais escolas parceiras possuem maior representatividade, quais categorias esportivas estão mais populosas ou carentes de atletas, e fundamentar propostas de captação de recursos e parcerias públicas ou privadas.
 
 ---
 
@@ -313,8 +403,15 @@ As consultas devem responder perguntas reais sobre o banco.
 
 Escolha uma consulta produzida nesta Sprint.
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    a.data_nascimento,
+    a.genero,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 ```
 
 Explique:
@@ -325,7 +422,11 @@ Explique:
 4. o que a cláusula `ON` faz;
 5. o que ocorreria se a condição de relacionamento estivesse errada.
 
-> Escreva aqui.
+> Tabelas participantes: Participam da consulta a tabela atleta (apelidada como a) e a tabela escola (apelidada como e).
+> Chave Primária (PK) utilizada: A chave primária é id_escola, localizada na tabela escola, que identifica de forma única cada instituição parceira cadastrada.
+>Chave Estrangeira (FK) utilizada: A chave estrangeira é id_escola, localizada na tabela atleta, que aponta para a escola de origem de cada praticante.
+>Função da cláusula ON: A cláusula ON a.id_escola = e.id_escola estabelece o critério lógico de correspondência entre as duas tabelas. Ela instrui o SGBD a vincular cada registro de atleta à respectiva escola cujo identificador seja idêntico, unindo os dados relacionais de forma correta.
+>Impacto de uma condição incorreta: Se a condição de relacionamento estivesse errada (por exemplo, comparando colunas incompatíveis ou apontando para uma chave equivocada), o SGBD poderia gerar um produto cartesiano (multiplicando indevidamente todas as linhas das tabelas), retornar um conjunto de resultados vazio por falta de correspondência lógica, ou associar incorretamente atletas às escolas erradas, comprometendo a integridade do relatório gerencial.
 
 ---
 
@@ -333,17 +434,25 @@ Explique:
 
 **Consulta executada:**
 
-```sql
--- Cole aqui.
+```
+SELECT
+    a.nome_atleta,
+    c.nome_categoria,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 ```
 
 **Resultado esperado:**
 
-> Escreva aqui.
+> Retornar uma listagem com todos os atletas cadastrados que possuem vínculo válido com uma categoria esportiva e com uma escola parceira, exibindo de forma clara e integrada o nome do atleta, a modalidade/categoria e a instituição de ensino correspondente.
 
 **Resultado obtido:**
 
-> Escreva aqui.
+> Execução bem-sucedida no MySQL Workbench (db_raaei). A consulta processou o duplo INNER JOIN sem erros de sintaxe ou gargalos de desempenho, retornando o conjunto de registros estruturado exatamente conforme planejado, comprovando a integridade das chaves estrangeiras e a consistência relacional da base de dados.
 
 ---
 
@@ -351,9 +460,12 @@ Explique:
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+
+| Retorno de linhas duplicadas ou multiplicação indevida de registros (Produto Cartesiano). | Ausência ou incorreção na especificação da condição de junção nas cláusulas ON. | Revisar a correspondência exata entre as Chaves Primárias (PK) e Estrangeiras (FK) de cada tabela envolvida na consulta.
+
+| Omissão de atletas recém-cadastrados que ainda não possuem escola ou categoria vinculada. | Utilização restritiva de INNER JOIN, que descarta registros com valores nulos (NULL) nas referências. | Substituir por LEFT JOIN ou RIGHT JOIN dependendo da tabela base que precisa ser mantida integralmente na listagem.
+
+| Erro de sintaxe Unknown column ou falha ao referenciar colunas em consultas com múltiplos JOIN. | Ambiguidade de nomes de colunas idênticas em tabelas diferentes sem a devida qualificação por alias. | Utilizar prefixos ou aliases claros para todas as tabelas e colunas referenciadas no comando SQL (ex: atleta AS a, escola AS e).
 
 ---
 
@@ -375,32 +487,135 @@ O aluno deverá ser capaz de explicar presencialmente qualquer consulta entregue
 
 # 18. Estrutura recomendada do SPRINT1-5.sql
 
-```sql
+```
 -- MODULE 2 — SPRINT 1/5
 -- JOINS E CONSULTAS RELACIONAIS
 
--- Aluno:
--- Banco:
+-- Aluno: Walter Anacleto Salido de Souza
+-- Banco: db_raaei
 
-USE nome_do_banco;
+USE db_raaei;
 
--- INNER JOIN 1
+-- =====================================================================
+-- 1. INNER JOIN 1: Relacionamento entre Atleta e Escola
+-- =====================================================================
+SELECT
+    a.nome_atleta,
+    a.data_nascimento,
+    a.genero,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 
--- INNER JOIN 2
+-- =====================================================================
+-- 2. INNER JOIN 2: Cruzamento Triplo (Atleta, Categoria e Escola)
+-- =====================================================================
+SELECT
+    a.nome_atleta,
+    c.nome_categoria,
+    c.faixa_etaria,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 
--- LEFT JOIN
+-- =====================================================================
+-- 3. LEFT JOIN: Categorias e Atletas (Garantindo categorias sem atletas)
+-- =====================================================================
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria,
+    a.nome_atleta
+FROM categoria AS c
+LEFT JOIN atleta AS a
+    ON c.id_categoria = a.id_categoria;
 
--- RIGHT JOIN
+-- =====================================================================
+-- 4. RIGHT JOIN: Atletas e Escolas (Garantindo atletas sem escola)
+-- =====================================================================
+SELECT 
+    e.nome_escola,
+    a.nome_atleta,
+    a.genero
+FROM escola AS e
+RIGHT JOIN atleta AS a
+    ON e.id_escola = a.id_escola;
 
--- JOIN COM 3+ TABELAS 1
+-- =====================================================================
+-- 5. JOIN COM 3+ TABELAS 1: Relatório Completo Institucional
+-- =====================================================================
+SELECT
+    a.nome_atleta,
+    c.nome_categoria,
+    c.faixa_etaria,
+    e.nome_escola,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola;
 
--- JOIN COM 3+ TABELAS 2
+-- =====================================================================
+-- 6. JOIN COM 3+ TABELAS 2: Agregação por Escola e Categoria
+-- =====================================================================
+SELECT
+    e.nome_escola,
+    c.nome_categoria,
+    COUNT(a.id_atleta) AS total_atletas
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+GROUP BY e.nome_escola, c.nome_categoria
+ORDER BY total_atletas DESC;
 
--- JOIN + WHERE
+-- =====================================================================
+-- 7. JOIN + WHERE: Filtrando por Rede Estadual e Categorias de Base
+-- =====================================================================
+SELECT
+    a.nome_atleta,
+    e.nome_escola,
+    c.nome_categoria,
+    e.tipo_rede
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+WHERE e.tipo_rede = 'Estadual'
+  AND c.nome_categoria LIKE '%Sub%';
 
--- JOIN + ORDER BY
+-- =====================================================================
+-- 8. JOIN + ORDER BY: Listagem Geral Ordenada Alfabeticamente
+-- =====================================================================
+SELECT
+    a.nome_atleta,
+    a.data_nascimento,
+    e.nome_escola,
+    c.nome_categoria
+FROM atleta AS a
+INNER JOIN escola AS e
+    ON a.id_escola = e.id_escola
+INNER JOIN categoria AS c
+    ON a.id_categoria = c.id_categoria
+ORDER BY a.nome_atleta ASC;
 
--- JOIN + GROUP BY + AGREGAÇÃO
+-- =====================================================================
+-- 9. JOIN + GROUP BY + AGREGAÇÃO: Quantitativo Total por Escola
+-- =====================================================================
+SELECT
+    e.nome_escola,
+    COUNT(a.id_atleta) AS total_atletas
+FROM escola AS e
+LEFT JOIN atleta AS a
+    ON e.id_escola = a.id_escola
+GROUP BY e.id_escola, e.nome_escola
+ORDER BY total_atletas DESC;
 ```
 
 ---
