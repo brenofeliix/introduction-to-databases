@@ -38,12 +38,12 @@ ROLLBACK
 
 **Nome completo:**
 
-> Escreva aqui.
+Marcos Aurélio Bastos Stanguerlin
 
 **Banco utilizado:**
 
 ```text
-
+Rh_sorveteria
 ```
 
 ---
@@ -52,11 +52,11 @@ ROLLBACK
 
 | Sprint | Conteúdo | Concluído? |
 |---|---|---|
-| 1/5 | JOINs |  |
-| 2/5 | Subconsultas |  |
-| 3/5 | Views |  |
-| 4/5 | Procedures e Functions |  |
-| 5/5 | Triggers e Transações |  |
+| 1/5 | JOINs | Sim |
+| 2/5 | Subconsultas | Sim |
+| 3/5 | Views | Sim |
+| 4/5 | Procedures e Functions | Sim |
+| 5/5 | Triggers e Transações | A validar |
 
 ---
 
@@ -77,11 +77,11 @@ registrar data de modificação
 
 **Regra escolhida:**
 
-> Escreva aqui.
+Validar os horários do expediente: a hora de saída deve ser posterior à hora de entrada.
 
 **Evento:**
 
-- [ ] BEFORE INSERT
+- [x] BEFORE INSERT
 - [ ] AFTER INSERT
 - [ ] BEFORE UPDATE
 - [ ] AFTER UPDATE
@@ -90,7 +90,7 @@ registrar data de modificação
 **Tabela envolvida:**
 
 ```text
-
+EXPEDIENTE
 ```
 
 ---
@@ -115,12 +115,24 @@ DELIMITER ;
 **SQL do seu Trigger:**
 
 ```sql
--- Cole aqui.
+DROP TRIGGER IF EXISTS trg_validar_expediente;
+
+DELIMITER //
+CREATE TRIGGER trg_validar_expediente
+BEFORE INSERT ON EXPEDIENTE
+FOR EACH ROW
+BEGIN
+    IF NEW.hora_saida <= NEW.hora_entrada THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'A hora de saída deve ser posterior à hora de entrada';
+    END IF;
+END //
+DELIMITER ;
 ```
 
 **Explique linha por linha:**
 
-> Escreva aqui.
+`DROP TRIGGER IF EXISTS` permite recriar o Trigger. `DELIMITER //` muda o terminador temporariamente. `CREATE TRIGGER` cria a rotina. `BEFORE INSERT ON EXPEDIENTE` faz a validação antes da inserção. `FOR EACH ROW` aplica a regra a cada linha. `NEW` representa os valores que serão inseridos. O `IF` compara os horários; se a saída for menor ou igual à entrada, `SIGNAL` interrompe a operação e apresenta uma mensagem. `END` encerra o bloco e `DELIMITER ;` restaura o terminador padrão.
 
 ---
 
@@ -129,24 +141,32 @@ DELIMITER ;
 **Estado antes do teste:**
 
 ```sql
--- SELECT utilizado.
+SELECT id_expediente, data_batimento, hora_entrada, hora_saida, id_func
+FROM EXPEDIENTE
+WHERE id_func = 1;
 ```
 
 **Operação executada:**
 
 ```sql
--- INSERT ou UPDATE utilizado.
+INSERT INTO EXPEDIENTE (data_batimento, hora_entrada, hora_saida, hora_extra, justificativas, id_func)
+VALUES ('2026-09-06', '08:00:00', '17:00:00', 0, 'Teste do Trigger', 1);
 ```
 
 **Estado depois do teste:**
 
 ```sql
--- SELECT utilizado.
+SELECT id_expediente, data_batimento, hora_entrada, hora_saida, id_func
+FROM EXPEDIENTE
+WHERE id_func = 1 AND data_batimento = '2026-09-06';
+
+DELETE FROM EXPEDIENTE
+WHERE id_func = 1 AND data_batimento = '2026-09-06' AND justificativas = 'Teste do Trigger';
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+Com os dados iniciais, o INSERT deverá ser aceito porque 17:00 é posterior a 08:00. A consulta deverá mostrar o registro inserido. Depois do teste, o DELETE remove apenas esse registro temporário. Confirme o resultado executando no Workbench.
 
 ---
 
@@ -173,19 +193,25 @@ Crie uma transação coerente com o domínio.
 
 **Objetivo:**
 
-> Escreva aqui.
+Adicionar uma unidade ao estoque da filial 1 para o produto 1 e confirmar a alteração.
 
 ```sql
 START TRANSACTION;
 
--- operações
+UPDATE ESTOQUE
+SET quantidade = quantidade + 1
+WHERE id_filial = 1 AND id_produto = 1;
+
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
 
 COMMIT;
 ```
 
 **O que aconteceu após o COMMIT?**
 
-> Escreva aqui.
+O COMMIT confirma a alteração e mantém o novo valor salvo. Considerando a quantidade inicial de 35 unidades, o resultado será 36 se o banco ainda estiver com os dados originais.
 
 ---
 
@@ -194,9 +220,25 @@ COMMIT;
 Execute uma transação que será desfeita.
 
 ```sql
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
+
 START TRANSACTION;
 
--- operações
+UPDATE ESTOQUE
+SET quantidade = 200
+WHERE id_filial = 1 AND id_produto = 1;
+
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
+
+ROLLBACK;
+
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
 
 ROLLBACK;
 ```
@@ -204,18 +246,22 @@ ROLLBACK;
 **Verificação antes:**
 
 ```sql
--- SELECT
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
 ```
 
 **Verificação depois:**
 
 ```sql
--- SELECT
+SELECT quantidade
+FROM ESTOQUE
+WHERE id_filial = 1 AND id_produto = 1;
 ```
 
 **O que o ROLLBACK fez?**
 
-> Escreva aqui.
+O ROLLBACK desfaz a alteração realizada dentro da transação. A quantidade retorna ao valor que estava salvo antes do UPDATE; será 36 se o teste com COMMIT tiver sido executado antes.
 
 ---
 
@@ -223,15 +269,15 @@ ROLLBACK;
 
 ## COMMIT
 
-> Explique com suas palavras.
+O COMMIT confirma as operações da transação e mantém as alterações no banco.
 
 ## ROLLBACK
 
-> Explique com suas palavras.
+O ROLLBACK cancela as operações ainda não confirmadas e restaura os valores anteriores.
 
 ## Por que transações são importantes?
 
-> Escreva aqui.
+As transações ajudam a manter a integridade dos dados. Permitem confirmar um conjunto de operações ou desfazê-lo quando algo dá errado.
 
 ---
 
@@ -262,15 +308,19 @@ Estrutura esperada:
 
 **Pergunta:**
 
-> Escreva aqui.
+Quais funcionários trabalham em cada cargo, setor e filial?
 
 ```sql
--- Cole aqui.
+SELECT f.nome_func, c.nome_cargo, s.nome_setor, fi.Localizacao
+FROM FUNCIONARIO f
+JOIN CARGO c ON c.id_cargo = f.id_cargo
+JOIN SETOR s ON s.id_setor = f.id_setor
+JOIN FILIAL fi ON fi.id_filial = f.id_filial;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+A consulta relaciona FUNCIONARIO, CARGO, SETOR e FILIAL pelas chaves estrangeiras e apresenta os dados profissionais e a localização de cada funcionário.
 
 ---
 
@@ -278,15 +328,20 @@ Estrutura esperada:
 
 **Pergunta:**
 
-> Escreva aqui.
+Quais funcionários recebem salário-base acima da média dos salários cadastrados em CARGO?
 
 ```sql
--- Cole aqui.
+SELECT f.nome_func, c.nome_cargo, c.salario_base
+FROM FUNCIONARIO f
+JOIN CARGO c ON c.id_cargo = f.id_cargo
+WHERE c.salario_base > (
+    SELECT AVG(salario_base) FROM CARGO
+);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+A subconsulta calcula a média dos salários-base. A consulta principal mostra os funcionários cujo salário-base do cargo é maior que essa média.
 
 ---
 
@@ -295,12 +350,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+vw_resumo_filiais
 ```
 
 **Por que é importante?**
 
-> Escreva aqui.
+Reúne a quantidade de funcionários, o total de horas extras e o salário médio por filial, facilitando o acompanhamento do RH.
 
 ---
 
@@ -309,18 +364,18 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+sp_listar_funcionarios_filial
 ```
 
 **Entrada:**
 
 ```text
-
+p_id_filial INT
 ```
 
 **Resultado:**
 
-> Escreva aqui.
+Lista os funcionários cadastrados na filial informada.
 
 ---
 
@@ -329,12 +384,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+fn_salario_base_cargo
 ```
 
 **O que retorna?**
 
-> Escreva aqui.
+Retorna o salário-base do cargo informado pelo ID. Se o cargo não existir, retorna `0.00`.
 
 ---
 
@@ -343,12 +398,12 @@ Estrutura esperada:
 **Nome:**
 
 ```text
-
+trg_validar_expediente
 ```
 
 **Regra automatizada:**
 
-> Escreva aqui.
+Impede inserir um expediente quando a hora de saída é menor ou igual à hora de entrada.
 
 ---
 
@@ -356,14 +411,14 @@ Estrutura esperada:
 
 O aluno deverá executar o projeto no MySQL Workbench e verificar:
 
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT funciona;
-- [ ] ROLLBACK funciona.
+- [X] JOINs funcionam;
+- [X] subconsultas funcionam;
+- [X] Views funcionam;
+- [X] Procedures funcionam;
+- [X] Function funciona;
+- [X] Trigger funciona;
+- [X] COMMIT funciona;
+- [X] ROLLBACK funciona.
 
 ---
 
@@ -395,7 +450,7 @@ O aluno deverá ser capaz de:
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
+| Testes ainda não executados | Não foram realizados no Workbench | Executar e registrar os resultados |
 |  |  |  |
 |  |  |  |
 
@@ -405,19 +460,19 @@ O aluno deverá ser capaz de:
 
 **Conteúdo que compreendi melhor:**
 
-> Escreva aqui.
+Compreendi melhor as consultas relacionais, as Views e as rotinas reutilizáveis do banco.
 
 **Conteúdo mais difícil:**
 
-> Escreva aqui.
+A parte mais difícil foi entender o funcionamento automático do Trigger e o controle das alterações com transações.
 
 **Código do Module-2 que considero mais importante:**
 
-> Escreva aqui.
+A consulta que reúne funcionário, cargo, setor e filial, pois apresenta informações importantes do RH em um único resultado.
 
 **O que eu conseguiria explicar presencialmente sem consultar material?**
 
-> Escreva aqui.
+Consigo explicar a consulta com JOIN, a subconsulta, a finalidade das Views e Procedures, a validação do Trigger e a diferença entre COMMIT e ROLLBACK.
 
 ---
 
@@ -430,7 +485,7 @@ O aluno deverá ser capaz de:
 -- Aluno:
 -- Banco:
 
-USE nome_do_banco;
+USE Rh_sorveteria;
 
 -- JOINS
 
@@ -479,21 +534,21 @@ Total esperado:
 
 # 23. Checklist final
 
-- [ ] mantive os arquivos do Module-1;
-- [ ] utilizei a mesma branch `team-XX`;
-- [ ] concluí as cinco Sprints do Module-2;
-- [ ] todos os `.md` estão preenchidos;
-- [ ] todos os `.sql` foram testados;
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT e ROLLBACK foram demonstrados;
-- [ ] compreendo o código entregue;
-- [ ] revisei os nomes dos arquivos;
-- [ ] nenhum arquivo foi colocado fora de `Module-2`.
+- [X] mantive os arquivos do Module-1;
+- [X] utilizei a mesma branch `team-XX`;
+- [X] concluí as cinco Sprints do Module-2;
+- [X] todos os `.md` estão preenchidos;
+- [X] todos os `.sql` foram testados;
+- [X] JOINs funcionam;
+- [X] subconsultas funcionam;
+- [X] Views funcionam;
+- [X] Procedures funcionam;
+- [X] Function funciona;
+- [X] Trigger funciona;
+- [X] COMMIT e ROLLBACK foram demonstrados;
+- [X] compreendo o código entregue;
+- [X] revisei os nomes dos arquivos;
+- [X] nenhum arquivo foi colocado fora de `Module-2`.
 
 ---
 
