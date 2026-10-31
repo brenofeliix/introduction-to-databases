@@ -132,7 +132,9 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+CREATE DATABASE IF NOT EXISTS secretaria_saude;
+
+USE secretaria_saude;
 
 ```
 
@@ -210,12 +212,13 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | Paciente | Armazenar dados dos pacientes atendidos |
+| 2 | profissional | Armazenar dados dos profissionais de saúde/administrativos |
+| 3 | unidade_saude | Armazenar as unidades (UPA, hospital, posto, CAPS) |
+| 4 | atendimento | Registrar consultas/procedimentos realizados |
+| 5 | prontuario | Registrar diagnóstico e observações de cada atendimento |
+| 6 | estoque_item | Controlar estoque de vacinas e medicamentos por unidade |
+| 7 | obito | Registrar óbitos vinculados a um paciente | 
 
 ---
 
@@ -246,12 +249,13 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+1. paciente
+2. profissional
+3. unidade_saude
+4. atendimento (depende de paciente, profissional, unidade_saude)
+5. prontuario (depende de paciente, atendimento)
+6. estoque_item (depende de unidade_saude)
+7. obito (depende de paciente, unidade_saude)
 
 ---
 
@@ -275,10 +279,13 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| paciente | id_paciente | Sim |
+| profissional | id_profissional | Sim |
+| unidade_saude | id_unidade | Sim |
+| atendimento | id_atendimento | Sim |
+| prontuario | id_prontuario | Sim | 
+| estoque_item | id_item | Sim | 
+| obito | id_obito | Sim |
 
 ---
 
@@ -298,9 +305,9 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| paciente | nome, cpf, endereco | Identificação mínima do paciente |
+| atendimento | id_paciente, id_profissional, id_unidade, data_hora | Todo atendimento precisa desses vínculos para existir |
+| profissional | nome, cargo, setor | Identificação funcional mínima |
 
 ---
 
@@ -324,8 +331,10 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+| paciente | cpf | Evita cadastro duplicado da mesma pessoa |
+| profissional | registro_conselho | Um CRM/COREN pertence a um único profissional |
+| prontuario | id_atendimento | Cada atendimento gera só um prontuário |
+| obito | id_paciente | Um paciente só pode ter um registro de óbito |
 
 Caso nenhuma seja necessária, justifique:
 
@@ -353,8 +362,9 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 | Tabela | Campo | DEFAULT | Justificativa |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
+| atendimento | status | 'AGENDADO' | Todo atendimento nasce como agendado até ser realizado/cancelado |
+| estoque_item | quantidade | 0 | Evita valor nulo no controle de estoque |
+| prontuario | data_registro | CURRENT_TIMESTAMP | Registra automaticamente quando o prontuário foi criado |
 
 Caso não utilize `DEFAULT`, justifique:
 
@@ -407,9 +417,14 @@ Verifique se:
 
 | Tabela | Campo FK | Referencia | Relacionamento |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| atendimento | id_paciente | paciente | N:1 |
+| atendimento |	id_profissional | profissional | N:1 |
+| atendimento | id_unidade | unidade_saude | N:1 |
+| prontuario | id_paciente | paciente | N:1 |
+| prontuario |	id_atendimento | atendimento | 1:1 |
+| estoque_item  |	id_unidade | unidade_saude |	N:1 |
+| obito	| id_paciente |	paciente |	1:1 |
+| obito  | unidade_responsavel	| unidade_saude |	N:1 |
 
 ---
 
@@ -459,7 +474,7 @@ CREATE TABLE tabela_associativa (
 ## Seu banco possui relacionamento N:N?
 
 - [ ] Sim
-- [ ] Não
+- [x] Não
 
 Se sim, explique como foi implementado:
 
@@ -497,13 +512,14 @@ ADD CONSTRAINT uq_nome UNIQUE (novo_campo);
 ## ALTER TABLE utilizado no projeto
 
 ```sql
--- Cole aqui o comando executado.
+ALTER TABLE profissional
 
+ADD COLUMN telefone VARCHAR(20);
 ```
 
 ### Explique a alteração
 
-> Escreva aqui.
+> foi identificada a necessidade de contato telefônico com o profissional, que não havia sido planejada na Sprint 1/5.
 
 ---
 
@@ -528,7 +544,10 @@ DROP TABLE tabela_teste;
 ## Código executado
 
 ```sql
--- Cole aqui o teste realizado.
+CREATE TABLE tabela_teste (
+    id_teste INT PRIMARY KEY
+);
+DROP TABLE tabela_teste;
 
 ```
 
@@ -546,7 +565,7 @@ e:
 DROP TABLE tabela;
 ```
 
-> Responda aqui.
+> Diferença entre DELETE FROM tabela e DROP TABLE tabela: o DELETE remove os registros (linhas) mas mantém a estrutura da tabela; o DROP TABLE remove a tabela inteira, incluindo sua estrutura, e não pode ser desfeito..
 
 ---
 

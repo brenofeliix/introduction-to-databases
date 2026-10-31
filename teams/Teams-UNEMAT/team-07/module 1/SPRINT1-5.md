@@ -35,12 +35,12 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
-
+> Talita de Oliveira Leite Sete.
+> 
 **Nome escolhido para o banco de dados:**
 
 ```text
-
+secretaria_saude
 ```
 
 ---
@@ -73,7 +73,7 @@ Alguns exemplos:
 
 ### Tema escolhido
 
-> Escreva aqui.
+> Secretaria Municipal de Saúde — gestão de pacientes, atendimentos e unidades de saúde.
 
 ---
 
@@ -90,7 +90,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> Esse banco de dados representa uma secretaria de saúde, do sistema público de saúde da cidade. Apenas funcionários de dentro da própria secretaria podem usar o sistema e, dependendo do nível de uso a ser liberado, apenas cargos altos ou de segurança teriam acesso a tudo. As principais informações dentro desse banco de dados seriam dados dos pacientes, prontuários, agendamentos de consultas, informações sobre vacinas, estoques de vacinas e remédios. As principais operações seriam agendar consultas, desmarcar, gerar óbito, transferir paciente entre unidades, gerar relatórios e estatísticas.
 
 ---
 
@@ -100,7 +100,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> Organizar e centralizar as informações de pacientes e atendimentos da rede municipal de saúde, garantindo rastreabilidade do histórico clínico-administrativo e apoiando a gestão da secretaria..
 
 ---
 
@@ -112,11 +112,15 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Cadastro de pacientes
+2. Cadastro de profissionais de saúde
+3. Cadastro de unidades de saúde
+4. Registro de atendimentos/consultas
+5. Acesso ao prontuário.
+6. Acesso ao estoque de vacinas e medicamentos.
+7. Geração de relatórios e estatísticas.
+8. Registro de óbitos.
+9. Registro de procedimentos.
 
 ---
 
@@ -150,12 +154,14 @@ Pagamento
 
 | Nº | Entidade | O que representa? |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
-| 6 |  |  |
+| 1 | Paciente | Pessoa atendida pela rede de saúde |
+| 2 | Profissional | Médico, enfermeiro, etc. |
+| 3 | Unidade_Saude | UBS, hospital, posto, CAPS |
+| 4 | Atendimento | Consulta/atendimento realizado |
+| 5 | Prontuario | Registro clínico gerado a partir de um atendimento | 
+| 6 | Estoque_Item | Controle de vacinas e medicamentos por unidade |
+| 7 | Obito | Registro de óbito vinculado a um paciente |
+
 
 > Como referência para esta atividade, planeje **pelo menos 4 tabelas relacionadas**.
 
@@ -170,64 +176,69 @@ Para cada entidade, identifique os principais atributos que deverão ser armazen
 **Nome da entidade:**
 
 ```text
-
+Paciente 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_paciente | Identificador único | INT (PK, AUTO_INCREMENT)	 | Sim |
+| nome | Nome completo | VARCHAR | Sim |
+| cpf | CPF | VARCHAR(11) | Sim |
+| data_nascimento | Data de nascimento | DATE | Sim |
+| sexo | Sexo | CHAR(1) | Não |
+| telefone | Contato | VARCHAR | Não |
+| endereço | Endereço | VARCHAR | Não |
 
 ## Entidade 2
 
 **Nome da entidade:**
 
 ```text
-
+Profissional 
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_profissional | Identificador único | INT (PK) | Sim |
+| nome | Nome completo | VARCHAR |	Sim  |
+| registro_conselho | CRM/COREN | VARCHAR | Não (NULL para administrativo) |
+| cargo | Cargo | VARCHAR | Sim |
+| setor | Setor em que atua | VARCHAR | Sim |
+| telefone | Contato | VARCHAR | Não |
 
 ## Entidade 3
 
 **Nome da entidade:**
 
 ```text
-
+Unidade_Saude
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_unidade | Identificador único | INT (PK) | Sim |
+| nome | Nome da unidade | VARCHAR | Sim |
+| endereço | Nome da unidade | VARCHAR | Sim |
+| tipo | UBS/HOSPITAL/POSTO/CAPS | VARCHAR | Sim |
+
 
 ## Entidade 4
 
 **Nome da entidade:**
 
 ```text
-
+Atendimento
 ```
 
 | Atributo | Informação armazenada | Tipo de dado previsto | Obrigatório? |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| id_atendimento | Identificador único | INT(PK, AUTO_INCREMENT) | Sim |
+| id_profissional | Profissional responsável | INT (FK) | Sim |
+| id_paciente | Paciente atendido | INT (FK) | Sim |
+| id_unidade | Unidade onde ocorreu | INT (FK) | Sim |
+| data_hora | Data/hora do atendimento | DATETIME | Sim |
+| tipo_atendimento | Consulta/procedimento/vacina | VARCHAR | Sim |
+| status | Agendado/Realizado/Cancelado | VARCHAR | Sim |
 
 ## Outras entidades
 
@@ -235,9 +246,9 @@ Caso o projeto possua mais de quatro entidades, registre-as abaixo.
 
 | Entidade | Principais atributos |
 |---|---|
-|  |  |
-|  |  |
-|  |  |
+| Prontuario | id_prontuario, id_paciente, id_atendimento, diagnostico |
+| Estoque_Item | id_item, id_unidade, nome, tipo, quantidade, validade |
+| Obito | id_obito, id_paciente, data_obito, causa, unidade_responsavel |
 
 ---
 
@@ -247,10 +258,13 @@ Cada tabela deverá possuir uma forma de identificar unicamente seus registros.
 
 | Entidade/Tabela | Chave primária prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Paciente | id_paciente | Identificador numérico único; evita duplicidade mesmo com nomes repetidos |
+| Profissional | id_profissional | CRM/COREN pode ser nulo (equipe administrativa), então um ID interno é mais seguro |
+| Unidade_saude | id_saude | Nome/endereço podem se repetir ou mudar; o ID garante unicidade  |
+| Atendimento | id_atendimento | Um paciente pode ter vários atendimentos; precisa de identificador próprio |
+| Prontuario | id_prontuario | Cada registro clínico deve ser único e rastreável |
+| Estoque_Item | id_item | Permite controlar entradas/saídas do mesmo insumo ao longo do tempo |
+| Obito | id_obito | Registro único e formal do evento |
 
 Considere:
 
@@ -277,11 +291,14 @@ Produto aparece em Item_Pedido
 
 | Entidade A | Relacionamento | Entidade B |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Paciente | realiza | Atendimento |
+| Profissional | realiza | Atendimento |
+| Unidade_Saude | sedia | Atendimento |
+| Paciente | possui | Prontuario |
+| Atendimento | gera | Prontuario |
+| Unidade_saude | controla | Estoque_Item |
+| Paciente | pode ter | Obito |
+| Unidade_saude | resgistra | Obito |
 
 ---
 
@@ -297,21 +314,26 @@ N:N  → muitos para muitos
 
 | Relacionamento | Cardinalidade prevista | Justificativa |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
+| Paciente → Atendimento | 	1:N | Um paciente pode ter vários atendimentos ao longo do tempo |
+| Profissional → Atendimento | 1:N | Um profissional atende vários pacientes |
+| Unidade_Saude → Atendimento | 1:N | 	Uma unidade concentra vários atendimentos |
+| Atendimento → Prontuario | 1:1 | Cada atendimento gera exatamente um registro de prontuário |
+| Unidade_Saude → Estoque_Item | 1:N | Cada unidade controla vários itens de estoque | 
+| Paciente → Obito | 1:1 | Um paciente só pode ter um registro de óbito |
 ---
 
 # 11. Chaves estrangeiras previstas
 
 | Tabela | Atributo previsto como FK | Referencia qual tabela? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Atendimento | id_paciente | Paciente |
+| Atendimento | id_profissional | Profissional |
+| Atendimento | id_unidade | Unidade_saude|
+| Prontuario | id_paciente | Paciente |
+| Prontuario | id_atendimento | Atendimento | 
+| Estoque_Item | id_unidade | Unidade_Saude |
+| Obito | id_paciente | Paciente |
+| Obito | unidade_responsavel | Unidade_Saude |
 
 > As `FOREIGN KEY` serão implementadas posteriormente. Nesta Sprint, apenas planeje os relacionamentos.
 
@@ -332,11 +354,13 @@ AUTO_INCREMENT
 
 | Tabela | Atributo | Restrição prevista | Motivo |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Paciente | cpf | UNIQUE, NOT NULL | Evitar cadastro duplicado da mesma pessoa |
+| Profissional | registro_conselho | UNIQUE | Um CRM/COREN não pode pertencer a dois cadastros |
+| Atendimento | id_paciente, id_profissional, id_unidade | FOREIGN KEY, NOT NULL | Todo atendimento precisa estar vinculado a registros existentes |
+| Atendimento | status | DEFAULT 'AGENDADO' | Todo atendimento nasce como agendado |
+| Prontuario | id_atendimento | UNIQUE | Cada atendimento gera só um prontuário |
+| Estoque_Item | quantidade | 	DEFAULT 0, NOT NULL | Controle de estoque não pode ficar nulo |
+| Obito | id_paciente | UNIQUE | Um paciente só pode ter um registro de óbito |
 
 ---
 
@@ -356,11 +380,12 @@ Um empréstimo deve possuir uma data de realização.
 
 ### Regras do seu banco
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Um paciente não pode possuir dois cadastros com o mesmo CPF.
+2. Um atendimento deve estar associado a um paciente, um profissional e uma unidade existentes.
+3. Um profissional só pode ser cadastrado com CRM/COREN válido, caso exerça função clínica.
+4. A quantidade em estoque de vacinas/medicamentos não pode ser negativa.
+5. Um paciente com registro de óbito não pode ter novos atendimentos agendados.
+6. A data do atendimento não pode ser anterior à data de nascimento do paciente.
 
 ---
 
@@ -387,7 +412,53 @@ CLIENTE 1 ───── N PEDIDO
 ### Esboço do seu banco
 
 ```text
-Escreva aqui a estrutura planejada.
+PACIENTE
+├── id_paciente (PK)
+├── nome
+├── cpf
+└── data_nascimento
+
+PROFISSIONAL
+├── id_profissional (PK)
+├── nome
+├── registro_conselho
+└── cargo
+
+UNIDADE_SAUDE
+├── id_unidade (PK)
+├── nome
+└── tipo
+
+ATENDIMENTO
+├── id_atendimento (PK)
+├── id_paciente (FK)
+├── id_profissional (FK)
+├── id_unidade (FK)
+└── data_hora
+
+PRONTUARIO
+├── id_prontuario (PK)
+├── id_paciente (FK)
+├── id_atendimento (FK)
+└── diagnostico
+
+ESTOQUE_ITEM
+├── id_item (PK)
+├── id_unidade (FK)
+├── tipo
+└── quantidade
+
+OBITO
+├── id_obito (PK)
+├── id_paciente (FK)
+└── data_obito
+
+PACIENTE 1───N ATENDIMENTO
+PROFISSIONAL 1───N ATENDIMENTO
+UNIDADE_SAUDE 1───N ATENDIMENTO
+ATENDIMENTO 1───1 PRONTUARIO
+UNIDADE_SAUDE 1───N ESTOQUE_ITEM
+PACIENTE 1───1 OBITO
 ```
 
 ---
@@ -396,10 +467,11 @@ Escreva aqui a estrutura planejada.
 
 Descreva que tipos de registros deverão existir no banco quando ele for populado.
 
-1. 
-2. 
-3. 
-4. 
+1. Pacientes cadastrados com dados pessoais e endereço.
+2. Profissionais de saúde (médicos, enfermeiros) e da equipe administrativa.
+3. Unidades de saúde (UPA, hospital, posto, CAPS) com endereço.
+4. Atendimentos/consultas realizados, com data e status.
+5. Itens de estoque (vacinas e medicamentos) por unidade.
 
 ---
 
@@ -419,11 +491,12 @@ Quais categorias possuem mais de 5 produtos?
 
 ### Perguntas do seu projeto
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais pacientes estão cadastrados em determinada unidade?
+2. Quantos atendimentos cada profissional realizou no mês?
+3. Quais unidades têm estoque baixo de determinada vacina?
+4. Qual o número de óbitos registrados por unidade/período?
+5. Quais pacientes têm atendimentos agendados para os próximos dias?
+6. Qual o tipo de atendimento mais frequente por unidade?
 
 ---
 
