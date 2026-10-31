@@ -39,11 +39,12 @@ ROLLBACK
 **Nome completo:**
 
 > Escreva aqui.
+Ylma Cristina Souza Lopes
 
 **Banco utilizado:**
 
 ```text
-
+Clinica_Ser
 ```
 
 ---
@@ -52,11 +53,11 @@ ROLLBACK
 
 | Sprint | Conteúdo | Concluído? |
 |---|---|---|
-| 1/5 | JOINs |  |
-| 2/5 | Subconsultas |  |
-| 3/5 | Views |  |
-| 4/5 | Procedures e Functions |  |
-| 5/5 | Triggers e Transações |  |
+| 1/5 | JOINs |V|
+| 2/5 | Subconsultas |V|
+| 3/5 | Views |V|
+| 4/5 | Procedures e Functions |V|
+| 5/5 | Triggers e Transações |V|
 
 ---
 
@@ -78,11 +79,11 @@ registrar data de modificação
 **Regra escolhida:**
 
 > Escreva aqui.
-
+Registrar um histórico automático (log) sempre que um novo resultado de exame for inserido.
 **Evento:**
 
 - [ ] BEFORE INSERT
-- [ ] AFTER INSERT
+- [V] AFTER INSERT
 - [ ] BEFORE UPDATE
 - [ ] AFTER UPDATE
 - [ ] Outro
@@ -90,7 +91,7 @@ registrar data de modificação
 **Tabela envolvida:**
 
 ```text
-
+Resultado
 ```
 
 ---
@@ -116,12 +117,29 @@ DELIMITER ;
 
 ```sql
 -- Cole aqui.
+DELIMITER //
+
+CREATE TRIGGER trg_log_resultado
+AFTER INSERT ON Resultado
+FOR EACH ROW
+BEGIN
+    INSERT INTO Log_Laudo (id_resultado, data_emissao, usuario)
+    VALUES (NEW.id_resultado, NOW(), CURRENT_USER());
+END //
+
+DELIMITER ;
+
 ```
 
 **Explique linha por linha:**
 
 > Escreva aqui.
-
+DELIMITER // altera o delimitador para permitir múltiplas linhas.
+CREATE TRIGGER trg_log_resultado cria um trigger chamado trg_log_resultado.
+AFTER INSERT ON Resultado especifica que o trigger será executado após inserção na tabela Resultado.
+FOR EACH ROW aplica a lógica para cada linha inserida.
+No bloco BEGIN...END, insere um novo registro na tabela Log_Laudo com o id do resultado inserido, a data/hora atual e o usuário que fez a operação.
+DELIMITER ; volta o delimitador ao padrão.
 ---
 
 # 5. Testando o Trigger
@@ -130,24 +148,30 @@ DELIMITER ;
 
 ```sql
 -- SELECT utilizado.
+SELECT * FROM Log_Laudo;
+
 ```
 
 **Operação executada:**
 
 ```sql
 -- INSERT ou UPDATE utilizado.
+INSERT INTO Resultado (id_agendamento, resultado_texto) VALUES (1, 'Exame com resultado Normal.');
+
 ```
 
 **Estado depois do teste:**
 
 ```sql
 -- SELECT utilizado.
+SELECT * FROM Log_Laudo;
+
 ```
 
 **Resultado observado:**
 
 > Escreva aqui.
-
+Após inserir um resultado, um novo registro foi criado automaticamente na tabela Log_Laudo, com o id do resultado recém inserido, data e usuário, confirmando o funcionamento do trigger.
 ---
 
 # 6. START TRANSACTION
@@ -174,11 +198,23 @@ Crie uma transação coerente com o domínio.
 **Objetivo:**
 
 > Escreva aqui.
+Inserir paciente e agendamento vinculados, garantindo que as duas operações sejam concluídas juntas.
 
 ```sql
 START TRANSACTION;
 
 -- operações
+START TRANSACTION;
+
+INSERT INTO Paciente (nome, cpf, data_nascimento, telefone, endereco, id_convenio) 
+VALUES ('Lucas Fernandes', '09876543210', '1992-08-20', '66 99999-5555', 'Av B', 1);
+
+SET @novo_paciente = LAST_INSERT_ID();
+
+INSERT INTO Agendamento (id_paciente, id_exame, id_medico, data_hora) 
+VALUES (@novo_paciente, 1, 1, '2026-11-10 10:00:00');
+
+COMMIT;
 
 COMMIT;
 ```
@@ -186,7 +222,7 @@ COMMIT;
 **O que aconteceu após o COMMIT?**
 
 > Escreva aqui.
-
+As duas inserções foram confirmadas e persistiram no banco de dados.
 ---
 
 # 8. Teste com ROLLBACK
@@ -195,6 +231,11 @@ Execute uma transação que será desfeita.
 
 ```sql
 START TRANSACTION;
+START TRANSACTION;
+
+UPDATE Exame SET preco = 5000.00 WHERE id_exame = 1; -- Aumento abusivo acidental
+
+ROLLBACK; -- Desfaz a alteração
 
 -- operações
 
@@ -205,18 +246,22 @@ ROLLBACK;
 
 ```sql
 -- SELECT
+SELECT preco FROM Exame WHERE id_exame = 1;
+
 ```
 
 **Verificação depois:**
 
 ```sql
 -- SELECT
+SELECT preco FROM Exame WHERE id_exame = 1;
+
 ```
 
 **O que o ROLLBACK fez?**
 
 > Escreva aqui.
-
+Reverteu a alteração feita no preço, mantendo o dado original intacto.
 ---
 
 # 9. Comparação COMMIT x ROLLBACK
@@ -224,15 +269,15 @@ ROLLBACK;
 ## COMMIT
 
 > Explique com suas palavras.
-
+Confirma todas as operações feitas dentro da transação, tornando as mudanças permanentes no banco.
 ## ROLLBACK
 
 > Explique com suas palavras.
-
+Desfaz todas as operações feitas na transação até o momento do seu início, anulando as alterações.
 ## Por que transações são importantes?
 
 > Escreva aqui.
-
+Elas garantem a integridade do banco, permitindo agrupar operações relacionadas para que todas sejam concluídas com sucesso, ou nenhuma, evitando dados inconsistentes.
 ---
 
 # 10. Integração do Module-2
@@ -256,6 +301,17 @@ Estrutura esperada:
 
 > Não é necessário duplicar todo o código do `Module-1`. O objetivo deste arquivo é integrar o que foi desenvolvido no `Module-2` utilizando o banco já existente.
 
+1. USE banco;
+2. Consultas com JOIN (ex: vw_agendamentos_detalhados);
+3. Subconsultas (ex: contagem de exames por paciente);
+4. Views (vw_faturamento_por_exame, vw_laudos_pendentes);
+5. Procedures (sp_agendar_exame, sp_verificar_elegibilidade);
+6. Function (fn_calcular_desconto);
+7. Trigger (trg_log_resultado);
+8. Teste de COMMIT (inserção paciente + agendamento);
+9. Teste de ROLLBACK (atualização de preço revertida);
+10. Consultas de validação (SELECT em views e tabela de log);
+
 ---
 
 # 11. Consulta relacional final
@@ -263,15 +319,21 @@ Estrutura esperada:
 **Pergunta:**
 
 > Escreva aqui.
-
+Quais agendamentos estão marcados com detalhes completos do paciente, médico e exame?
 ```sql
 -- Cole aqui.
+SELECT a.id_agendamento, a.data_hora, p.nome AS paciente, m.nome AS medico, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
+
 ```
 
 **Explique:**
 
 > Escreva aqui.
-
+Esta consulta utiliza JOINs para relacionar as principais tabelas e retorna informações completas e integradas dos agendamentos, facilitando o entendimento do quadro clínico e o planejamento médico.
 ---
 
 # 12. Subconsulta final
@@ -279,15 +341,25 @@ Estrutura esperada:
 **Pergunta:**
 
 > Escreva aqui.
-
+Qual o paciente com maior número de agendamentos registrados?
 ```sql
 -- Cole aqui.
+SELECT nome
+FROM Paciente
+WHERE id_paciente = (
+    SELECT id_paciente
+    FROM Agendamento
+    GROUP BY id_paciente
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
+);
+
 ```
 
 **Explique:**
 
 > Escreva aqui.
-
+A subconsulta agrupa os agendamentos por paciente, ordena pela quantidade em ordem decrescente e retorna o paciente com maior número de agendamentos. A consulta externa busca o nome desse paciente.
 ---
 
 # 13. VIEW final mais útil
@@ -295,13 +367,14 @@ Estrutura esperada:
 **Nome:**
 
 ```text
+vw_agendamentos_detalhados
 
 ```
 
 **Por que é importante?**
 
 > Escreva aqui.
-
+Centraliza informações de várias tabelas para facilitar consultas frequentes sobre agendamentos, poupando tempo e evitando repetição de joins complexos em várias consultas.
 ---
 
 # 14. Procedure final mais útil
@@ -309,19 +382,21 @@ Estrutura esperada:
 **Nome:**
 
 ```text
+sp_agendar_exame
 
 ```
 
 **Entrada:**
 
 ```text
+p_id_paciente INT, p_id_exame INT, p_id_medico INT, p_data DATETIME
 
 ```
 
 **Resultado:**
 
 > Escreva aqui.
-
+Insere um novo agendamento no sistema com os dados fornecidos, garantindo o registro correto do exame agendado para o paciente e médico.
 ---
 
 # 15. Function final
@@ -329,13 +404,14 @@ Estrutura esperada:
 **Nome:**
 
 ```text
+fn_calcular_desconto
 
 ```
 
 **O que retorna?**
 
 > Escreva aqui.
-
+Retorna o preço final do exame aplicando desconto para pacientes conveniados, permitindo cálculos simplificados diretamente em consultas.
 ---
 
 # 16. Trigger final
@@ -343,27 +419,28 @@ Estrutura esperada:
 **Nome:**
 
 ```text
+trg_log_resultado
 
 ```
 
 **Regra automatizada:**
 
 > Escreva aqui.
-
+Após a inserção de um resultado de exame, registra automaticamente o evento em uma tabela de log com data e usuário, garantindo rastreabilidade das alterações no sistema.
 ---
 
 # 17. Teste operacional final
 
 O aluno deverá executar o projeto no MySQL Workbench e verificar:
 
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT funciona;
-- [ ] ROLLBACK funciona.
+- [V] JOINs funcionam;
+- [V] subconsultas funcionam;
+- [V] Views funcionam;
+- [V] Procedures funcionam;
+- [V] Function funciona;
+- [V] Trigger funciona;
+- [V] COMMIT funciona;
+- [V] ROLLBACK funciona.
 
 ---
 
@@ -395,9 +472,9 @@ O aluno deverá ser capaz de:
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|Trigger não dispara após inserção|Definição incorreta do evento do trigger ou falta de permissão|Verificar evento (AFTER/BEFORE INSERT) e permissões do usuário|
+|Procedures retornam erro de sintaxe|Uso incorreto do DELIMITER ou comandos mal formatados|Ajustar uso do DELIMITER e revisar sintaxe das procedures|
+|Dados inconsistentes após transação|Falta de COMMIT ou erro na lógica que gera inconsistência|Confirmar transações com COMMIT ou implementar uso correto de ROLLBACK|
 
 ---
 
@@ -406,19 +483,22 @@ O aluno deverá ser capaz de:
 **Conteúdo que compreendi melhor:**
 
 > Escreva aqui.
+ROLLBACK
 
 **Conteúdo mais difícil:**
 
 > Escreva aqui.
+PROCEDURES E FUNCTIONS
 
 **Código do Module-2 que considero mais importante:**
 
 > Escreva aqui.
+JOINS
 
 **O que eu conseguiria explicar presencialmente sem consultar material?**
 
 > Escreva aqui.
-
+SUBCONSULTAS
 ---
 
 # 21. Estrutura recomendada do SPRINT5-5.sql
@@ -479,21 +559,21 @@ Total esperado:
 
 # 23. Checklist final
 
-- [ ] mantive os arquivos do Module-1;
-- [ ] utilizei a mesma branch `team-XX`;
-- [ ] concluí as cinco Sprints do Module-2;
-- [ ] todos os `.md` estão preenchidos;
-- [ ] todos os `.sql` foram testados;
-- [ ] JOINs funcionam;
-- [ ] subconsultas funcionam;
-- [ ] Views funcionam;
-- [ ] Procedures funcionam;
-- [ ] Function funciona;
-- [ ] Trigger funciona;
-- [ ] COMMIT e ROLLBACK foram demonstrados;
-- [ ] compreendo o código entregue;
-- [ ] revisei os nomes dos arquivos;
-- [ ] nenhum arquivo foi colocado fora de `Module-2`.
+- [V] mantive os arquivos do Module-1;
+- [V] utilizei a mesma branch `team-XX`;
+- [V] concluí as cinco Sprints do Module-2;
+- [V] todos os `.md` estão preenchidos;
+- [V] todos os `.sql` foram testados;
+- [V] JOINs funcionam;
+- [V] subconsultas funcionam;
+- [V] Views funcionam;
+- [V] Procedures funcionam;
+- [V] Function funciona;
+- [V] Trigger funciona;
+- [V] COMMIT e ROLLBACK foram demonstrados;
+- [V] compreendo o código entregue;
+- [V] revisei os nomes dos arquivos;
+- [V] nenhum arquivo foi colocado fora de `Module-2`.
 
 ---
 
