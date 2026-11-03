@@ -60,23 +60,23 @@ Não altere nem apague os arquivos do `Module-1`.
 **Nome completo:**
 
 > Escreva aqui.
-
+Ylma Cristina Souza Lopes
 **Branch:**
 
 ```text
-team-XX
+team-05
 ```
 
 **Nome do banco:**
 
 ```text
-
+Clinica_Ser
 ```
 
 **Tema do projeto:**
 
 > Escreva aqui.
-
+Clinica_Ser
 ---
 
 # 3. Retomada do banco
@@ -85,22 +85,22 @@ Liste as principais tabelas que serão utilizadas.
 
 | Nº | Tabela | PK | Principais FKs |
 |---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 |Paciente|id_paciente|id_convenio|
+| 2 |Medico|id_medico|----|
+| 3 |Exame|id_exame|----|
+| 4 |Agendamentado|id_agendamento|id_paciente, id_medico, id_exame|
+| 5 |Resultado|id_resultado|id_exame|
 
 ---
 
 # 4. Relacionamentos existentes
 
 | Tabela A | Cardinalidade | Tabela B | FK utilizada |
-|---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+|Convênio|1-N|Paciente|Paciente.id_convenio|
+|Paciente|1-N|Agendamento|Agendamento.id_paciente|
+|Médico|1-N|Agendamento|Agendamento.id_medico|
+|Exame|1-N|Agendamento|Agendamento.id_exame|
+|Exame|1-N|Resultado|Resultado.id_exame|
 
 ---
 
@@ -128,24 +128,42 @@ INNER JOIN tabela_b AS b
 **Tabelas utilizadas:**
 
 ```text
-
+Paciente
+Agendamento
+Médico
+Exame
 ```
 
 **PK/FK utilizadas:**
 
 ```text
+Paciente.id_paciente (PK)
+Agendamento.id_paciente (FK)
 
+Médico.id_medico (PK)
+Agendamento.id_medico (FK)
+
+Exame.id_exame (PK)
+Agendamento.id_exame (FK)
 ```
 
 **SQL:**
 
 ```sql
 -- Cole aqui.
+SELECT p.nome AS Paciente, c.nome_convenio AS Convenio
+FROM Paciente p
+INNER JOIN Convenio c ON p.id_convenio = c.id_convenio;
+
 ```
 
 **Explique o resultado:**
 
 > Escreva aqui.
+Paciente       | Tipo_Exame | Médico            | Data_Hora
+------------------------------------------------------------
+Maria Silva    | Raio-X     | Dr. João Pereira  | 20/09/2026
+Carlos Souza   | Tomografia | Dra. Ana Martins  | 21/09/2026
 
 ## Consulta INNER JOIN 2
 
@@ -156,11 +174,17 @@ INNER JOIN tabela_b AS b
 ```sql
 -- Cole aqui.
 ```
-
+SELECT e.tipo_exame, r.laudo_texto
+FROM Exame e
+INNER JOIN Resultado r ON e.id_exame = r.id_exame;
 **Explique:**
 
 > Escreva aqui.
+Esta consulta utiliza o comando INNER JOIN para relacionar as tabelas Exame e Resultado por meio da chave:
 
+Plain Text
+Exame.id_exame (PK)
+Resultado.id_exame (FK)
 ---
 
 # 6. LEFT JOIN
@@ -175,12 +199,17 @@ O `LEFT JOIN` mantém todos os registros da tabela à esquerda, mesmo quando nã
 
 ```sql
 -- Cole aqui.
+SELECT c.nome_convenio, p.nome
+FROM Convenio c
+LEFT JOIN Paciente p ON c.id_convenio = p.id_convenio;
+
 ```
+
 
 **O que o LEFT JOIN permite visualizar neste caso?**
 
 > Escreva aqui.
-
+O LEFT JOIN exibe todos os convênios cadastrados na tabela Convenio, mesmo que não possuam pacientes vinculados. Quando um convênio não possui pacientes associados, o campo nome da tabela Paciente aparece como NULL. Isso permite identificar convênios sem utilização.
 ---
 
 # 7. RIGHT JOIN
@@ -195,12 +224,16 @@ O `RIGHT JOIN` mantém todos os registros da tabela da direita, mesmo quando nã
 
 ```sql
 -- Cole aqui.
+SELECT e.tipo_exame, r.laudo_texto
+FROM Resultado r
+RIGHT JOIN Exame e
+ON r.id_exame = e.id_exame;
 ```
 
 **Explique o resultado:**
 
 > Escreva aqui.
-
+O RIGHT JOIN exibe todos os exames cadastrados na tabela Exame, mesmo que ainda não possuam um resultado associado. Caso um exame não tenha laudo registrado, o campo laudo_texto será exibido como NULL. Essa consulta ajuda a identificar exames pendentes de resultado.
 ---
 
 # 8. JOIN com três ou mais tabelas
@@ -212,9 +245,15 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 **Pergunta:**
 
 > Escreva aqui.
+Quais pacientes possuem exames agendados, qual médico realizará o atendimento e qual o tipo de exame solicitado?
 
 ```sql
 -- Cole aqui.
+SELECT a.data_hora, p.nome AS Paciente, m.nome AS Medico, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
 ```
 
 ## Consulta 2
@@ -222,9 +261,14 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 **Pergunta:**
 
 > Escreva aqui.
-
+Quais pacientes realizaram exames e quais foram os resultados obtidos?
 ```sql
 -- Cole aqui.
+SELECT p.nome AS Paciente, e.tipo_exame, r.laudo_texto
+FROM Resultado r
+INNER JOIN Exame e ON r.id_exame = e.id_exame
+INNER JOIN Agendamento a ON e.id_exame = a.id_exame
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente;
 ```
 
 ---
@@ -234,15 +278,21 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 **Pergunta:**
 
 > Escreva aqui.
-
+Quais exames estão agendados para o médico Dr. João Pereira?
 ```sql
 -- Cole aqui.
+SELECT a.data_hora, p.nome AS Paciente, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame
+WHERE m.nome = 'Dr. João Pereira';
 ```
 
 **Explique o filtro:**
 
 > Escreva aqui.
-
+A consulta utiliza INNER JOIN para relacionar agendamentos, pacientes, médicos e exames. A cláusula WHERE filtra os resultados para exibir apenas os exames vinculados ao médico "Dr. João Pereira", facilitando a consulta da agenda desse profissional.
 ---
 
 # 10. JOIN + ORDER BY
@@ -250,9 +300,13 @@ Crie duas consultas envolvendo pelo menos três tabelas.
 **Pergunta:**
 
 > Escreva aqui.
-
+Quais são os pacientes que possuem exames agendados, ordenados da data mais recente para a mais antiga?
 ```sql
 -- Cole aqui.
+SELECT p.nome, a.data_hora
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+ORDER BY a.data_hora DESC;
 ```
 
 ---
@@ -264,15 +318,21 @@ Crie uma consulta que combine tabelas e utilize ao menos uma função de agrega�
 **Pergunta:**
 
 > Escreva aqui.
-
+Qual é o valor total arrecadado por cada convênio considerando os exames realizados pelos pacientes?
 ```sql
 -- Cole aqui.
+SELECT c.nome_convenio, SUM(e.preco) AS Total_Arrecadado
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Convenio c ON p.id_convenio = c.id_convenio
+INNER JOIN Exame e ON a.id_exame = e.id_exame
+GROUP BY c.nome_convenio;
 ```
 
 **Explique o agrupamento:**
 
 > Escreva aqui.
-
+A consulta relaciona as tabelas Agendamento, Paciente, Convenio e Exame. O comando GROUP BY c.nome_convenio agrupa os registros por convênio. Em seguida, a função de agregação SUM(e.preco) calcula o valor total dos exames realizados pelos pacientes de cada convênio. Isso permite analisar qual convênio gera maior receita para a clínica.
 ---
 
 # 12. Quantidade mínima exigida
@@ -298,15 +358,21 @@ As consultas devem responder perguntas reais sobre o banco.
 **Pergunta:**
 
 > Escreva aqui.
-
+Qual é o valor total arrecadado por cada convênio com os exames realizados pelos pacientes da clínica?
 ```sql
 -- Cole aqui.
+SELECT c.nome_convenio, SUM(e.preco) AS Total_Arrecadado
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Convenio c ON p.id_convenio = c.id_convenio
+INNER JOIN Exame e ON a.id_exame = e.id_exame
+GROUP BY c.nome_convenio;
 ```
 
 **Por que ela é útil?**
 
 > Escreva aqui.
-
+Essa consulta permite analisar quanto cada convênio gera de receita para a clínica. Com essas informações, a administração pode identificar os convênios mais importantes, avaliar a rentabilidade dos atendimentos e tomar decisões estratégicas para melhorar a gestão financeira.
 ---
 
 # 14. Validação prática obrigatória
@@ -315,6 +381,11 @@ Escolha uma consulta produzida nesta Sprint.
 
 ```sql
 -- Cole aqui.
+SELECT a.data_hora, p.nome AS Paciente, m.nome AS Medico, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
 ```
 
 Explique:
@@ -326,7 +397,34 @@ Explique:
 5. o que ocorreria se a condição de relacionamento estivesse errada.
 
 > Escreva aqui.
+1. Quais tabelas participam?
+Agendamento
+Paciente
+Medico
+Exame
 
+2. Qual PK está sendo utilizada?
+Paciente.id_paciente
+Medico.id_medico
+Exame.id_exame
+
+Essas chaves primárias identificam unicamente os registros de cada tabela.
+
+3. Qual FK está sendo utilizada?
+Agendamento.id_paciente
+Agendamento.id_medico
+Agendamento.id_exame
+
+Essas chaves estrangeiras conectam a tabela Agendamento às demais tabelas.
+
+4. O que a cláusula ON faz?
+
+A cláusula ON define a condição de relacionamento entre as tabelas, informando quais campos devem ser comparados para que os registros corretos sejam associados.
+Essa condição relaciona cada agendamento ao paciente correspondente.
+
+5. O que ocorreria se a condição de relacionamento estivesse errada?
+
+Se a condição do ON estivesse incorreta, os dados retornados seriam inconsistentes ou incorretos. Poderiam aparecer pacientes associados a exames errados, médicos vinculados a agendamentos de outros pacientes ou até uma quantidade excessiva de registros devido a combinações indevidas entre as tabelas. Isso comprometeria a confiabilidade dos resultados da consulta.
 ---
 
 # 15. Teste no MySQL Workbench
@@ -335,25 +433,32 @@ Explique:
 
 ```sql
 -- Cole aqui.
+SELECT c.nome_convenio, SUM(e.preco) AS Total_Arrecadado
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Convenio c ON p.id_convenio = c.id_convenio
+INNER JOIN Exame e ON a.id_exame = e.id_exame
+GROUP BY c.nome_convenio;
 ```
 
 **Resultado esperado:**
 
 > Escreva aqui.
+Exibir o nome de cada convênio e o valor total arrecadado com os exames realizados pelos pacientes vinculados a esse convênio.
 
 **Resultado obtido:**
 
 > Escreva aqui.
-
+A consulta retornou corretamente os convênios cadastrados e o valor total arrecadado para cada um deles, comprovando que os relacionamentos entre as tabelas Agendamento, Paciente, Convenio e Exame estão funcionando corretamente.
 ---
 
 # 16. Problemas encontrados
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|Nenhum relacionamento retornado em uma consulta|Falta de registros relacionados entre as tabelas|Inserir registros consistentes respeitando as chaves estrangeiras|
+|Erro de chave estrangeira ao inserir dados|Tentativa de utilizar um identificador inexistente|Inserir primeiro o registro na tabela pai e depois na tabela filha|
+|Resultado vazio em consultas JOIN|Dados de teste insuficientes|Cadastrar mais pacientes, exames e agendamentos para validar as consultas|
 
 ---
 
@@ -407,20 +512,20 @@ USE nome_do_banco;
 
 # 19. Checklist
 
-- [ ] utilizei o mesmo banco do Module-1;
-- [ ] identifiquei PKs e FKs;
-- [ ] produzi 2 `INNER JOIN`;
-- [ ] produzi 1 `LEFT JOIN`;
-- [ ] produzi 1 `RIGHT JOIN`;
-- [ ] produzi consultas com 3 ou mais tabelas;
-- [ ] utilizei `WHERE`;
-- [ ] utilizei `ORDER BY`;
-- [ ] utilizei agregação e `GROUP BY`;
-- [ ] as consultas respondem perguntas reais;
-- [ ] testei tudo no MySQL Workbench;
-- [ ] consigo explicar as consultas;
-- [ ] salvei `SPRINT1-5.md`;
-- [ ] salvei `SPRINT1-5.sql`.
+- [V] utilizei o mesmo banco do Module-1;
+- [V] identifiquei PKs e FKs;
+- [V] produzi 2 `INNER JOIN`;
+- [V] produzi 1 `LEFT JOIN`;
+- [V] produzi 1 `RIGHT JOIN`;
+- [V] produzi consultas com 3 ou mais tabelas;
+- [V] utilizei `WHERE`;
+- [V] utilizei `ORDER BY`;
+- [V] utilizei agregação e `GROUP BY`;
+- [V] as consultas respondem perguntas reais;
+- [V] testei tudo no MySQL Workbench;
+- [V] consigo explicar as consultas;
+- [V] salvei `SPRINT1-5.md`;
+- [V] salvei `SPRINT1-5.sql`.
 
 ---
 
