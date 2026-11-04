@@ -30,11 +30,11 @@ O aluno deverá compreender que uma `VIEW` representa uma consulta armazenada qu
 **Nome completo:**
 
 > Escreva aqui.
-
+Ylma Cristina Souza Lopes
 **Banco utilizado:**
 
 ```text
-
+Clinica_Ser
 ```
 
 ---
@@ -45,10 +45,10 @@ Identifique pelo menos três consultas das Sprints anteriores que são important
 
 | Consulta | Por que é útil? | Será transformada em VIEW? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|Pacientes com exames agendados, médico responsável e tipo de exame|Permite visualizar rapidamente todas as informações dos atendimentos agendados em uma única consulta.|Sim|
+|Exames e seus respectivos resultados (laudos)|Facilita a consulta de exames já realizados e os laudos emitidos pela clínica.|Sim|
+|Total arrecadado por convênio (SUM(preco) agrupado por convênio)|Auxilia no controle financeiro e na análise dos convênios que geram maior receita.|Sim|
+|Quantidade de agendamentos por médico (COUNT)|Permite acompanhar a demanda de cada médico e analisar a distribuição dos atendimentos.|Sim|
 
 ---
 
@@ -84,27 +84,36 @@ INNER JOIN pedido AS p
 **Nome da VIEW:**
 
 ```text
-
+vw_agendamentos_detalhados
 ```
 
 **Pergunta que ela representa:**
 
 > Escreva aqui.
-
+Quais são os detalhes dos agendamentos, incluindo data/hora, nome do paciente, nome do médico e tipo de exame?
 **SQL:**
 
 ```sql
 -- Cole aqui.
+CREATE VIEW vw_agendamentos_detalhados AS
+SELECT a.id_agendamento, a.data_hora, p.nome AS paciente, m.nome AS medico, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
+
 ```
 
 **Tabelas utilizadas:**
 
 > Escreva aqui.
-
+Agendamento, Paciente, Medico, Exame
 **Como consultar essa VIEW?**
 
 ```sql
 -- Cole aqui.
+SELECT * FROM vw_agendamentos_detalhados;
+
 ```
 
 ---
@@ -120,15 +129,20 @@ Esta VIEW deverá possuir, quando aplicável:
 **Pergunta:**
 
 > Escreva aqui.
-
+Qual é o faturamento total e a quantidade de exames realizados por tipo de exame?
 ```sql
 -- Cole aqui.
+CREATE VIEW vw_faturamento_por_exame AS
+SELECT e.tipo_exame, COUNT(a.id_agendamento) AS qtd_realizada, SUM(e.preco) AS faturamento_total
+FROM Exame e
+LEFT JOIN Agendamento a ON e.id_exame = a.id_exame
+GROUP BY e.tipo_exame;
 ```
 
 **Explique:**
 
 > Escreva aqui.
-
+Esta view sumariza o número de exames realizados e o faturamento gerado para cada tipo de exame, agrupando os dados pelo tipo de exame. Isso ajuda a analisar o desempenho financeiro e a demanda por exames específicos.
 ---
 
 # 6. VIEW 3 — consulta operacional do sistema
@@ -150,17 +164,25 @@ pagamentos pendentes
 **Nome da VIEW:**
 
 ```text
-
+vw_laudos_pendentes
 ```
 
 ```sql
 -- Cole aqui.
+CREATE VIEW vw_laudos_pendentes AS
+SELECT a.data_hora, p.nome, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Exame e ON a.id_exame = e.id_exame
+LEFT JOIN Resultado r ON a.id_exame = r.id_exame
+WHERE r.id_resultado IS NULL AND a.data_hora < NOW();
+
 ```
 
 **Por que essa VIEW é útil?**
 
 > Escreva aqui.
-
+Ela exibe os agendamentos passados que ainda não possuem resultados (laudos) registrados, o que é fundamental para acompanhar exames pendentes de análise e garantir que os laudos sejam gerados em tempo hábil.
 ---
 
 # 7. Consultando uma VIEW
@@ -184,11 +206,17 @@ WHERE ...;
 
 ```sql
 -- Cole aqui.
+SELECT * FROM vw_agendamentos_detalhados;
+SELECT * FROM vw_agendamentos_detalhados
+WHERE medico = 'Dr. João Silva';
+
 ```
 
 **Resultado observado:**
 
 > Escreva aqui.
+Foi retornada a lista completa dos agendamentos com detalhes, incluindo data, paciente, médico, especialidade e tipo de exame. Com o filtro pelo médico, foram mostrados apenas os agendamentos relacionados a esse profissional específico.
+
 
 ---
 
@@ -208,18 +236,32 @@ Pode ser:
 
 ```sql
 -- Cole aqui.
+CREATE VIEW vw_agendamentos_detalhados AS
+SELECT a.id_agendamento, a.data_hora, p.nome AS paciente, m.nome AS medico, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
+
 ```
 
 **Nova versão:**
 
 ```sql
 CREATE OR REPLACE VIEW ...
+CREATE OR REPLACE VIEW vw_agendamentos_detalhados AS
+SELECT a.id_agendamento, a.data_hora, p.nome AS paciente, m.nome AS medico, m.especialidade, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
+
 ```
 
 **O que mudou?**
 
 > Escreva aqui.
-
+Foi adicionada a coluna m.especialidade à view, para mostrar também a especialidade do médico em cada agendamento, enriquecendo a informação disponível.
 ---
 
 # 9. DROP VIEW — exercício controlado
@@ -241,12 +283,18 @@ DROP VIEW vw_teste;
 
 ```sql
 -- Cole aqui.
+-- Criação da view temporária
+CREATE VIEW vw_teste AS
+SELECT * FROM Convenio;
+-- Remoção da view
+DROP VIEW vw_teste;
+
 ```
 
 **Qual a diferença entre `DROP VIEW` e `DROP TABLE`?**
 
 > Escreva aqui.
-
+DROP VIEW remove apenas a definição da view, sem afetar os dados das tabelas subjacentes. Já DROP TABLE remove completamente a tabela e todos os seus dados do banco de dados.
 ---
 
 # 10. Validando as Views
@@ -260,9 +308,9 @@ WHERE Table_type = 'VIEW';
 
 **Views encontradas:**
 
-1. 
-2. 
-3. 
+1. vw_agendamentos_detalhados
+2. vw_faturamento_por_exame
+3. vw_laudos_pendentes
 
 ---
 
@@ -277,19 +325,23 @@ Faça um teste:
 **VIEW testada:**
 
 ```text
-
+vw_agendamento_detalhados
 ```
 
 **Alteração realizada:**
 
 ```sql
 -- Cole aqui.
+-- Inserir um novo agendamento (exemplo)
+INSERT INTO Agendamento (id_agendamento, data_hora, id_paciente, id_medico, id_exame)
+VALUES (101, '2026-11-01 14:00:00', 10, 5, 3);
+
 ```
 
 **Resultado observado:**
 
 > Escreva aqui.
-
+Ao consultar a view vw_agendamentos_detalhados antes da inserção, o novo agendamento não aparece. Após a inserção do novo registro na tabela base Agendamento, ao consultar novamente a view, o novo agendamento com detalhes do paciente, médico e exame já é exibido, evidenciando que a view reflete dados atualizados diretamente das tabelas base.
 ---
 
 # 12. Validação prática obrigatória
@@ -298,6 +350,13 @@ Escolha uma VIEW.
 
 ```sql
 -- Cole aqui a definição.
+CREATE OR REPLACE VIEW vw_agendamentos_detalhados AS
+SELECT a.id_agendamento, a.data_hora, p.nome AS paciente, m.nome AS medico, m.especialidade, e.tipo_exame
+FROM Agendamento a
+INNER JOIN Paciente p ON a.id_paciente = p.id_paciente
+INNER JOIN Medico m ON a.id_medico = m.id_medico
+INNER JOIN Exame e ON a.id_exame = e.id_exame;
+
 ```
 
 Explique:
@@ -309,6 +368,16 @@ Explique:
 5. o que muda se os dados das tabelas originais forem alterados.
 
 > Escreva aqui.
+1. De quais tabelas ela depende: Depende das tabelas Agendamento, Paciente, Medico e Exame.
+
+2. Qual relacionamento utiliza: Utiliza relacionamentos do tipo INNER JOIN entre Agendamento e as outras três tabelas, através dos campos id_paciente, id_medico e id_exame.
+
+3. Quais campos apresenta: Apresenta id_agendamento, data_hora do agendamento, nome do paciente, nome do médico, especialidade do médico e tipo do exame.
+
+4. Qual problema resolve: Consolida informações distribuídas em várias tabelas em uma visão única, facilitando consultas rápidas e detalhadas sobre os agendamentos sem precisar fazer vários joins repetidamente.
+
+5. O que muda se os dados das tabelas originais forem alterados: Como a view é baseada diretamente nas tabelas, quaisquer inserções, exclusões ou atualizações nessas tabelas serão refletidas automaticamente na view na próxima consulta, mantendo os dados sempre atualizados.
+
 
 ---
 
@@ -360,9 +429,9 @@ USE nome_do_banco;
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|View não atualiza com dados novos|A view foi criada com dados estáticos (materialized view) ou erro na consulta|Usar views baseadas em tabelas (views normais) ou atualizar a view materializada|
+|Erro ao criar view por falta de permissão|Usuário não tem permissão para acessar tabelas envolvidas|Conceder permissões necessárias para o usuário no banco|
+|Dados inconsistentes na view|Dados inconsistentes nas tabelas base ou joins incorretos|Verificar integridade dos dados e corrigir as condições dos joins|
 
 ---
 
@@ -384,18 +453,18 @@ COMPREENDER
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei pelo menos 3 Views;
-- [ ] pelo menos uma View usa JOIN;
-- [ ] pelo menos uma View usa agregação ou resumo;
-- [ ] consultei as Views;
-- [ ] utilizei `CREATE OR REPLACE VIEW`;
-- [ ] pratiquei `DROP VIEW`;
-- [ ] validei as Views;
-- [ ] testei mudança em tabela base;
-- [ ] compreendo de onde vêm os dados de cada View;
-- [ ] salvei `SPRINT3-5.md`;
-- [ ] salvei `SPRINT3-5.sql`.
+- [V] utilizei o banco do projeto;
+- [V] criei pelo menos 3 Views;
+- [V] pelo menos uma View usa JOIN;
+- [V] pelo menos uma View usa agregação ou resumo;
+- [V] consultei as Views;
+- [V] utilizei `CREATE OR REPLACE VIEW`;
+- [V] pratiquei `DROP VIEW`;
+- [V] validei as Views;
+- [V] testei mudança em tabela base;
+- [V] compreendo de onde vêm os dados de cada View;
+- [V] salvei `SPRINT3-5.md`;
+- [V] salvei `SPRINT3-5.sql`.
 
 ---
 
