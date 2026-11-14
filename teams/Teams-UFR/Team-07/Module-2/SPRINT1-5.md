@@ -657,7 +657,6 @@ Module-2/SPRINT1-5.sql
 Mensagem sugerida:
 
 ```text
-Conclui Module 2 Sprint 1 de 5 - JOINs
 ```
 
 **Não abra o Pull Request final nesta Sprint.**
