@@ -36,12 +36,12 @@ O aluno deverá continuar utilizando o mesmo banco do `Module-1`.
 
 **Nome completo:**
 
-> Escreva aqui.
+> Walter Anacleto Salido de Souza
 
 **Banco utilizado:**
 
-```text
-
+```
+db_raaei
 ```
 
 ---
@@ -72,11 +72,15 @@ Neste exemplo:
 
 Defina pelo menos cinco perguntas do seu domínio que possam ser resolvidas com subconsultas.
 
-1. 
-2. 
-3. 
-4. 
-5. 
+1. Quais são os atletas cuja idade (calculada ou cadastrada) está acima da média de idade de todos os atletas matriculados na associação?
+
+2. Quais escolas parceiras possuem um número total de atletas superior à média de atletas cadastrados por escola em toda a base de dados?
+
+3. Quais categorias esportivas possuem pelo menos um atleta cadastrado (utilizando o operador EXISTS para correlacionar com a tabela de atletas)?
+
+4. Quais escolas parceiras ainda não possuem nenhum atleta matriculado e vinculado em suas dependências (utilizando NOT IN ou NOT EXISTS)?
+
+5. Quais atletas pertencem à mesma categoria que o atleta mais jovem cadastrado na base de dados da associação?
 
 ---
 
@@ -86,19 +90,35 @@ Crie uma consulta utilizando uma comparação com resultado agregado.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais escolas parceiras possuem um número total de atletas matriculados superior à média geral de atletas por escola em toda a associação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    e.nome_escola,
+    COUNT(a.id_atleta) AS total_atletas
+FROM escola AS e
+INNER JOIN atleta AS a 
+    ON e.id_escola = a.id_escola
+GROUP BY e.id_escola, e.nome_escola
+HAVING COUNT(a.id_atleta) > (
+    SELECT AVG(atletas_por_escola.total)
+    FROM (
+        SELECT COUNT(at.id_atleta) AS total
+        FROM escola AS esc
+        LEFT JOIN atleta AS at 
+            ON esc.id_escola = at.id_escola
+        GROUP BY esc.id_escola
+    ) AS atletas_por_escola
+);
 ```
 
 **Explique primeiro a consulta interna:**
 
-> Escreva aqui.
+> A subconsulta mais interna (atletas_por_escola) agrupa todos os atletas por escola e calcula a contagem (COUNT) de praticantes vinculados a cada instituição. Em seguida, a função AVG aplicada sobre esse conjunto computa o valor médio geral de atletas por escola na associação, retornando um único valor escalar de referência.
 
 **Depois explique a consulta externa:**
 
-> Escreva aqui.
+> A consulta externa realiza a junção entre as tabelas escola e atleta, agrupa os resultados por instituição e aplica a cláusula HAVING. Ela compara o total de atletas de cada escola individualmente com o valor médio retornado pela subconsulta, exibindo apenas as instituições cuja representatividade de praticantes está acima da média geral da associação.
 
 ---
 
@@ -119,15 +139,23 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são os nomes e os tipos de rede das escolas parceiras que possuem pelo menos um atleta cadastrado e ativo nas categorias da associação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> A subconsulta (interna) seleciona todos os identificadores de escola (id_escola) que aparecem associados a registros na tabela atleta, utilizando DISTINCT para eliminar duplicidades. A consulta externa utiliza o operador IN para verificar quais escolas da tabela escola possuem seu identificador presente no conjunto retornado pela subconsulta, listando assim apenas as instituições ativas que colaboram com a formação de atletas na RAAEI.
 
 ---
 
@@ -135,15 +163,23 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são as escolas parceiras cadastradas no sistema que ainda não possuem nenhum atleta vinculado ou matriculado nas atividades da associação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola NOT IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 ```
 
 **Que registros você está procurando?**
 
-> Escreva aqui.
+> Estamos procurando por escolas cadastradas na base de dados (escola) cujos identificadores (id_escola) não estejam presentes no conjunto de chaves estrangeiras referenciadas na tabela de atletas (atleta). Esse filtro por exclusão (NOT IN) permite à diretoria identificar instituições parceiras inativas ou que necessitam de ações urgentes de captação e divulgação para iniciar o envio de novos praticantes para os projetos da RAAEI.
 
 ---
 
@@ -155,10 +191,18 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são as categorias esportivas cadastradas que possuem, no momento, pelo menos um atleta vinculado participando dos treinamentos da associação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 ```
 
 ---
@@ -167,15 +211,23 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são as categorias esportivas cadastradas que não possuem nenhum atleta vinculado atualmente, permitindo à diretoria técnica identificar modalidades ociosas ou que exigem novas turmas de captação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 ```
 
 **Explique a diferença em relação a `EXISTS`:**
 
-> Escreva aqui.
+> Enquanto o operador EXISTS avalia como verdadeiro e retorna os registros da consulta externa quando a subconsulta correlacionada encontra pelo menos uma correspondência, o NOT EXISTS faz exatamente o oposto: ele filtra e retorna apenas os registros da tabela externa para os quais a subconsulta não encontra nenhuma linha correspondente. Em termos lógicos, o EXISTS busca categorias com atletas, enquanto o NOT EXISTS isola as categorias vazias ou sem praticantes ativos.
 
 ---
 
@@ -183,15 +235,26 @@ WHERE id_cliente IN (
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais são os dados completos dos atletas (nome, gênero e data de nascimento) que correspondem ao atleta mais jovem cadastrado na base de dados da associação?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    a.nome_atleta,
+    a.genero,
+    a.data_nascimento,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e 
+    ON a.id_escola = e.id_escola
+WHERE a.data_nascimento = (
+    SELECT MAX(data_nascimento)
+    FROM atleta
+);
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> A subconsulta interna utiliza a função de agregação MAX(data_nascimento) para encontrar a data mais recente registrada na tabela de atletas, que corresponde matematicamente ao praticante com menor idade (o atleta mais jovem). A consulta externa então filtra todos os registros da tabela atleta (cruzando com a escola correspondente) para retornar apenas o atleta (ou atletas, em caso de empate na mesma data) cuja data de nascimento coincida exatamente com esse valor máximo obtido.
 
 ---
 
@@ -203,15 +266,26 @@ Uma subconsulta correlacionada depende de valores da consulta externa.
 
 **Pergunta:**
 
-> Escreva aqui.
+> Quais atletas possuem uma data de nascimento anterior à data de nascimento média de todos os demais atletas cadastrados na mesma escola em que estudam?
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    a1.nome_atleta,
+    a1.data_nascimento,
+    e.nome_escola
+FROM atleta AS a1
+INNER JOIN escola AS e 
+    ON a1.id_escola = e.id_escola
+WHERE a1.data_nascimento < (
+    SELECT AVG(a2.data_nascimento)
+    FROM atleta AS a2
+    WHERE a2.id_escola = a1.id_escola
+);
 ```
 
 **Qual coluna da consulta externa é utilizada pela subconsulta?**
 
-> Escreva aqui.
+> A coluna da consulta externa utilizada pela subconsulta é a1.id_escola. Essa referência cria a correlação linha a linha: para cada atleta avaliado na consulta principal (a1), a subconsulta executa o cálculo da média de nascimento (AVG) filtrando especificamente apenas os atletas pertencentes à mesma instituição (a2.id_escola = a1.id_escola).
 
 ---
 
@@ -226,45 +300,71 @@ b) SUBQUERY
 
 ## Pergunta 1
 
-> Escreva aqui.
+> Quais são as escolas parceiras que possuem atletas matriculados e ativos nos projetos da associação?
 
 ### JOIN
 
-```sql
--- Cole aqui.
+```
+SELECT DISTINCT
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+INNER JOIN atleta AS a
+    ON e.id_escola = a.id_escola;
 ```
 
 ### SUBQUERY
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 ```
 
 ### Qual abordagem ficou mais compreensível?
 
-> Escreva aqui e justifique.
+> A abordagem com JOIN mostrou-se mais intuitiva e compreensível para esta pergunta específica. Como o objetivo principal é relacionar duas entidades estruturais (escola e atleta), o JOIN conecta os dados de forma natural e direta. A utilização do DISTINCT evita duplicidades caso a escola possua múltiplos atletas, mantendo o código limpo e com excelente performance no SGBD.
 
 ---
 
 ## Pergunta 2
 
-> Escreva aqui.
+> Quais categorias esportivas cadastradas possuem pelo menos um atleta vinculado participando dos treinamentos?
 
 ### JOIN
 
-```sql
--- Cole aqui.
+```
+SELECT DISTINCT
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+INNER JOIN atleta AS a
+    ON c.id_categoria = a.id_categoria;
 ```
 
 ### SUBQUERY
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 ```
 
 ### Comparação
 
-> Escreva aqui.
+> Ambas as abordagens resolvem perfeitamente a questão analítica, mas atendem a lógicas distintas. O JOIN com DISTINCT funciona muito bem pelo cruzamento relacional, porém a abordagem com SUBQUERY usando EXISTS revelou-se conceitualmente mais elegante para verificar a existência de registros dependentes. O EXISTS é altamente otimizado para checagem booleana, pois interrompe a busca na subconsulta assim que encontra a primeira correspondência para cada categoria, evitando processamentos desnecessários de linhas duplicadas.
 
 ---
 
@@ -289,8 +389,19 @@ O `SPRINT2-5.sql` deverá conter no mínimo:
 
 Escolha uma subconsulta.
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    a.nome_atleta,
+    a.genero,
+    a.data_nascimento,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e 
+    ON a.id_escola = e.id_escola
+WHERE a.data_nascimento = (
+    SELECT MAX(data_nascimento)
+    FROM atleta
+);
 ```
 
 Responda:
@@ -299,7 +410,9 @@ Responda:
 2. Qual valor ou conjunto de valores ela retorna?
 3. Como esse resultado é utilizado pela consulta externa?
 
-> Escreva aqui.
+> Execução inicial: A subconsulta interna (SELECT MAX(data_nascimento) FROM atleta) é executada primeiro pelo SGBD.
+> Retorno obtido: Ela processa a tabela inteira de atletas e retorna um único valor escalar correspondente à data mais recente cadastrada no sistema (ou seja, a data de nascimento do atleta mais jovem).
+>Utilização pelo comando externo: A consulta externa utiliza esse valor escalar como parâmetro de igualdade na cláusula WHERE (a.data_nascimento = <valor_retornado>). O SGBD filtra e exibe apenas os registros da tabela atleta (juntamente com as informações da tabela escola) cuja data de nascimento coincida exatamente com o limite máximo calculado, garantindo a identificação precisa do praticante mais novo da associação.
 
 ---
 
@@ -309,17 +422,25 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 
 **Consulta original:**
 
-```sql
--- Cole aqui.
+```
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 ```
 
 **Alteração realizada:**
 
-> Escreva aqui.
+> Adição de um filtro restritivo de gênero (AND a.genero = 'F') na cláusula WHERE da subconsulta correlacionada, passando a verificar apenas a existência de atletas do gênero feminino vinculadas a cada categoria.
 
 **Mudança observada:**
 
-> Escreva aqui.
+> O conjunto de resultados obtido foi reduzido dinamicamente. O SGBD passou a listar apenas as categorias esportivas que possuem, comprovadamente, pelo menos uma atleta do gênero feminino ativa, ocultando as modalidades que contam exclusivamente com praticantes do gênero masculino. Esse teste operacional demonstra a flexibilidade e o poder de refinamento analítico proporcionado pelas subconsultas correlacionadas no MySQL Workbench.
 
 ---
 
@@ -327,44 +448,176 @@ Execute uma consulta e altere temporariamente um valor de filtro.
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+
+| Erro Subquery returns more than 1 row ao utilizar operadores de comparação direta (=, >, <). | Utilização de um operador relacional simples com uma subconsulta que retorna múltiplos registros, em vez de um único valor escalar. | Ajustar a consulta utilizando operadores de conjunto (IN, ANY, ALL) ou aplicar funções de agregação (MAX, MIN, AVG) na subconsulta.
+
+| Retorno vazio ou incorreto ao utilizar o operador NOT IN. | Presença de valores NULL no conjunto retornado pela subconsulta, o que anula a lógica de exclusão no SQL. | Adicionar um filtro explícito WHERE coluna IS NOT NULL na subconsulta ou substituir a estrutura por NOT EXISTS.
+
+| Lentidão ou alto custo de processamento em subconsultas correlacionadas com grandes volumes de dados. | Execução linha a linha da subconsulta interna para cada registro avaliado pela consulta externa (complexidade de varredura). | Criar índices nas chaves estrangeiras envolvidas ou reescrever a lógica utilizando junções (JOIN) e agregações padrão quando aplicável.
 
 ---
 
 # 16. Estrutura recomendada do SPRINT2-5.sql
 
-```sql
+```
 -- MODULE 2 — SPRINT 2/5
 -- SUBCONSULTAS
 
--- Aluno:
--- Banco:
+-- Aluno: Walter Anacleto Salido de Souza
+-- Banco: db_raaei
 
-USE nome_do_banco;
+USE db_raaei;
 
--- SUBQUERY COM COMPARAÇÃO
+-- =====================================================================
+-- 1. SUBQUERY COM COMPARAÇÃO: Escolas com atletas acima da média geral
+-- =====================================================================
+SELECT 
+    e.nome_escola,
+    COUNT(a.id_atleta) AS total_atletas
+FROM escola AS e
+INNER JOIN atleta AS a 
+    ON e.id_escola = a.id_escola
+GROUP BY e.id_escola, e.nome_escola
+HAVING COUNT(a.id_atleta) > (
+    SELECT AVG(atletas_por_escola.total)
+    FROM (
+        SELECT COUNT(at.id_atleta) AS total
+        FROM escola AS esc
+        LEFT JOIN atleta AS at 
+            ON esc.id_escola = at.id_escola
+        GROUP BY esc.id_escola
+    ) AS atletas_por_escola
+);
 
--- IN
+-- =====================================================================
+-- 2. IN: Escolas parceiras que possuem pelo menos um atleta ativo
+-- =====================================================================
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 
--- NOT IN
+-- =====================================================================
+-- 3. NOT IN: Escolas cadastradas que ainda não possuem atletas vinculados
+-- =====================================================================
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola NOT IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 
--- EXISTS
+-- =====================================================================
+-- 4. EXISTS: Categorias esportivas que possuem pelo menos um atleta ativo
+-- =====================================================================
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 
--- NOT EXISTS
+-- =====================================================================
+-- 5. NOT EXISTS: Categorias esportivas ociosas ou sem praticantes
+-- =====================================================================
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 
--- MAX / MIN
+-- =====================================================================
+-- 6. MAX / MIN: Dados completos do atleta mais jovem da associação
+-- =====================================================================
+SELECT 
+    a.nome_atleta,
+    a.genero,
+    a.data_nascimento,
+    e.nome_escola
+FROM atleta AS a
+INNER JOIN escola AS e 
+    ON a.id_escola = e.id_escola
+WHERE a.data_nascimento = (
+    SELECT MAX(data_nascimento)
+    FROM atleta
+);
 
--- SUBQUERY CORRELACIONADA
+-- =====================================================================
+-- 7. SUBQUERY CORRELACIONADA: Atletas mais novos que a média de sua escola
+-- =====================================================================
+SELECT 
+    a1.nome_atleta,
+    a1.data_nascimento,
+    e.nome_escola
+FROM atleta AS a1
+INNER JOIN escola AS e 
+    ON a1.id_escola = e.id_escola
+WHERE a1.data_nascimento < (
+    SELECT AVG(a2.data_nascimento)
+    FROM atleta AS a2
+    WHERE a2.id_escola = a1.id_escola
+);
 
--- PROBLEMA 1 - JOIN
+-- =====================================================================
+-- 8. PROBLEMA 1 - JOIN: Escolas com atletas matriculados
+-- =====================================================================
+SELECT DISTINCT
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+INNER JOIN atleta AS a
+    ON e.id_escola = a.id_escola;
 
--- PROBLEMA 1 - SUBQUERY
+-- =====================================================================
+-- 9. PROBLEMA 1 - SUBQUERY: Escolas com atletas matriculados
+-- =====================================================================
+SELECT 
+    e.nome_escola,
+    e.tipo_rede
+FROM escola AS e
+WHERE e.id_escola IN (
+    SELECT DISTINCT a.id_escola
+    FROM atleta AS a
+    WHERE a.id_escola IS NOT NULL
+);
 
--- PROBLEMA 2 - JOIN
+-- =====================================================================
+-- 10. PROBLEMA 2 - JOIN: Categorias esportivas com atletas ativos
+-- =====================================================================
+SELECT DISTINCT
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+INNER JOIN atleta AS a
+    ON c.id_categoria = a.id_categoria;
 
--- PROBLEMA 2 - SUBQUERY
+-- =====================================================================
+-- 11. PROBLEMA 2 - SUBQUERY: Categorias esportivas com atletas ativos
+-- =====================================================================
+SELECT 
+    c.nome_categoria,
+    c.faixa_etaria
+FROM categoria AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM atleta AS a
+    WHERE a.id_categoria = c.id_categoria
+);
 ```
 
 ---
