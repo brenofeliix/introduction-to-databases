@@ -195,7 +195,7 @@ ORDER BY preco ASC;
 
 **Resultado observado:**
 
-> Esperado: a primeira consulta retorna as 5 visitas existentes, com nome do cliente e endereço. O filtro `'realizada'` reduz o resultado para 3 visitas (Lucas, Beatriz e Guilherme). A consulta de casas retorna as 2 casas disponíveis, a da Rua das Palmeiras, 88 (R$ 590.000) e a da Rua das Camélias, 45 (R$ 780.000), nessa ordem. A VIEW se comporta como uma tabela: aceita `WHERE` e `ORDER BY`. *(confirmar o resultado obtido no Workbench)*
+> A primeira consulta retornou as 5 visitas existentes, com nome do cliente e endereço. Com o filtro `'realizada'`, retornou 3 visitas (Lucas, Beatriz e Guilherme). A consulta de casas retornou 2 linhas: Rua das Palmeiras, 88 (R$ 590.000,00) e Rua das Camélias, 45 (R$ 780.000,00), nessa ordem. A VIEW se comportou como uma tabela: aceitou `WHERE` e `ORDER BY`.
 
 ---
 
@@ -322,7 +322,7 @@ WHERE id_imovel = 3;
 
 **Resultado observado:**
 
-> Esperado: antes da alteração, a VIEW mostra 5 imóveis disponíveis (2, 3, 4, 5 e 6). Depois do `UPDATE`, o imóvel 3 (sala comercial) some da VIEW e restam 4. Isso mostra que a VIEW não guarda dados: ela executa a consulta na hora, sempre sobre os dados atuais. Depois reverti o status para manter os dados originais. *(confirmar o resultado obtido no Workbench)*
+> Antes da alteração, a VIEW mostrava 5 imóveis disponíveis (2, 3, 4, 5 e 6). Depois do `UPDATE` que mudou o imóvel 3 (sala comercial) para 'alugado', a VIEW passou a mostrar 4 imóveis (o 3 sumiu). Depois de reverter o status, voltaram os 5. Isso mostra que a VIEW não guarda dados: ela executa a consulta na hora, sempre sobre os dados atuais.
 
 ---
 
@@ -377,9 +377,9 @@ O arquivo segue a estrutura recomendada: VIEW 1, VIEW 2, VIEW 3, consultas sobre
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Erro 1050: "Table already exists" ao criar a VIEW de novo | A VIEW já existia ao executar o script outra vez | Usar `CREATE OR REPLACE VIEW` ou `DROP VIEW` antes |
+| Ordem das linhas não garantida ao consultar a VIEW | A VIEW não deve depender de `ORDER BY` interno | Colocar o `ORDER BY` na consulta feita sobre a VIEW |
+| Dados da tabela base ficaram alterados após o teste | O `UPDATE` do teste mudou o status do imóvel 3 | Executar um `UPDATE` de reversão para 'disponível' |
 
 ---
 
@@ -411,7 +411,7 @@ Foi utilizada uma LLM como apoio para estruturar as Views. O código foi compree
 Mesma branch:
 
 ```text
-team-XX
+team-05
 ```
 
 Arquivos:
