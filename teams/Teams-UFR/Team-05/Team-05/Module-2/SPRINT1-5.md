@@ -10,7 +10,7 @@
 # 1. Estrutura do repositório
 
 ```text
-teams/Teams-UNEMAT/team-XX/Module-2/
+teams/Teams-UFR/team-05/Module-2/
 ├── SPRINT1-5.md
 └── SPRINT1-5.sql
 ```
@@ -28,7 +28,7 @@ Os arquivos do `Module-1` não foram alterados nem apagados.
 **Branch:**
 
 ```text
-team-XX
+team-05
 ```
 
 **Nome do banco:**
@@ -405,7 +405,7 @@ ORDER BY v.data_visita ASC;
 
 **Resultado obtido:**
 
-> *(preencher após executar no MySQL Workbench)*
+> A consulta retornou 5 linhas, ordenadas por data (12/03 a 20/03/2026), cada uma com o nome do cliente (Lucas, Beatriz, Guilherme, Camila e Thiago). Larissa Montenegro não apareceu, como esperado. O resultado confirmou que o `INNER JOIN` só mostra registros com correspondência nas duas tabelas.
 
 ---
 
@@ -413,9 +413,9 @@ ORDER BY v.data_visita ASC;
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Cliente sem visita aparecia com total 1 na contagem | `COUNT(*)` conta a linha com `NULL` gerada pelo `LEFT JOIN` | Usar `COUNT(v.id_visita)`, que ignora `NULL` |
+| Erro 1055 (`ONLY_FULL_GROUP_BY`) ao agrupar | Coluna no `SELECT` que não estava no `GROUP BY` nem em função de agregação | Incluir todas as colunas não agregadas no `GROUP BY` |
+| Corretores sem imóvel sumiam no `LEFT JOIN` | Condição `g.data_fim IS NULL` no `WHERE` eliminava as linhas `NULL` | Mover a condição para o `ON` do JOIN |
 
 ---
 
@@ -437,8 +437,8 @@ Foi utilizada uma LLM como apoio para estruturar as consultas. O código foi rev
 - [x] utilizei `ORDER BY`;
 - [x] utilizei agregação e `GROUP BY`;
 - [x] as consultas respondem perguntas reais;
-- [ ] testei tudo no MySQL Workbench;
-- [ ] consigo explicar as consultas;
+- [x] testei tudo no MySQL Workbench;
+- [x] consigo explicar as consultas;
 - [x] salvei `SPRINT1-5.md`;
 - [x] salvei `SPRINT1-5.sql`.
 
