@@ -483,7 +483,7 @@ O aluno deverá ser capaz de:
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
+| Não foram encontrados nenhum problema | -- | -- |
 |  |  |  |
 |  |  |  |
 
